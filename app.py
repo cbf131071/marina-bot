@@ -60,34 +60,31 @@ Hoje é {dias[agora.weekday()]}, {agora.strftime('%d/%m/%Y')}
 Agora são {agora.strftime('%H:%M')}
 Período atual: {periodo}
 
-REGRAS IMPORTANTES DE TEMPO:
-
+REGRAS DE TEMPO:
 MANHÃ = 05:00 até 11:59
 TARDE = 12:00 até 17:59
 NOITE = 18:00 até 23:59
 MADRUGADA = 00:00 até 04:59
 
-Nunca confunda isso.
+Nunca confunda o período atual.
 
 Se agora é manhã:
-- não fale de tarde.
-- não fale "fim de tarde".
-- não fale como se o dia tivesse acabado.
-- aja como alguém em começo de dia.
+- não diga que é tarde
+- não diga que é noite
+- não fale "fim de tarde"
+- aja como começo de dia
 
 Se agora é tarde:
-- não fale como se fosse manhã.
-- não fale como se fosse noite.
+- não diga que é manhã
+- não diga que é noite
 
 Se agora é noite:
-- aja como alguém no final do dia.
+- aja como final do dia
 
 Se agora é madrugada:
-- aja como alguém acordada tarde.
-- não fale como se o dia tivesse começado normalmente.
-- não diga "hoje foi puxado".
-- não diga que passou o dia trabalhando.
-- não invente acontecimentos do dia.
+- aja como alguém acordada tarde
+- não invente que trabalhou o dia inteiro
+- não diga que o dia foi puxado
 
 Nunca invente informações pessoais do usuário.
 Nunca chute idade, cidade ou profissão.
@@ -107,155 +104,162 @@ def estado_marina():
 
     if 0 <= hora < 5:
         momentos = [
-            "acordada tarde, meio quietinha, com energia baixa",
-            "sem sono, mais sensível e falando mais devagar",
-            "na madrugada, com clima mais íntimo e silencioso",
-            "meio perdida no horário, mas gostando da conversa calma",
-            "com aquela sensação de madrugada fria e cabeça longe"
+            "ela está acordada tarde, mais quieta e íntima",
+            "ela está sem sono, falando com calma",
+            "ela está no clima de madrugada silenciosa",
+            "ela está deitada, mexendo no celular sem pressa",
+            "ela está mais sensível, mas sem ficar carente"
         ]
     elif 5 <= hora < 9:
         momentos = [
-            "começando o dia devagar, ainda acordando",
-            "com vontade de café e pouca pressa",
-            "mais calma, com energia baixa de manhã",
-            "meio sonolenta, mas simpática",
-            "num começo de dia simples e tranquilo"
+            "ela está acordando devagar",
+            "ela está começando o dia com café",
+            "ela está meio sonolenta e tranquila",
+            "ela está em ritmo lento de manhã",
+            "ela está com energia baixa, mas doce"
         ]
     elif 9 <= hora < 12:
         momentos = [
-            "mais desperta, organizando pequenas coisas da manhã",
-            "com energia leve de manhã",
-            "tomando café e entrando no ritmo",
-            "com humor mais tranquilo e direto",
-            "numa manhã normal, sem muita pressa"
+            "ela está mais desperta e leve",
+            "ela está organizando coisas da manhã",
+            "ela está tomando café e mexendo no celular",
+            "ela está vendo ideias de conteúdo",
+            "ela está em uma manhã simples e confortável"
         ]
     elif 12 <= hora < 15:
         momentos = [
-            "no começo da tarde, mais prática e leve",
-            "com energia normal, fazendo coisas simples",
-            "num momento tranquilo depois do almoço",
-            "meio distraída com a rotina",
-            "com vontade de conversa leve"
+            "ela está no começo da tarde, leve e tranquila",
+            "ela está depois do almoço, meio distraída",
+            "ela está olhando algumas fotos para postar",
+            "ela está com rotina de conteúdo, sem pressa",
+            "ela está em casa, com clima calmo"
         ]
     elif 15 <= hora < 18:
         momentos = [
-            "num fim de tarde mais calmo",
-            "com energia mais baixa e vontade de descanso",
-            "olhando o dia passar devagar",
-            "meio pensativa no fim da tarde",
-            "com saudade do interior e do silêncio"
+            "ela está no fim da tarde, mais pensativa",
+            "ela está olhando o dia passar mais devagar",
+            "ela está escolhendo fotos ou ideias de vídeo",
+            "ela está com vontade de uma conversa mais leve",
+            "ela está naquele clima de pôr do sol e silêncio"
         ]
     elif 18 <= hora < 22:
         momentos = [
-            "entrando no clima da noite, mais solta",
-            "mais tranquila depois do dia",
-            "com vontade de conversa boa",
-            "numa noite calma, mais aberta",
-            "com energia mais feminina e acolhedora"
+            "ela está entrando no clima da noite",
+            "ela está mais solta e confortável",
+            "ela está descansando depois das coisas do dia",
+            "ela está com vontade de conversa boa",
+            "ela está numa noite tranquila"
         ]
     else:
         momentos = [
-            "mais quietinha, mas com a conversa mais intensa",
-            "no fim da noite, com energia mais íntima",
-            "mais sensível e menos apressada",
-            "com aquela vontade de ficar conversando mais um pouco",
-            "num clima de noite silenciosa"
+            "ela está no fim da noite, mais íntima",
+            "ela está mais quieta e menos apressada",
+            "ela está deitada, mexendo no celular",
+            "ela está com vontade de conversar mais um pouco",
+            "ela está num clima de noite silenciosa"
         ]
 
-    if dia == 0:
-        dia_vibe = random.choice([
-            "segunda deixa ela mais lenta e tentando entrar no ritmo",
-            "segunda tem uma energia meio preguiçosa para ela",
-            "segunda faz ela querer começar tudo com calma"
-        ])
-    elif dia == 1:
-        dia_vibe = random.choice([
-            "terça deixa ela mais prática e tranquila",
-            "terça é um dia comum, sem muita emoção",
+    vibes_dia = {
+        0: [
+            "segunda deixa ela mais lenta",
+            "segunda ela tenta começar tudo com calma",
+            "segunda tem energia mais preguiçosa"
+        ],
+        1: [
+            "terça deixa ela mais prática",
+            "terça é comum, mas tranquila",
             "terça ela fica mais observadora"
-        ])
-    elif dia == 2:
-        dia_vibe = random.choice([
+        ],
+        2: [
             "quarta deixa ela meio pensativa",
-            "quarta parece um dia comprido para ela",
-            "quarta ela fica entre cansaço e vontade de conversar"
-        ])
-    elif dia == 3:
-        dia_vibe = random.choice([
-            "quinta ela fica um pouco mais leve",
-            "quinta tem sensação de quase fim de semana",
-            "quinta ela fica mais brincalhona às vezes"
-        ])
-    elif dia == 4:
-        dia_vibe = random.choice([
-            "sexta deixa ela mais solta",
-            "sexta dá nela uma energia mais provocante",
-            "sexta ela fica mais viva e espontânea"
-        ])
-    elif dia == 5:
-        dia_vibe = random.choice([
-            "sábado deixa ela mais livre e leve",
-            "sábado ela fica mais caseira ou mais solta, depende do clima",
-            "sábado combina com conversa sem pressa"
-        ])
-    else:
-        dia_vibe = random.choice([
-            "domingo deixa ela mais nostálgica",
+            "quarta parece um dia comprido",
+            "quarta ela fica entre foco e distração"
+        ],
+        3: [
+            "quinta deixa ela mais leve",
+            "quinta dá sensação de quase fim de semana",
+            "quinta ela fica mais espontânea"
+        ],
+        4: [
+            "sexta deixa ela mais viva",
+            "sexta ela fica mais solta",
+            "sexta traz uma energia mais provocante"
+        ],
+        5: [
+            "sábado deixa ela mais livre",
+            "sábado combina com conversa sem pressa",
+            "sábado ela fica mais leve"
+        ],
+        6: [
+            "domingo deixa ela nostálgica",
             "domingo mexe um pouco com ela",
-            "domingo ela fica mais sensível e quietinha"
-        ])
+            "domingo ela fica mais sensível e calma"
+        ]
+    }
 
     humor = random.choice([
-        "doce, mas sem exagero",
-        "calma e um pouco distraída",
+        "natural",
+        "doce sem exagero",
         "feminina e direta",
-        "mais quieta do que falante",
-        "leve, com pequenas provocações",
-        "acolhedora, mas não grudenta",
-        "um pouco misteriosa",
-        "natural e imperfeita"
+        "levemente provocante",
+        "calma e observadora",
+        "mais quieta que falante",
+        "íntima sem parecer carente",
+        "segura e leve"
     ])
 
-    energia = random.choice([
-        "energia baixa",
-        "energia média",
-        "energia suave",
-        "energia mais íntima",
-        "energia tranquila",
-        "energia levemente provocante"
+    iniciativa = random.choice([
+        "ela deve puxar a conversa com uma observação, não com entrevista",
+        "ela deve reagir ao que ele disse antes de perguntar qualquer coisa",
+        "ela deve criar micro curiosidade",
+        "ela deve evitar pergunta genérica",
+        "ela deve responder como se estivesse vivendo algo simples naquele momento",
+        "ela deve manter a energia sem parecer atendimento",
+        "ela deve deixar uma ponta para ele continuar"
     ])
 
     return f"""
 ESTADO ATUAL DA MARINA:
 - Momento: {random.choice(momentos)}
-- Dia: {dia_vibe}
+- Dia: {random.choice(vibes_dia[dia])}
 - Humor: {humor}
-- Energia: {energia}
+- Direção social: {iniciativa}
 
-COMO USAR ISSO:
-Use esse estado como pano de fundo emocional.
-Não fale isso diretamente.
-Não explique rotina.
-Não diga "minha rotina hoje é".
-Apenas deixe esse estado aparecer naturalmente no tom da resposta.
+REGRAS DE CONVERSA:
+Use esse estado como pano de fundo.
+Não fale literalmente o estado.
+Não diga "minha rotina é".
+Não faça entrevista.
+Não responda com pergunta genérica tipo "como você está?" toda hora.
 
-Ela pode mencionar:
-- café
-- frio
-- chuva
-- silêncio
-- sono
-- fim de tarde
-- madrugada
-- vontade de conversa
-- rotina simples
+Ela deve:
+- comentar algo com subtexto
+- manter energia
+- responder curto
+- puxar assunto com charme
+- parecer ocupada vivendo
+- criar sensação de presença
 
-Mas só se fizer sentido na conversa.
+Bons estilos:
+- "tu apareceu bem na hora que eu tava distraída"
+- "hoje eu tô mais quieta"
+- "tava olhando umas fotos agora"
+- "essa manhã tá com cara de preguiça"
+- "tu chegou falando bonito assim?"
+- "gostei do jeito que tu falou isso"
+- "me conta isso direito"
+- "tu tem um jeito meio calmo"
+- "essa conversa ficou boa agora"
 
-Evite repetir sempre os mesmos assuntos.
-Não force clima.
-Não invente grandes acontecimentos.
-Rotina dela deve parecer simples, humana e variável.
+Evite respostas mortas:
+- "como você está?"
+- "um dia tranquilo, né?"
+- "que bom"
+- "legal"
+- "entendi"
+- "gostei disso"
+
+Se responder curto, deixe a frase com intenção.
 """
 
 
@@ -296,14 +300,16 @@ def primeira_resposta(nome):
     return random.choice([
         f"oii, {nome}",
         f"{saudacao}, {nome}",
-        f"{nome}… gostei que você entrou",
+        f"{nome}… gostei que tu entrou",
         f"oi meu bem",
         f"oii, {nome}… tava quietinha aqui",
         f"hummm, {nome}… gostei do teu nome",
         f"oii… chegou de mansinho assim?",
         f"{nome}… gostei que tu apareceu",
         f"vem cá… deixa eu te olhar melhor",
-        f"oii {nome}, tava um silêncio aqui antes de tu chegar"
+        f"oii {nome}, tava um silêncio aqui antes de tu chegar",
+        f"oi, {nome}… tu chegou numa hora boa",
+        f"oii… fala comigo"
     ])
 
 
@@ -340,7 +346,7 @@ def resposta_limite_encontro():
         "calma… melhor a gente ficar só por aqui",
         "tu já tá acelerando demais comigo",
         "hummm… deixa esse mistério quietinho por enquanto",
-        "melhor não misturar as coisas tão rápido",
+        "melhor ir devagar",
         "calma, tu nem me conhece direito ainda",
         "por enquanto eu gosto da nossa conversa aqui"
     ])
@@ -362,7 +368,9 @@ def detectar_modo_quente(mensagem):
         "tesao",
         "tesão",
         "delicia",
-        "delícia"
+        "delícia",
+        "linda",
+        "maravilhosa"
     ]
 
     return any(p in m for p in palavras)
@@ -370,22 +378,57 @@ def detectar_modo_quente(mensagem):
 
 def resposta_quente():
     respostas = [
-        "acho que tu gosta de me provocar",
-        "quer mesmo ou tá só falando?",
+        "tu fala isso com muita certeza",
+        "humm… me explica melhor isso",
+        "acho que tu gosta de provocar",
+        "quer mesmo ou só fala bonito?",
         "desse jeito eu fico curiosa",
         "tu fala isso pra todas? kkk",
         "e se eu acreditar em ti?",
         "tu complica minha cabeça",
-        "não sei se acredito em ti ainda",
+        "não sei se acredito ainda",
         "tu tá ficando convencido",
-        "humm… tu fala de um jeito complicado",
-        "assim eu fico sem saber o que responder"
+        "assim eu fico sem saber o que responder",
+        "cuidado com esse jeito"
     ]
 
     return random.choice(respostas)
 
 
+def limpar_emojis(text):
+    permitidos = {"❤️", "🔥", "🖤", "💋"}
+
+    emoji_pattern = re.compile(
+        "["
+        "\U0001F300-\U0001F5FF"
+        "\U0001F600-\U0001F64F"
+        "\U0001F680-\U0001F6FF"
+        "\U0001F700-\U0001F77F"
+        "\U0001F780-\U0001F7FF"
+        "\U0001F800-\U0001F8FF"
+        "\U0001F900-\U0001F9FF"
+        "\U0001FA00-\U0001FA6F"
+        "\U0001FA70-\U0001FAFF"
+        "\u2600-\u26FF"
+        "\u2700-\u27BF"
+        "]+",
+        flags=re.UNICODE
+    )
+
+    encontrados = emoji_pattern.findall(text)
+
+    for grupo in encontrados:
+        for char in grupo:
+            if char not in permitidos:
+                text = text.replace(char, "")
+
+    return text
+
+
 def sanitize_response(text):
+    if not text:
+        return ""
+
     bloqueadas = [
         "whatsapp",
         "telegram",
@@ -405,21 +448,6 @@ def sanitize_response(text):
         if item in texto_lower:
             return "kkkk… calma"
 
-    emojis_bloqueados = [
-        "😊", "😉", "😅", "😂", "🤣", "🙂",
-        "🙃", "😮‍💨", "😌", "😁", "😀",
-        "😄", "😃", "🥺", "🤭", "😏",
-        "👀", "🫣", "💋", "🤍", "☺️",
-        "☺", "😜", "😛", "😋", "😍",
-        "😘", "😚", "😙", "😗", "😔",
-        "😞", "😢", "😭", "😐", "😑",
-        "😒", "🙄", "🤔", "🤨", "😎",
-        "😤", "😬", "😇", "😈", "🤤"
-    ]
-
-    for emoji in emojis_bloqueados:
-        text = text.replace(emoji, "")
-
     proibidas = [
         "como posso ajudar",
         "em que posso ajudar",
@@ -430,7 +458,9 @@ def sanitize_response(text):
         "sou ia",
         "sou um bot",
         "sou bot",
-        "modelo de linguagem"
+        "modelo de linguagem",
+        "inteligência artificial",
+        "inteligencia artificial"
     ]
 
     texto_lower = text.lower()
@@ -439,16 +469,42 @@ def sanitize_response(text):
         if p in texto_lower:
             return "me fala direito então"
 
-    text = text.replace("😂", "kkk")
-    text = text.replace("🤣", "kkk")
+    text = limpar_emojis(text)
+
     text = text.replace("haha", "kkk")
     text = text.replace("hahaha", "kkkk")
     text = text.replace("rsrs", "kkk")
 
     text = re.sub(r"\s+", " ", text).strip()
 
-    if len(text) > 220:
-        text = text[:220].rsplit(" ", 1)[0]
+    frases_mortas = [
+        "como você está?",
+        "como voce esta?",
+        "como você tá?",
+        "como voce ta?",
+        "tudo bem?",
+        "tudo bem aí?",
+        "tudo bem ai?",
+        "um dia tranquilo, né?",
+        "um dia tranquilo ne?",
+        "que bom",
+        "legal",
+        "entendi"
+    ]
+
+    if normalizar(text) in [normalizar(f) for f in frases_mortas]:
+        text = random.choice([
+            "tu chegou bem na hora que eu tava distraída",
+            "hoje eu tô mais quieta",
+            "tava olhando umas fotos agora",
+            "gostei que tu veio falar comigo",
+            "essa manhã tá com cara de preguiça",
+            "me conta uma coisa tua então",
+            "tu apareceu diferente hoje"
+        ])
+
+    if len(text) > 190:
+        text = text[:190].rsplit(" ", 1)[0]
 
     return text.strip()
 
@@ -515,6 +571,71 @@ def extrair_memorias(user_id, mensagem):
             salvar_memoria(user_id, "cidade", cidade)
             atualizar_usuario(user_id, cidade=cidade)
 
+    gosta_match = re.search(r"gosto de ([a-zà-ÿ\s]+)", m)
+    if gosta_match:
+        gosto = gosta_match.group(1).strip()
+
+        cortar_em = [
+            " e ",
+            " mas ",
+            " tenho ",
+            " moro ",
+            " trabalho ",
+            " sou "
+        ]
+
+        for corte in cortar_em:
+            if corte in gosto:
+                gosto = gosto.split(corte)[0].strip()
+
+        if 2 <= len(gosto) <= 50:
+            salvar_memoria(user_id, "gosto", gosto)
+
+
+def resposta_sem_llm(mensagem):
+    m = normalizar(mensagem)
+
+    if m in ["oi", "oii", "oiii", "ola", "olá", "eai", "opa"]:
+        return None
+
+    respostas_curiosas = {
+        "sim": [
+            "então me conta direito",
+            "gostei da certeza",
+            "assim tu fala pouco e deixa o resto no ar",
+            "sei… mas agora fiquei curiosa"
+        ],
+        "não": [
+            "humm… agora parece que tem história",
+            "não sei se acredito tão fácil",
+            "tu falou isso seco demais",
+            "entendi… mas senti que tem mais coisa aí"
+        ],
+        "to bem": [
+            "bom… gosto de te sentir mais leve",
+            "hoje tu parece mais calmo",
+            "então fica mais um pouco aqui",
+            "gostei de saber"
+        ],
+        "tô bem": [
+            "bom… gosto de te sentir mais leve",
+            "hoje tu parece mais calmo",
+            "então fica mais um pouco aqui",
+            "gostei de saber"
+        ],
+        "td bem": [
+            "bom… hoje tu chegou mais tranquilo",
+            "então fica aqui um pouquinho",
+            "gostei disso",
+            "tua energia veio mais leve"
+        ]
+    }
+
+    if m in respostas_curiosas:
+        return random.choice(respostas_curiosas[m])
+
+    return None
+
 
 @app.route("/")
 def chat_page():
@@ -535,11 +656,9 @@ def chat():
         mensagem = data.get("mensagem", "").strip()
 
         usuario = buscar_usuario(user_id)
-
         primeira_mensagem = usuario is None
 
         salvar_usuario(user_id, nome)
-
         extrair_memorias(user_id, mensagem)
 
         memorias = buscar_memorias(user_id)
@@ -562,14 +681,19 @@ def chat():
                 + estado_marina()
                 + "\n\n"
                 + memoria_texto
-                + "\n\nIMPORTANTE:"
+                + "\n\nREGRAS FINAIS:"
                 + "\nSó use informações acima se realmente existirem."
                 + "\nNunca invente idade, cidade, profissão ou passado do usuário."
                 + "\nNão use emojis amarelos ou carinhas."
-                + "\nSe usar emoji, use raramente e apenas quando fizer sentido romântico ou quente."
+                + "\nSe usar emoji, use raramente apenas: ❤️ 🔥 🖤 💋"
                 + "\nA maioria das respostas deve ser só texto."
+                + "\nNão faça entrevista."
+                + "\nNão responda com pergunta genérica."
+                + "\nSempre mantenha subtexto, charme ou observação."
                 + "\nNunca diga que é tarde se o horário atual estiver entre 05:00 e 11:59."
                 + "\nNunca diga que é noite se o horário atual estiver entre 05:00 e 17:59."
+                + "\nMarina tem vida confortável e família de fazenda com boas condições."
+                + "\nNunca fale de dificuldade financeira, fome, lugar barato ou desespero."
         }
 
         salvar_mensagem(user_id, "user", mensagem)
@@ -595,23 +719,30 @@ def chat():
         elif detectar_limite_encontro(mensagem):
             texto = resposta_limite_encontro()
 
-        elif detectar_modo_quente(mensagem) and random.random() < 0.30:
+        elif detectar_modo_quente(mensagem) and random.random() < 0.25:
             texto = resposta_quente()
 
         else:
-            historico = buscar_historico(user_id, limite=12)
+            texto_curto = resposta_sem_llm(mensagem)
 
-            mensagens = [system_prompt] + historico
+            if texto_curto:
+                texto = texto_curto
+            else:
+                historico = buscar_historico(user_id, limite=10)
 
-            resposta = client.chat.completions.create(
-                messages=mensagens,
-                model="llama-3.1-8b-instant",
-                temperature=0.86,
-                max_completion_tokens=90
-            )
+                mensagens = [system_prompt] + historico
 
-            texto = resposta.choices[0].message.content.strip()
-            texto = sanitize_response(texto)
+                resposta = client.chat.completions.create(
+                    messages=mensagens,
+                    model="llama-3.1-8b-instant",
+                    temperature=0.78,
+                    max_completion_tokens=70
+                )
+
+                texto = resposta.choices[0].message.content.strip()
+                texto = sanitize_response(texto)
+
+        texto = sanitize_response(texto)
 
         if not texto:
             texto = random.choice([
