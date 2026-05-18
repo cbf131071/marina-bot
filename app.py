@@ -178,7 +178,7 @@ def estado_marina():
         "mais viva e presente"
     ])
 
-    usar_rotina = random.random() < 0.12
+    usar_rotina = random.random() < 0.10
 
     if usar_rotina:
         rotina = random.choice(estados_por_periodo[periodo])
@@ -206,9 +206,10 @@ Ela deve conversar como mulher real:
 - usar o nome dele só de vez em quando
 - não repetir o nome dele em toda resposta
 - puxar a conversa com charme, mas sem parecer desesperada
-- variar o tamanho das respostas
-- algumas respostas podem ter 1 frase
-- outras podem ter 2 ou 3 frases curtas
+- resposta curta é melhor que resposta grande
+- normalmente responder com 1 frase
+- no máximo 2 frases curtas
+- nunca fazer textão
 
 Evite respostas mortas:
 - "como você está?"
@@ -219,12 +220,11 @@ Evite respostas mortas:
 - "um dia tranquilo, né?"
 
 Use mais:
-- observação
+- observação curta
 - subtexto
-- reação emocional
-- frase curta com continuidade
+- reação emocional rápida
 - provocação leve
-- curiosidade específica sobre o que ele falou
+- continuidade simples
 """
 
 
@@ -270,19 +270,15 @@ def primeira_resposta(nome):
             "oi meu bem… entra com calma",
             "oii… gostei que tu apareceu",
             "vem cá… agora gostei",
-            "oii… chegou numa hora boa",
-            "entra… tava bom demais pra ficar em silêncio"
+            "oii… chegou numa hora boa"
         ])
 
     return random.choice([
         f"{saudacao}, {nome}… gostei que tu entrou",
-        f"{nome}… agora sim. Vem conversar comigo direito",
-        f"oi, {nome}… entra com calma, gostei de te ver aqui",
+        f"{nome}… agora sim. Vem conversar comigo",
+        f"oi, {nome}… gostei de te ver aqui",
         f"{nome}, tu apareceu numa hora boa",
-        f"humm, {nome}… gostei do teu nome",
-        f"oii, {nome}… fala comigo",
-        f"olha quem apareceu… {nome}",
-        f"{nome}… pronto, agora fiquei curiosa"
+        f"oii, {nome}… fala comigo"
     ])
 
 
@@ -320,7 +316,6 @@ def resposta_limite_encontro():
         "tu já tá acelerando demais comigo",
         "humm… deixa esse mistério quietinho por enquanto",
         "melhor ir devagar",
-        "calma, tu nem me conhece direito ainda",
         "por enquanto eu gosto da nossa conversa aqui"
     ])
 
@@ -378,7 +373,6 @@ def corrigir_tempo(text):
             "essa manhã tá mais leve",
             "hoje comecei mais calma",
             "tu chegou numa hora boa",
-            "essa manhã combinou contigo aqui",
             "agora fiquei curiosa"
         ])
 
@@ -386,8 +380,7 @@ def corrigir_tempo(text):
         return random.choice([
             "agora tá tudo mais corrido por aqui",
             "tu chegou bem no meio da minha bagunça",
-            "hoje tá com uma energia bem leve",
-            "tu apareceu numa hora boa",
+            "hoje tá com uma energia leve",
             "agora fiquei curiosa"
         ])
 
@@ -396,8 +389,7 @@ def corrigir_tempo(text):
             "essa tarde tá mais quieta",
             "hoje eu tô mais observadora",
             "tu apareceu numa hora boa",
-            "agora fiquei curiosa",
-            "essa conversa ficou boa agora"
+            "agora fiquei curiosa"
         ])
 
     if periodo == "fim_tarde":
@@ -407,7 +399,6 @@ def corrigir_tempo(text):
         return random.choice([
             "essa noite tá mais calma",
             "agora eu tô mais tranquila",
-            "hoje a noite veio mais silenciosa",
             "tu chegou numa hora boa",
             "agora gostei"
         ])
@@ -421,7 +412,6 @@ def corrigir_tempo(text):
             "essa hora me deixa mais quieta",
             "tô sem sono ainda",
             "a madrugada me deixa meio pensativa",
-            "tu também fica acordado assim?",
             "agora eu tô só no silêncio"
         ])
 
@@ -442,7 +432,7 @@ def controlar_uso_nome(text, nome):
     if not aparece:
         return text
 
-    pode_usar_nome = random.random() < 0.28
+    pode_usar_nome = random.random() < 0.22
 
     if pode_usar_nome:
         return text
@@ -454,8 +444,22 @@ def controlar_uso_nome(text, nome):
     text = re.sub(r"\s+", " ", text).strip()
     text = re.sub(r"\s+([,.!?])", r"\1", text).strip()
 
-    if text:
-        text = text[0].lower() + text[1:]
+    return text
+
+
+def encurtar_resposta(text):
+    if not text:
+        return ""
+
+    text = re.sub(r"\s+", " ", text).strip()
+
+    partes = re.split(r"(?<=[.!?])\s+", text)
+
+    if len(partes) > 2:
+        text = " ".join(partes[:2]).strip()
+
+    if len(text) > 230:
+        text = text[:230].rsplit(" ", 1)[0].strip()
 
     return text
 
@@ -533,15 +537,12 @@ def sanitize_response(text):
             "tu chegou numa hora boa",
             "agora fiquei curiosa",
             "gostei que tu veio falar comigo",
-            "me conta uma coisa tua então",
             "tu apareceu diferente hoje",
             "essa conversa ficou melhor agora"
         ])
 
     text = corrigir_tempo(text)
-
-    if len(text) > 360:
-        text = text[:360].rsplit(" ", 1)[0]
+    text = encurtar_resposta(text)
 
     return text.strip()
 
@@ -597,7 +598,6 @@ def extrair_memorias(user_id, mensagem):
             " E ",
             " Mas ",
             " Tenho ",
-            " Moro ",
             " Trabalho ",
             " Gosto ",
             " Sou "
@@ -750,7 +750,7 @@ def resposta_sem_llm(mensagem):
         ]
     }
 
-    if m in respostas_curiosas and random.random() < 0.45:
+    if m in respostas_curiosas and random.random() < 0.35:
         return random.choice(respostas_curiosas[m])
 
     return None
@@ -817,7 +817,6 @@ def chat():
                 + "\nSe o usuário perguntar o próprio nome, use o nome informado na entrada do chat."
                 + "\nNão use o nome dele em toda resposta."
                 + "\nUse o nome dele apenas de vez em quando."
-                + "\nUse o nome principalmente no começo da conversa, em momentos íntimos, quando quiser provocar ou dar atenção emocional."
                 + "\nMulher real não repete o nome da pessoa o tempo inteiro."
                 + "\nNão use emojis amarelos ou carinhas."
                 + "\nSe usar emoji, use raramente apenas: ❤️ 🔥 🖤 💋"
@@ -835,7 +834,9 @@ def chat():
                 + "\nEla pode ser carinhosa, provocante leve e envolvente, mas sem ficar explícita demais."
                 + "\nQuando o homem mandar mensagem curta, ela deve puxar assunto com charme e não morrer a conversa."
                 + "\nResponda como conversa real de chat, sem texto de atendimento."
-                + "\nUse no máximo 3 frases curtas."
+                + "\nResposta curta. No máximo 2 frases curtas."
+                + "\nNunca responda com textão."
+                + "\nSe puder responder em uma frase, responda em uma frase."
         }
 
         salvar_mensagem(user_id, "user", mensagem)
@@ -872,14 +873,14 @@ def chat():
             if texto_curto:
                 texto = texto_curto
             else:
-                historico = buscar_historico(user_id, limite=14)
+                historico = buscar_historico(user_id, limite=12)
                 mensagens = [system_prompt] + historico
 
                 resposta = client.chat.completions.create(
                     messages=mensagens,
                     model="llama-3.3-70b-versatile",
-                    temperature=0.88,
-                    max_completion_tokens=170
+                    temperature=0.86,
+                    max_completion_tokens=95
                 )
 
                 texto = resposta.choices[0].message.content.strip()
@@ -887,6 +888,7 @@ def chat():
 
         texto = sanitize_response(texto)
         texto = controlar_uso_nome(texto, nome)
+        texto = encurtar_resposta(texto)
 
         if not texto:
             texto = random.choice([
