@@ -6,38 +6,367 @@
 <title>Marina Alves</title>
 
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial, Helvetica, sans-serif;}
-body{background:#0f0f0f;height:100vh;display:flex;justify-content:center;align-items:center;color:white;}
-.chat-container{width:100%;max-width:430px;height:100vh;background:#151515;display:flex;flex-direction:column;}
-.topo{padding:14px 16px;border-bottom:1px solid #2a2a2a;display:flex;align-items:center;gap:12px;background:#111;}
-.foto{width:48px;height:48px;border-radius:50%;background:url('/static/marina.jpeg');background-size:cover;background-position:center;flex-shrink:0;}
-.nome h1{font-size:17px;color:white;}
-.nome span{color:#5cff87;font-size:13px;}
-.mensagens{flex:1;overflow-y:auto;padding:15px;display:flex;flex-direction:column;gap:10px;}
-.msg{padding:12px 14px;border-radius:18px;max-width:80%;line-height:1.4;font-size:15px;word-wrap:break-word;}
-.user{align-self:flex-end;background:#7c3aed;}
-.bot{align-self:flex-start;background:#262626;}
-.digitando{align-self:flex-start;background:#262626;color:#aaa;padding:10px 14px;border-radius:18px;font-size:14px;display:none;}
-.input-area{padding:15px;border-top:1px solid #2a2a2a;display:flex;gap:10px;background:#111;}
-input{flex:1;background:#1d1d1d;border:none;outline:none;color:white;padding:14px;border-radius:14px;font-size:15px;}
-button{border:none;background:#7c3aed;color:white;padding:0 20px;border-radius:14px;cursor:pointer;font-size:15px;transition:0.2s;}
-button:hover{opacity:0.9;}
-button:disabled{opacity:0.6;cursor:not-allowed;}
-.nome-box{position:fixed;inset:0;background:#0f0f0f;display:flex;justify-content:center;align-items:center;z-index:999;}
-.nome-content{width:90%;max-width:350px;background:#181818;padding:25px;border-radius:22px;display:flex;flex-direction:column;gap:15px;}
-.nome-content h2{font-size:22px;}
-.nome-content p{color:#aaa;line-height:1.5;}
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Arial, Helvetica, sans-serif;
+}
+
+body{
+    background:#050505;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    color:white;
+}
+
+.chat-container{
+    width:100%;
+    max-width:430px;
+    height:100vh;
+    background:#151515;
+    display:flex;
+    flex-direction:column;
+}
+
+.topo{
+    padding:14px 16px;
+    border-bottom:1px solid #2a2a2a;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    background:#111;
+}
+
+.foto{
+    width:48px;
+    height:48px;
+    border-radius:50%;
+    background:url('/static/marina.jpeg');
+    background-size:cover;
+    background-position:center;
+    flex-shrink:0;
+}
+
+.nome h1{
+    font-size:17px;
+    color:white;
+}
+
+.nome span{
+    color:#5cff87;
+    font-size:13px;
+}
+
+.mensagens{
+    flex:1;
+    overflow-y:auto;
+    padding:15px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+}
+
+.msg{
+    padding:12px 14px;
+    border-radius:18px;
+    max-width:80%;
+    line-height:1.4;
+    font-size:15px;
+    word-wrap:break-word;
+}
+
+.user{
+    align-self:flex-end;
+    background:#7c3aed;
+}
+
+.bot{
+    align-self:flex-start;
+    background:#262626;
+}
+
+.digitando{
+    align-self:flex-start;
+    background:#262626;
+    color:#aaa;
+    padding:10px 14px;
+    border-radius:18px;
+    font-size:14px;
+    display:none;
+}
+
+.input-area{
+    padding:15px;
+    border-top:1px solid #2a2a2a;
+    display:flex;
+    gap:10px;
+    background:#111;
+}
+
+.input-area input{
+    flex:1;
+    background:#1d1d1d;
+    border:none;
+    outline:none;
+    color:white;
+    padding:14px;
+    border-radius:14px;
+    font-size:15px;
+}
+
+.input-area button{
+    border:none;
+    background:#7c3aed;
+    color:white;
+    padding:0 20px;
+    border-radius:14px;
+    cursor:pointer;
+    font-size:15px;
+    transition:0.2s;
+}
+
+button:hover{
+    opacity:0.92;
+}
+
+button:disabled{
+    opacity:0.6;
+    cursor:not-allowed;
+}
+
+/* ENTRADA PREMIUM */
+
+.nome-box{
+    position:fixed;
+    inset:0;
+    background:#020202;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:999;
+    overflow:hidden;
+}
+
+.nome-card{
+    width:100%;
+    max-width:430px;
+    height:100vh;
+    position:relative;
+    background:#050505;
+    overflow:hidden;
+    display:flex;
+    justify-content:flex-end;
+    flex-direction:column;
+}
+
+.nome-card::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:
+        linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.25) 42%, rgba(0,0,0,0.92) 78%, #020202 100%),
+        url('/static/imagem_chat.jpeg');
+    background-size:cover;
+    background-position:center top;
+    z-index:1;
+}
+
+.nome-card::after{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:radial-gradient(circle at center 35%, rgba(255,70,70,0.12), transparent 48%);
+    z-index:2;
+    pointer-events:none;
+}
+
+.entrada-content{
+    position:relative;
+    z-index:3;
+    width:100%;
+    padding:0 28px 36px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+.titulo-script{
+    font-family:"Brush Script MT", "Segoe Script", cursive;
+    font-size:45px;
+    font-weight:400;
+    line-height:0.95;
+    color:#ffe6c9;
+    text-shadow:0 0 18px rgba(255,120,90,0.55);
+    margin-bottom:2px;
+}
+
+.titulo-principal{
+    font-family:Georgia, "Times New Roman", serif;
+    font-size:47px;
+    line-height:0.95;
+    color:#ffe4bf;
+    text-align:center;
+    text-shadow:0 0 18px rgba(255,120,90,0.35);
+    margin-bottom:14px;
+}
+
+.divisor{
+    width:78%;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin:4px 0 16px;
+    color:#e44752;
+}
+
+.divisor::before,
+.divisor::after{
+    content:"";
+    flex:1;
+    height:1px;
+    background:linear-gradient(to right, transparent, rgba(228,71,82,0.7), transparent);
+}
+
+.subtexto{
+    color:#c8b9ad;
+    font-size:16px;
+    line-height:1.35;
+    text-align:center;
+    max-width:310px;
+    margin-bottom:24px;
+}
+
+.form-box{
+    width:100%;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+}
+
+.campo{
+    width:100%;
+    height:58px;
+    border-radius:16px;
+    background:rgba(30,20,15,0.72);
+    border:1px solid rgba(255,205,175,0.18);
+    display:flex;
+    align-items:center;
+    padding:0 16px;
+    gap:12px;
+    backdrop-filter:blur(10px);
+    box-shadow:0 8px 24px rgba(0,0,0,0.25);
+}
+
+.campo span{
+    opacity:0.7;
+    font-size:20px;
+}
+
+.campo input{
+    flex:1;
+    border:none;
+    outline:none;
+    background:transparent;
+    color:white;
+    font-size:15px;
+}
+
+.campo input::placeholder{
+    color:#a99c94;
+}
+
+.aviso{
+    color:#b7a9a1;
+    font-size:13px;
+    text-align:center;
+    margin:2px 0 8px;
+}
+
+.entrar-btn{
+    width:100%;
+    height:64px;
+    border:none;
+    border-radius:22px;
+    background:linear-gradient(135deg, #a71928, #d44749, #8f1422);
+    color:#ffe7c9;
+    font-family:"Brush Script MT", "Segoe Script", cursive;
+    font-size:33px;
+    cursor:pointer;
+    box-shadow:0 12px 35px rgba(196,32,44,0.35);
+    transition:0.2s;
+}
+
+.entrar-btn:hover{
+    transform:translateY(-1px);
+    opacity:0.96;
+}
+
+@media(max-height:720px){
+    .titulo-script{
+        font-size:36px;
+    }
+
+    .titulo-principal{
+        font-size:39px;
+    }
+
+    .subtexto{
+        font-size:14px;
+        margin-bottom:16px;
+    }
+
+    .entrada-content{
+        padding:0 26px 24px;
+    }
+
+    .campo{
+        height:52px;
+    }
+
+    .entrar-btn{
+        height:58px;
+        font-size:29px;
+    }
+}
 </style>
 </head>
 
 <body>
 
 <div class="nome-box" id="nomeBox">
-    <div class="nome-content">
-        <h2>Marina Alves ❤️</h2>
-        <p>Como posso te chamar?</p>
-        <input type="text" id="nomeInput" placeholder="Seu nome ou apelido">
-        <button onclick="entrar()">Entrar</button>
+    <div class="nome-card">
+        <div class="entrada-content">
+            <div class="titulo-script">Bem vindo</div>
+            <div class="titulo-principal">ao meu cantinho</div>
+
+            <div class="divisor">♡</div>
+
+            <div class="subtexto">
+                Para a gente conversar tranquilo<br>
+                sem ser incomodado ❤️
+            </div>
+
+            <div class="form-box">
+                <div class="campo">
+                    <span>♡</span>
+                    <input type="text" id="nomeInput" placeholder="Seu nome ou apelido">
+                </div>
+
+                <div class="campo">
+                    <span>⌕</span>
+                    <input type="text" id="codigoInput" placeholder="Um código pra eu lembrar de você">
+                </div>
+
+                <div class="aviso">
+                    Use sempre o mesmo nome e código quando voltar. ❤️
+                </div>
+
+                <button class="entrar-btn" onclick="entrar()">Entrar no meu cantinho</button>
+            </div>
+        </div>
     </div>
 </div>
 
@@ -63,13 +392,7 @@ button:disabled{opacity:0.6;cursor:not-allowed;}
 <script>
 let user_id = localStorage.getItem("user_id") || null
 let nome = localStorage.getItem("nome") || null
-
-if (!sessionStorage.getItem("sessao_ativa")) {
-    localStorage.removeItem("nome")
-    localStorage.removeItem("user_id")
-    nome = null
-    user_id = null
-}
+let codigo_usuario = localStorage.getItem("codigo_usuario") || null
 
 const mensagens = document.getElementById("mensagens")
 const digitando = document.getElementById("digitando")
@@ -77,9 +400,25 @@ const statusMarina = document.getElementById("status")
 const botaoEnviar = document.getElementById("botaoEnviar")
 const mensagemInput = document.getElementById("mensagemInput")
 const nomeInput = document.getElementById("nomeInput")
+const codigoInput = document.getElementById("codigoInput")
 
-if(nome){
+if(nome && codigo_usuario && user_id){
     document.getElementById("nomeBox").style.display = "none"
+}
+
+function normalizarId(texto){
+    return texto
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[^a-z0-9]/g, "")
+        .trim()
+}
+
+function criarUserId(nomeValor, codigoValor){
+    const nomeLimpo = normalizarId(nomeValor)
+    const codigoLimpo = normalizarId(codigoValor)
+    return `marina_${nomeLimpo}_${codigoLimpo}`
 }
 
 function adicionarMensagem(texto, classe){
@@ -106,13 +445,13 @@ function esconderDigitando(){
 
 function mensagemBoasVindas(){
     const opcoes = [
-        `oii, ${nome} ❤️`,
-        `que bom te ver por aqui, ${nome} ❤️`,
-        `oi meu bem ❤️ tava quietinha por aqui`,
-        `${nome}... gostei que você entrou 😌`,
-        `hummm, ${nome}... gostei do teu nome ❤️`,
-        `tava te esperando aparecer, ${nome} 😌`,
-        `oii, ${nome}... chega mais um pouquinho 😌`
+        `oii, ${nome}`,
+        `que bom te ver por aqui, ${nome}`,
+        `oi meu bem`,
+        `${nome}... gostei que você entrou`,
+        `hummm, ${nome}... gostei do teu nome`,
+        `tava quietinha aqui antes de tu chegar`,
+        `oii, ${nome}... fala comigo`
     ]
 
     return opcoes[Math.floor(Math.random() * opcoes.length)]
@@ -120,10 +459,16 @@ function mensagemBoasVindas(){
 
 function entrar(){
     nome = nomeInput.value.trim()
+    codigo_usuario = codigoInput.value.trim()
+
     if(!nome) return
+    if(!codigo_usuario) return
+
+    user_id = criarUserId(nome, codigo_usuario)
 
     localStorage.setItem("nome", nome)
-    sessionStorage.setItem("sessao_ativa", "1")
+    localStorage.setItem("codigo_usuario", codigo_usuario)
+    localStorage.setItem("user_id", user_id)
 
     document.getElementById("nomeBox").style.display = "none"
     mensagemInput.focus()
@@ -135,21 +480,21 @@ function entrar(){
             esconderDigitando()
             adicionarMensagem(mensagemBoasVindas(), "bot")
             mensagemInput.focus()
-        }, 2500 + Math.random() * 2500)
+        }, 1800 + Math.random() * 2200)
 
-    }, 1000 + Math.random() * 2000)
+    }, 700 + Math.random() * 1200)
 }
 
 function tempoAntesDigitando(){
-    return Math.floor(Math.random() * 5000) + 1500
+    return Math.floor(Math.random() * 3000) + 1200
 }
 
 function tempoDigitando(resposta){
-    let tempo = resposta.length * 55
-    tempo += Math.floor(Math.random() * 3000) + 1500
+    let tempo = resposta.length * 45
+    tempo += Math.floor(Math.random() * 2200) + 1200
 
-    if(tempo < 3000) tempo = 3000
-    if(tempo > 11000) tempo = 11000
+    if(tempo < 2200) tempo = 2200
+    if(tempo > 9000) tempo = 9000
 
     return tempo
 }
@@ -169,13 +514,17 @@ async function enviar(){
             body:JSON.stringify({
                 user_id:user_id,
                 nome:nome,
+                codigo_usuario:codigo_usuario,
                 mensagem:texto
             })
         })
 
         const data = await resposta.json()
-        user_id = data.user_id
-        localStorage.setItem("user_id", user_id)
+
+        if(data.user_id){
+            user_id = data.user_id
+            localStorage.setItem("user_id", user_id)
+        }
 
         setTimeout(() => {
             mostrarDigitando()
@@ -191,7 +540,7 @@ async function enviar(){
 
     }catch(erro){
         esconderDigitando()
-        adicionarMensagem("ai... deu um errinho aqui 😮‍💨", "bot")
+        adicionarMensagem("me perdi aqui por um segundo kkk", "bot")
         botaoEnviar.disabled = false
         mensagemInput.focus()
     }
@@ -205,6 +554,13 @@ mensagemInput.addEventListener("keydown", function(e){
 })
 
 nomeInput.addEventListener("keydown", function(e){
+    if(e.key === "Enter"){
+        e.preventDefault()
+        codigoInput.focus()
+    }
+})
+
+codigoInput.addEventListener("keydown", function(e){
     if(e.key === "Enter"){
         e.preventDefault()
         entrar()
