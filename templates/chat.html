@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
 
     <style>
-
         *{
             margin:0;
             padding:0;
@@ -25,9 +24,6 @@
         }
 
         body{
-            display:flex;
-            justify-content:center;
-            align-items:center;
             color:white;
         }
 
@@ -35,6 +31,7 @@
             width:100%;
             max-width:430px;
             height:100dvh;
+            margin:0 auto;
             position:relative;
             overflow:hidden;
             background:#000;
@@ -47,81 +44,83 @@
         /* LOGIN */
 
         #loginScreen{
+            width:100%;
+            height:100%;
             background:
-                linear-gradient(to top, rgba(0,0,0,0.92), rgba(0,0,0,0.25)),
+                linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.55) 34%, rgba(0,0,0,0.10) 72%),
                 url('/static/imagem_chat.jpeg');
             background-size:cover;
-            background-position:center;
+            background-position:center top;
             display:flex;
             justify-content:flex-end;
             align-items:center;
             flex-direction:column;
-            padding:40px 28px 34px;
-            height:100%;
+            padding:0 26px 26px;
         }
 
         .overlay-box{
             width:100%;
+            background:rgba(0,0,0,0.30);
+            border-radius:26px;
+            padding:18px 18px 20px;
+            border:1px solid rgba(255,255,255,0.08);
             backdrop-filter:blur(2px);
-            background:rgba(0,0,0,0.18);
-            border-radius:28px;
-            padding:22px;
-            border:1px solid rgba(255,255,255,0.06);
+            margin-bottom:0;
         }
 
         .welcome-script{
             font-family:'Great Vibes', cursive;
-            font-size:58px;
+            font-size:52px;
             text-align:center;
             color:#ffd2ad;
             line-height:0.9;
-            text-shadow:0 0 18px rgba(255,150,120,0.25);
+            text-shadow:0 0 18px rgba(255,150,120,0.28);
         }
 
         .welcome-main{
             text-align:center;
-            font-size:31px;
+            font-size:27px;
             color:#ffd9b9;
-            margin-top:4px;
+            margin-top:2px;
             font-weight:400;
             letter-spacing:-0.5px;
         }
 
         .line-heart{
             text-align:center;
-            margin:10px 0 16px;
+            margin:7px 0 11px;
             color:#ff4b67;
             opacity:0.95;
-            font-size:14px;
+            font-size:13px;
         }
 
         .welcome-sub{
             text-align:center;
-            font-size:16px;
-            line-height:1.45;
-            color:rgba(255,255,255,0.92);
-            margin-bottom:22px;
+            font-size:14px;
+            line-height:1.35;
+            color:rgba(255,255,255,0.94);
+            margin-bottom:16px;
         }
 
         .input-group{
             position:relative;
-            margin-bottom:14px;
+            margin-bottom:11px;
         }
 
         .input-group input{
             width:100%;
-            height:58px;
-            border-radius:18px;
+            height:52px;
+            border-radius:17px;
             border:1px solid rgba(255,255,255,0.12);
-            background:rgba(20,10,10,0.75);
+            background:rgba(20,10,10,0.72);
             color:white;
-            padding:0 18px 0 46px;
-            font-size:16px;
+            padding:0 18px 0 44px;
+            font-size:15px;
             outline:none;
         }
 
         .input-group input::placeholder{
-            color:rgba(255,255,255,0.48);
+            color:rgba(255,255,255,0.52);
         }
 
         .input-icon{
@@ -129,53 +128,58 @@
             left:16px;
             top:50%;
             transform:translateY(-50%);
-            opacity:0.65;
-            font-size:15px;
+            opacity:0.70;
+            font-size:14px;
         }
 
         .tip{
             text-align:center;
-            font-size:13px;
-            color:rgba(255,255,255,0.72);
-            margin-top:6px;
-            margin-bottom:18px;
+            font-size:12px;
+            line-height:1.35;
+            color:rgba(255,255,255,0.78);
+            margin-top:4px;
+            margin-bottom:14px;
         }
 
         .enter-btn{
             width:100%;
-            height:62px;
+            height:58px;
             border:none;
             border-radius:22px;
             background:linear-gradient(135deg, #b8132c, #ff3d63);
             color:white;
             font-family:'Great Vibes', cursive;
-            font-size:36px;
+            font-size:34px;
             cursor:pointer;
-            box-shadow:0 10px 30px rgba(255, 40, 90, 0.28);
+            box-shadow:0 10px 30px rgba(255,40,90,0.30);
         }
 
         /* CHAT */
 
         #chatScreen{
-            display:flex;
-            flex-direction:column;
-            height:100dvh;
+            width:100%;
+            height:100%;
             background:#0b0b0f;
+            position:relative;
+            overflow:hidden;
         }
 
         .chat-header{
-            position:sticky;
+            position:fixed;
             top:0;
+            left:50%;
+            transform:translateX(-50%);
+            width:100%;
+            max-width:430px;
             z-index:1000;
             display:flex;
             align-items:center;
             gap:14px;
-            padding:env(safe-area-inset-top) 16px 14px;
+            padding:calc(10px + env(safe-area-inset-top)) 16px 14px;
             min-height:84px;
-            background:rgba(10,10,10,0.96);
+            background:rgba(10,10,10,0.98);
             border-bottom:1px solid rgba(255,255,255,0.08);
             backdrop-filter:blur(12px);
-            flex-shrink:0;
         }
 
         .avatar{
@@ -183,24 +187,30 @@
             height:58px;
             border-radius:50%;
             object-fit:cover;
+            flex-shrink:0;
         }
 
         .header-info h2{
             font-size:20px;
             font-weight:700;
+            line-height:1.1;
         }
 
         .status{
             color:#30ff69;
             font-size:14px;
-            margin-top:2px;
+            margin-top:4px;
             transition:0.2s;
         }
 
         .messages{
-            flex:1;
+            position:absolute;
+            top:92px;
+            left:0;
+            right:0;
+            bottom:86px;
             overflow-y:auto;
-            padding:18px 14px 110px;
+            padding:18px 14px 24px;
             display:flex;
             flex-direction:column;
             gap:14px;
@@ -230,11 +240,15 @@
         }
 
         .input-area{
-            position:sticky;
+            position:fixed;
+            left:50%;
+            transform:translateX(-50%);
             bottom:0;
+            width:100%;
+            max-width:430px;
             z-index:999;
-            padding:12px 14px calc(12px + env(safe-area-inset-bottom));
-            background:rgba(11,11,15,0.98);
+            padding:12px 12px calc(12px + env(safe-area-inset-bottom));
+            background:rgba(11,11,15,0.99);
             border-top:1px solid rgba(255,255,255,0.08);
             display:flex;
             gap:10px;
@@ -251,6 +265,7 @@
             color:white;
             padding:0 18px;
             font-size:17px;
+            min-width:0;
         }
 
         .input-area input::placeholder{
@@ -258,14 +273,15 @@
         }
 
         .send-btn{
-            width:102px;
+            width:82px;
             border:none;
             border-radius:20px;
             background:linear-gradient(135deg, #7c3aed, #9333ea);
             color:white;
-            font-size:18px;
+            font-size:17px;
             font-weight:600;
             cursor:pointer;
+            flex-shrink:0;
         }
 
         @keyframes fadeIn{
@@ -280,30 +296,33 @@
         }
 
         @media (max-width:480px){
+            .screen{
+                max-width:100%;
+            }
+
+            .chat-header,
+            .input-area{
+                max-width:100%;
+            }
 
             .welcome-script{
-                font-size:52px;
+                font-size:50px;
             }
 
             .welcome-main{
-                font-size:28px;
+                font-size:26px;
             }
 
             .msg{
                 font-size:15px;
             }
-
         }
-
     </style>
-
 </head>
 
 <body>
 
 <div class="screen">
-
-    <!-- LOGIN -->
 
     <div id="loginScreen">
 
@@ -323,37 +342,30 @@
             </div>
 
             <div class="input-group">
-
                 <div class="input-icon">♡</div>
-
                 <input
                     type="text"
                     id="nomeInput"
                     placeholder="Seu nome ou apelido"
+                    autocomplete="off"
                 >
-
             </div>
 
             <div class="input-group">
-
                 <div class="input-icon">⌕</div>
-
                 <input
                     type="text"
                     id="codigoInput"
                     placeholder="Um código pra eu lembrar de você"
+                    autocomplete="off"
                 >
-
             </div>
 
             <div class="tip">
                 Use sempre o mesmo nome e código quando voltar ❤️
             </div>
 
-            <button
-                class="enter-btn"
-                onclick="entrarChat()"
-            >
+            <button class="enter-btn" onclick="entrarChat()">
                 Entrar no meu cantinho
             </button>
 
@@ -361,38 +373,22 @@
 
     </div>
 
-    <!-- CHAT -->
-
     <div id="chatScreen" class="hidden">
 
-        <div class="chat-header">
+        <div class="chat-header" id="chatHeader">
 
-            <img
-                src="/static/marina.jpeg"
-                class="avatar"
-            >
+            <img src="/static/marina.jpeg" class="avatar">
 
             <div class="header-info">
-
                 <h2>Marina Alves</h2>
-
-                <div
-                    class="status"
-                    id="statusText"
-                >
-                    online agora
-                </div>
-
+                <div class="status" id="statusText">online agora</div>
             </div>
 
         </div>
 
-        <div
-            class="messages"
-            id="messages"
-        ></div>
+        <div class="messages" id="messages"></div>
 
-        <div class="input-area">
+        <div class="input-area" id="inputArea">
 
             <input
                 type="text"
@@ -401,10 +397,7 @@
                 autocomplete="off"
             >
 
-            <button
-                class="send-btn"
-                onclick="enviarMensagem()"
-            >
+            <button class="send-btn" onclick="enviarMensagem()">
                 Enviar
             </button>
 
@@ -415,20 +408,21 @@
 </div>
 
 <script>
-
 let userId = null;
 let nomeUsuario = '';
 let codigoUsuario = '';
+let enviando = false;
 
 const loginScreen = document.getElementById('loginScreen');
 const chatScreen = document.getElementById('chatScreen');
 const messages = document.getElementById('messages');
 const messageInput = document.getElementById('messageInput');
+const inputArea = document.getElementById('inputArea');
+const statusText = document.getElementById('statusText');
 
 window.onload = () => {
-
     localStorage.removeItem('marina_auto_login');
-
+    ajustarTecladoMobile();
 };
 
 function entrarChat(){
@@ -437,10 +431,8 @@ function entrarChat(){
     const codigo = document.getElementById('codigoInput').value.trim();
 
     if(!nome || !codigo){
-
         alert('Preenche teu nome e um código ❤️');
         return;
-
     }
 
     nomeUsuario = nome;
@@ -452,41 +444,63 @@ function entrarChat(){
     primeiraMensagem();
 
     setTimeout(() => {
-
         messageInput.focus();
-
+        ajustarTecladoMobile();
     }, 300);
-
 }
 
 async function primeiraMensagem(){
 
     mostrarDigitando();
 
-    const response = await fetch('/api/chat', {
+    try{
 
-        method:'POST',
+        const response = await fetch('/api/chat', {
+            method:'POST',
+            headers:{
+                'Content-Type':'application/json'
+            },
+            body:JSON.stringify({
+                nome:nomeUsuario,
+                codigo_usuario:codigoUsuario,
+                mensagem:'oi'
+            })
+        });
 
-        headers:{
-            'Content-Type':'application/json'
-        },
+        const data = await response.json();
 
-        body:JSON.stringify({
-            nome:nomeUsuario,
-            codigo_usuario:codigoUsuario,
-            mensagem:'oi'
-        })
+        userId = data.user_id;
 
-    });
+        setTimeout(() => {
+            removerDigitando();
 
-    removerDigitando();
+            const nomeLimpo = limparNome(nomeUsuario);
 
-    const data = await response.json();
+            adicionarMensagem(
+                `Boa tarde, ${nomeLimpo}... adorei te ver por aqui. Vem, fica tranquilo comigo ❤️`,
+                'bot'
+            );
+        }, 600);
 
-    userId = data.user_id;
+    } catch(error){
 
-    adicionarMensagem(data.resposta, 'bot');
+        removerDigitando();
 
+        const nomeLimpo = limparNome(nomeUsuario);
+
+        adicionarMensagem(
+            `Boa tarde, ${nomeLimpo}... entra com calma, gostei de te ver por aqui ❤️`,
+            'bot'
+        );
+    }
+}
+
+function limparNome(nome){
+    if(!nome) return 'meu amor';
+
+    const primeiroNome = nome.trim().split(' ')[0];
+
+    return primeiroNome.charAt(0).toUpperCase() + primeiroNome.slice(1).toLowerCase();
 }
 
 function adicionarMensagem(texto, tipo){
@@ -501,44 +515,33 @@ function adicionarMensagem(texto, tipo){
     messages.appendChild(div);
 
     scrollFinal();
-
 }
 
 function mostrarDigitando(){
-
-    const statusText = document.getElementById('statusText');
-
     if(statusText){
-
         statusText.innerText = 'digitando...';
-
     }
-
 }
 
 function removerDigitando(){
-
-    const statusText = document.getElementById('statusText');
-
     if(statusText){
-
         statusText.innerText = 'online agora';
-
     }
-
 }
 
 function scrollFinal(){
-
-    messages.scrollTop = messages.scrollHeight;
-
+    setTimeout(() => {
+        messages.scrollTop = messages.scrollHeight;
+    }, 50);
 }
 
 async function enviarMensagem(){
 
     const texto = messageInput.value.trim();
 
-    if(!texto) return;
+    if(!texto || enviando) return;
+
+    enviando = true;
 
     adicionarMensagem(texto, 'user');
 
@@ -549,25 +552,21 @@ async function enviarMensagem(){
     try{
 
         const response = await fetch('/api/chat', {
-
             method:'POST',
-
             headers:{
                 'Content-Type':'application/json'
             },
-
             body:JSON.stringify({
                 user_id:userId,
                 nome:nomeUsuario,
                 codigo_usuario:codigoUsuario,
                 mensagem:texto
             })
-
         });
 
-        removerDigitando();
-
         const data = await response.json();
+
+        removerDigitando();
 
         adicionarMensagem(data.resposta, 'bot');
 
@@ -580,22 +579,46 @@ async function enviarMensagem(){
             'bot'
         );
 
-    }
+    } finally{
 
+        enviando = false;
+
+    }
 }
 
-messageInput.addEventListener('keypress', function(e){
-
+messageInput.addEventListener('keydown', function(e){
     if(e.key === 'Enter'){
-
         e.preventDefault();
-
         enviarMensagem();
-
     }
-
 });
 
+function ajustarTecladoMobile(){
+
+    if(!window.visualViewport) return;
+
+    const ajustar = () => {
+
+        const viewport = window.visualViewport;
+        const alturaTeclado = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop);
+
+        if(inputArea){
+            inputArea.style.bottom = alturaTeclado + 'px';
+        }
+
+        if(messages){
+            const inputAltura = inputArea ? inputArea.offsetHeight : 86;
+            messages.style.bottom = (inputAltura + alturaTeclado) + 'px';
+        }
+
+        scrollFinal();
+    };
+
+    window.visualViewport.addEventListener('resize', ajustar);
+    window.visualViewport.addEventListener('scroll', ajustar);
+
+    ajustar();
+}
 </script>
 
 </body>
