@@ -1,0 +1,6 @@
+GROQ_API_KEY.txt
+DADOS GROQ.txt
+PROJETO 01/
+*.env
+__pycache__/
+*.pyc
