@@ -5,7 +5,6 @@ import uuid
 import os
 import random
 import re
-import time
 
 from database import (
     init_db,
@@ -204,7 +203,8 @@ Ela deve conversar como mulher real:
 - não parecer atendimento
 - não parecer NPC
 - manter energia
-- usar o nome dele naturalmente quando souber
+- usar o nome dele só de vez em quando
+- não repetir o nome dele em toda resposta
 - puxar a conversa com charme, mas sem parecer desesperada
 - variar o tamanho das respostas
 - algumas respostas podem ter 1 frase
@@ -428,6 +428,38 @@ def corrigir_tempo(text):
     return text
 
 
+def controlar_uso_nome(text, nome):
+    if not text or not nome:
+        return text
+
+    nome_limpo = limpar_nome(nome)
+
+    if not nome_limpo or nome_limpo.lower() == "amor":
+        return text
+
+    aparece = re.search(rf"\b{re.escape(nome_limpo)}\b", text, flags=re.IGNORECASE)
+
+    if not aparece:
+        return text
+
+    pode_usar_nome = random.random() < 0.28
+
+    if pode_usar_nome:
+        return text
+
+    text = re.sub(rf",\s*{re.escape(nome_limpo)}\b", "", text, flags=re.IGNORECASE)
+    text = re.sub(rf"\b{re.escape(nome_limpo)},\s*", "", text, flags=re.IGNORECASE)
+    text = re.sub(rf"\b{re.escape(nome_limpo)}\b", "", text, flags=re.IGNORECASE)
+
+    text = re.sub(r"\s+", " ", text).strip()
+    text = re.sub(r"\s+([,.!?])", r"\1", text).strip()
+
+    if text:
+        text = text[0].lower() + text[1:]
+
+    return text
+
+
 def sanitize_response(text):
     if not text:
         return ""
@@ -565,6 +597,7 @@ def extrair_memorias(user_id, mensagem):
             " E ",
             " Mas ",
             " Tenho ",
+            " Moro ",
             " Trabalho ",
             " Gosto ",
             " Sou "
@@ -766,7 +799,7 @@ def chat():
                 memoria_texto += f"- {chave}: {valor}\n"
 
         memoria_texto += f"\nNOME INFORMADO NA ENTRADA DO CHAT: {nome}\n"
-        memoria_texto += "Use esse nome naturalmente quando fizer sentido.\n"
+        memoria_texto += "Use esse nome apenas de vez em quando, como uma pessoa real faria.\n"
 
         system_prompt = {
             "role": "system",
@@ -782,6 +815,10 @@ def chat():
                 + "\nSó use informações acima se realmente existirem."
                 + "\nNunca invente idade, cidade, profissão ou passado do usuário."
                 + "\nSe o usuário perguntar o próprio nome, use o nome informado na entrada do chat."
+                + "\nNão use o nome dele em toda resposta."
+                + "\nUse o nome dele apenas de vez em quando."
+                + "\nUse o nome principalmente no começo da conversa, em momentos íntimos, quando quiser provocar ou dar atenção emocional."
+                + "\nMulher real não repete o nome da pessoa o tempo inteiro."
                 + "\nNão use emojis amarelos ou carinhas."
                 + "\nSe usar emoji, use raramente apenas: ❤️ 🔥 🖤 💋"
                 + "\nA maioria das respostas deve ser só texto."
@@ -849,6 +886,7 @@ def chat():
                 texto = sanitize_response(texto)
 
         texto = sanitize_response(texto)
+        texto = controlar_uso_nome(texto, nome)
 
         if not texto:
             texto = random.choice([
@@ -859,13 +897,6 @@ def chat():
                 "me chama de novo"
             ])
 
-        tempo_resposta = random.uniform(1.8, 4.5)
-
-        if len(texto) > 120:
-            tempo_resposta += 1.2
-
-        time.sleep(tempo_resposta)
-
         salvar_mensagem(user_id, "assistant", texto)
 
         return jsonify({
@@ -875,8 +906,6 @@ def chat():
 
     except Exception as erro:
         print("ERRO NO CHAT:", erro)
-
-        time.sleep(random.uniform(1.2, 2.4))
 
         user_id = str(uuid.uuid4())
         texto = random.choice([
