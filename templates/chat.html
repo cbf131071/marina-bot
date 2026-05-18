@@ -1,602 +1,476 @@
+```html
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Marina Alves</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Marina Alves</title>
 
-<style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Arial, Helvetica, sans-serif;}
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
 
-html,body{
-    width:100%;
-    height:100%;
-    background:#050505;
-    color:white;
-    overflow:hidden;
-    position:fixed;
-    inset:0;
-    overscroll-behavior:none;
-}
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-body{
-    display:flex;
-    justify-content:center;
-    align-items:center;
-}
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #000;
+            font-family: 'Poppins', sans-serif;
+            -webkit-font-smoothing: antialiased;
+        }
 
-.chat-container{
-    position:fixed;
-    top:0;
-    bottom:0;
-    left:50%;
-    transform:translateX(-50%);
-    width:100%;
-    max-width:430px;
-    height:var(--app-height, 100vh);
-    background:#151515;
-    overflow:hidden;
-}
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+        }
 
-.topo{
-    position:fixed;
-    top:0;
-    left:50%;
-    transform:translateX(-50%);
-    width:100%;
-    max-width:430px;
-    height:88px;
-    padding:14px 16px;
-    border-bottom:1px solid #2a2a2a;
-    display:flex;
-    align-items:center;
-    gap:12px;
-    background:#111;
-    z-index:50;
-}
+        .screen {
+            width: 100%;
+            max-width: 430px;
+            height: 100dvh;
+            position: relative;
+            overflow: hidden;
+            background: #000;
+        }
 
-.foto{
-    width:54px;
-    height:54px;
-    border-radius:50%;
-    background:url('/static/marina.jpeg');
-    background-size:cover;
-    background-position:center;
-    flex-shrink:0;
-}
+        .hidden {
+            display: none !important;
+        }
 
-.nome h1{font-size:20px;color:white;}
-.nome span{color:#5cff87;font-size:15px;}
+        /* ================= LOGIN ================= */
 
-.mensagens{
-    position:fixed;
-    top:88px;
-    bottom:86px;
-    left:50%;
-    transform:translateX(-50%);
-    width:100%;
-    max-width:430px;
-    overflow-y:auto;
-    padding:20px 16px;
-    display:flex;
-    flex-direction:column;
-    gap:14px;
-    background:#151515;
-    -webkit-overflow-scrolling:touch;
-    z-index:5;
-}
+        #loginScreen {
+            background:
+                linear-gradient(to top, rgba(0,0,0,0.92), rgba(0,0,0,0.25)),
+                url('/static/imagem_chat.jpeg');
+            background-size: cover;
+            background-position: center;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            flex-direction: column;
+            padding: 40px 28px 34px;
+        }
 
-.msg{
-    padding:14px 16px;
-    border-radius:20px;
-    max-width:80%;
-    line-height:1.35;
-    font-size:18px;
-    word-wrap:break-word;
-}
+        .overlay-box {
+            width: 100%;
+            backdrop-filter: blur(2px);
+            background: rgba(0,0,0,0.18);
+            border-radius: 28px;
+            padding: 22px;
+            border: 1px solid rgba(255,255,255,0.06);
+        }
 
-.user{align-self:flex-end;background:#7c3aed;}
-.bot{align-self:flex-start;background:#262626;}
+        .welcome-script {
+            font-family: 'Great Vibes', cursive;
+            font-size: 58px;
+            text-align: center;
+            color: #ffd2ad;
+            line-height: 0.9;
+            text-shadow: 0 0 18px rgba(255,150,120,0.25);
+        }
 
-.digitando{
-    align-self:flex-start;
-    background:#262626;
-    color:#aaa;
-    padding:12px 15px;
-    border-radius:18px;
-    font-size:15px;
-    display:none;
-}
+        .welcome-main {
+            text-align: center;
+            font-size: 31px;
+            color: #ffd9b9;
+            margin-top: 4px;
+            font-weight: 400;
+            letter-spacing: -0.5px;
+        }
 
-.input-area{
-    position:fixed;
-    left:50%;
-    transform:translateX(-50%);
-    right:auto;
-    bottom:0;
-    width:100%;
-    max-width:430px;
-    min-height:86px;
-    padding:14px 14px calc(14px + env(safe-area-inset-bottom));
-    border-top:1px solid #2a2a2a;
-    display:flex;
-    align-items:center;
-    gap:10px;
-    background:#111;
-    z-index:60;
-}
+        .line-heart {
+            text-align: center;
+            margin: 10px 0 16px;
+            color: #ff4b67;
+            opacity: 0.95;
+            font-size: 14px;
+        }
 
-.input-area input{
-    flex:1;
-    min-width:0;
-    background:#1d1d1d;
-    border:none;
-    outline:none;
-    color:white;
-    padding:17px 18px;
-    border-radius:18px;
-    font-size:18px;
-}
+        .welcome-sub {
+            text-align: center;
+            font-size: 16px;
+            line-height: 1.45;
+            color: rgba(255,255,255,0.92);
+            margin-bottom: 22px;
+        }
 
-.input-area button{
-    border:none;
-    background:#7c3aed;
-    color:white;
-    padding:0 24px;
-    height:58px;
-    border-radius:18px;
-    cursor:pointer;
-    font-size:18px;
-    transition:0.2s;
-}
+        .input-group {
+            position: relative;
+            margin-bottom: 14px;
+        }
 
-button:hover{opacity:0.92;}
-button:disabled{opacity:0.6;cursor:not-allowed;}
+        .input-group input {
+            width: 100%;
+            height: 58px;
+            border-radius: 18px;
+            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(20,10,10,0.75);
+            color: white;
+            padding: 0 18px 0 46px;
+            font-size: 16px;
+            outline: none;
+        }
 
-/* ENTRADA PREMIUM */
+        .input-group input::placeholder {
+            color: rgba(255,255,255,0.48);
+        }
 
-.nome-box{
-    position:fixed;
-    inset:0;
-    background:#020202;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    z-index:999;
-    overflow:hidden;
-}
+        .input-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.65;
+            font-size: 15px;
+        }
 
-.nome-card{
-    width:100%;
-    max-width:430px;
-    height:var(--app-height, 100vh);
-    position:relative;
-    background:#050505;
-    overflow:hidden;
-    display:flex;
-    justify-content:flex-end;
-    flex-direction:column;
-}
+        .tip {
+            text-align: center;
+            font-size: 13px;
+            color: rgba(255,255,255,0.72);
+            margin-top: 6px;
+            margin-bottom: 18px;
+        }
 
-.nome-card::before{
-    content:"";
-    position:absolute;
-    inset:0;
-    background:
-        linear-gradient(to bottom,
-            rgba(0,0,0,0.02) 0%,
-            rgba(0,0,0,0.08) 28%,
-            rgba(0,0,0,0.46) 55%,
-            rgba(0,0,0,0.90) 78%,
-            #020202 100%
-        ),
-        radial-gradient(circle at 50% 25%, rgba(255,190,145,0.14), transparent 42%),
-        url('/static/imagem_chat.jpeg');
-    background-size:cover;
-    background-position:center 18%;
-    z-index:1;
-}
+        .enter-btn {
+            width: 100%;
+            height: 62px;
+            border: none;
+            border-radius: 22px;
+            background: linear-gradient(135deg, #b8132c, #ff3d63);
+            color: white;
+            font-family: 'Great Vibes', cursive;
+            font-size: 36px;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(255, 40, 90, 0.28);
+        }
 
-.nome-card::after{
-    content:"";
-    position:absolute;
-    inset:0;
-    background:
-        linear-gradient(to right, rgba(0,0,0,0.42), transparent 25%, transparent 75%, rgba(0,0,0,0.42)),
-        radial-gradient(circle at center 35%, rgba(255,70,70,0.10), transparent 48%);
-    z-index:2;
-    pointer-events:none;
-}
+        /* ================= CHAT ================= */
 
-.entrada-content{
-    position:relative;
-    z-index:3;
-    width:100%;
-    padding:0 28px 34px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-}
+        #chatScreen {
+            display: flex;
+            flex-direction: column;
+            height: 100dvh;
+            background: #0b0b0f;
+        }
 
-.titulo-script{
-    font-family:"Brush Script MT", "Segoe Script", cursive;
-    font-size:41px;
-    font-weight:400;
-    line-height:0.9;
-    color:#ffe6c9;
-    text-shadow:0 0 18px rgba(255,120,90,0.55);
-}
+        .chat-header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: env(safe-area-inset-top) 16px 14px;
+            min-height: 84px;
+            background: rgba(10,10,10,0.96);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            backdrop-filter: blur(12px);
+            flex-shrink: 0;
+        }
 
-.titulo-principal{
-    font-family:Georgia, "Times New Roman", serif;
-    font-size:43px;
-    line-height:0.95;
-    color:#ffe4bf;
-    text-align:center;
-    text-shadow:0 0 18px rgba(255,120,90,0.35);
-    margin-bottom:10px;
-}
+        .avatar {
+            width: 58px;
+            height: 58px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
 
-.divisor{
-    width:72%;
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin:0 0 12px;
-    color:#e44752;
-    font-size:18px;
-}
+        .header-info h2 {
+            font-size: 20px;
+            font-weight: 700;
+        }
 
-.divisor::before,.divisor::after{
-    content:"";
-    flex:1;
-    height:1px;
-    background:linear-gradient(to right, transparent, rgba(228,71,82,0.7), transparent);
-}
+        .status {
+            color: #30ff69;
+            font-size: 14px;
+            margin-top: 2px;
+        }
 
-.subtexto{
-    color:#d8c8bd;
-    font-size:15px;
-    line-height:1.35;
-    text-align:center;
-    max-width:310px;
-    margin-bottom:20px;
-    text-shadow:0 2px 8px rgba(0,0,0,0.7);
-}
+        .messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 18px 14px 110px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+            scroll-behavior: smooth;
+        }
 
-.form-box{
-    width:100%;
-    display:flex;
-    flex-direction:column;
-    gap:12px;
-}
+        .msg {
+            max-width: 80%;
+            padding: 16px 18px;
+            border-radius: 24px;
+            line-height: 1.45;
+            font-size: 16px;
+            word-wrap: break-word;
+            animation: fadeIn 0.2s ease;
+        }
 
-.campo{
-    width:100%;
-    height:56px;
-    border-radius:16px;
-    background:rgba(30,20,15,0.72);
-    border:1px solid rgba(255,205,175,0.20);
-    display:flex;
-    align-items:center;
-    padding:0 16px;
-    gap:12px;
-    backdrop-filter:blur(10px);
-    box-shadow:0 8px 24px rgba(0,0,0,0.25);
-}
+        .msg.bot {
+            background: #232326;
+            align-self: flex-start;
+            border-bottom-left-radius: 8px;
+        }
 
-.campo span{opacity:0.75;font-size:18px;color:#e7d1c3;}
+        .msg.user {
+            background: linear-gradient(135deg, #7c3aed, #9333ea);
+            align-self: flex-end;
+            border-bottom-right-radius: 8px;
+        }
 
-.campo input{
-    flex:1;
-    border:none;
-    outline:none;
-    background:transparent;
-    color:white;
-    font-size:15px;
-}
+        .input-area {
+            position: sticky;
+            bottom: 0;
+            z-index: 999;
+            padding: 12px 14px calc(12px + env(safe-area-inset-bottom));
+            background: rgba(11,11,15,0.98);
+            border-top: 1px solid rgba(255,255,255,0.08);
+            display: flex;
+            gap: 10px;
+            backdrop-filter: blur(12px);
+        }
 
-.campo input::placeholder{color:#b9aaa1;}
+        .input-area input {
+            flex: 1;
+            height: 58px;
+            border: none;
+            outline: none;
+            border-radius: 20px;
+            background: #19191d;
+            color: white;
+            padding: 0 18px;
+            font-size: 17px;
+        }
 
-.aviso{
-    color:#c8b8ae;
-    font-size:13px;
-    text-align:center;
-    margin:0 0 6px;
-    text-shadow:0 2px 8px rgba(0,0,0,0.7);
-}
+        .input-area input::placeholder {
+            color: rgba(255,255,255,0.42);
+        }
 
-.entrar-btn{
-    width:100%;
-    height:62px;
-    border:none;
-    border-radius:22px;
-    background:linear-gradient(135deg, #a71928, #d44749, #8f1422);
-    color:#ffe7c9;
-    font-family:"Brush Script MT", "Segoe Script", cursive;
-    font-size:31px;
-    cursor:pointer;
-    box-shadow:0 12px 35px rgba(196,32,44,0.35);
-    transition:0.2s;
-}
+        .send-btn {
+            width: 102px;
+            border: none;
+            border-radius: 20px;
+            background: linear-gradient(135deg, #7c3aed, #9333ea);
+            color: white;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+        }
 
-.entrar-btn:hover{transform:translateY(-1px);opacity:0.96;}
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(4px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
 
-@media(max-height:720px){
-    .nome-card::before{background-position:center 12%;}
-    .entrada-content{padding:0 26px 22px;}
-    .titulo-script{font-size:34px;}
-    .titulo-principal{font-size:37px;}
-    .subtexto{font-size:13px;margin-bottom:14px;}
-    .campo{height:50px;}
-    .entrar-btn{height:56px;font-size:28px;}
-}
-</style>
+        @media (max-width: 480px) {
+            .welcome-script {
+                font-size: 52px;
+            }
+
+            .welcome-main {
+                font-size: 28px;
+            }
+
+            .msg {
+                font-size: 15px;
+            }
+        }
+    </style>
 </head>
-
 <body>
 
-<div class="nome-box" id="nomeBox">
-    <div class="nome-card">
-        <div class="entrada-content">
-            <div class="titulo-script">Bem vindo</div>
-            <div class="titulo-principal">ao meu cantinho</div>
-            <div class="divisor">♡</div>
-            <div class="subtexto">Para a gente conversar tranquilo<br>sem ser incomodado ❤️</div>
+<div class="screen">
 
-            <div class="form-box">
-                <div class="campo">
-                    <span>♡</span>
-                    <input type="text" id="nomeInput" placeholder="Seu nome ou apelido">
-                </div>
+    <!-- LOGIN -->
+    <div id="loginScreen">
+        <div class="overlay-box">
 
-                <div class="campo">
-                    <span>⌕</span>
-                    <input type="text" id="codigoInput" placeholder="Um código pra eu lembrar de você">
-                </div>
+            <div class="welcome-script">Bem vindo</div>
+            <div class="welcome-main">ao meu cantinho</div>
 
-                <div class="aviso">Use sempre o mesmo nome e código quando voltar. ❤️</div>
-                <button class="entrar-btn" onclick="entrar()">Entrar no meu cantinho</button>
+            <div class="line-heart">♡</div>
+
+            <div class="welcome-sub">
+                Para a gente conversar tranquilo<br>
+                sem ser incomodado ❤️
+            </div>
+
+            <div class="input-group">
+                <div class="input-icon">♡</div>
+                <input type="text" id="nomeInput" placeholder="Seu nome ou apelido">
+            </div>
+
+            <div class="input-group">
+                <div class="input-icon">⌕</div>
+                <input type="text" id="codigoInput" placeholder="Um código pra eu lembrar de você">
+            </div>
+
+            <div class="tip">
+                Use sempre o mesmo nome e código quando voltar. ❤️
+            </div>
+
+            <button class="enter-btn" onclick="entrarChat()">
+                Entrar no meu cantinho
+            </button>
+
+        </div>
+    </div>
+
+    <!-- CHAT -->
+    <div id="chatScreen" class="hidden">
+
+        <div class="chat-header">
+            <img src="/static/marina.jpeg" class="avatar">
+
+            <div class="header-info">
+                <h2>Marina Alves</h2>
+                <div class="status">online agora</div>
             </div>
         </div>
-    </div>
-</div>
 
-<div class="chat-container">
-    <div class="topo">
-        <div class="foto"></div>
-        <div class="nome">
-            <h1>Marina Alves</h1>
-            <span id="status">online agora</span>
+        <div class="messages" id="messages"></div>
+
+        <div class="input-area">
+            <input
+                type="text"
+                id="messageInput"
+                placeholder="Mensagem..."
+                autocomplete="off"
+            >
+
+            <button class="send-btn" onclick="enviarMensagem()">
+                Enviar
+            </button>
         </div>
+
     </div>
 
-    <div class="mensagens" id="mensagens">
-        <div class="digitando" id="digitando">Marina está digitando...</div>
-    </div>
-
-    <div class="input-area" id="inputArea">
-        <input type="text" id="mensagemInput" placeholder="Mensagem...">
-        <button id="botaoEnviar" onclick="enviar()">Enviar</button>
-    </div>
 </div>
 
 <script>
-let user_id = localStorage.getItem("user_id") || null
-let nome = localStorage.getItem("nome") || null
-let codigo_usuario = localStorage.getItem("codigo_usuario") || null
 
-const mensagens = document.getElementById("mensagens")
-const digitando = document.getElementById("digitando")
-const statusMarina = document.getElementById("status")
-const botaoEnviar = document.getElementById("botaoEnviar")
-const mensagemInput = document.getElementById("mensagemInput")
-const nomeInput = document.getElementById("nomeInput")
-const codigoInput = document.getElementById("codigoInput")
-const nomeBox = document.getElementById("nomeBox")
+let userId = null;
+let nomeUsuario = '';
+let codigoUsuario = '';
 
-if(nome){
-    nomeInput.value = nome
-}
+const loginScreen = document.getElementById('loginScreen');
+const chatScreen = document.getElementById('chatScreen');
+const messages = document.getElementById('messages');
+const messageInput = document.getElementById('messageInput');
 
-if(codigo_usuario){
-    codigoInput.value = codigo_usuario
-}
+window.onload = () => {
+    localStorage.removeItem('marina_auto_login');
+};
 
-function travarTela(){
-    window.scrollTo(0,0)
+function entrarChat() {
 
-    const altura = window.visualViewport ? window.visualViewport.height : window.innerHeight
-    document.documentElement.style.setProperty("--app-height", `${altura}px`)
+    const nome = document.getElementById('nomeInput').value.trim();
+    const codigo = document.getElementById('codigoInput').value.trim();
 
-    setTimeout(() => {
-        window.scrollTo(0,0)
-        mensagens.scrollTop = mensagens.scrollHeight
-    }, 80)
-}
+    if (!nome || !codigo) {
+        alert('Preenche teu nome e um código ❤️');
+        return;
+    }
 
-window.addEventListener("resize", travarTela)
-window.addEventListener("orientationchange", travarTela)
+    nomeUsuario = nome;
+    codigoUsuario = codigo;
 
-if(window.visualViewport){
-    window.visualViewport.addEventListener("resize", travarTela)
-    window.visualViewport.addEventListener("scroll", travarTela)
-}
+    loginScreen.classList.add('hidden');
+    chatScreen.classList.remove('hidden');
 
-document.addEventListener("scroll", function(){
-    window.scrollTo(0,0)
-}, {passive:false})
-
-travarTela()
-
-function normalizarId(texto){
-    return texto
-        .toLowerCase()
-        .normalize("NFD")
-        .replace(/[\u0300-\u036f]/g, "")
-        .replace(/[^a-z0-9]/g, "")
-        .trim()
-}
-
-function criarUserId(nomeValor, codigoValor){
-    const nomeLimpo = normalizarId(nomeValor)
-    const codigoLimpo = normalizarId(codigoValor)
-    return `marina_${nomeLimpo}_${codigoLimpo}`
-}
-
-function adicionarMensagem(texto, classe){
-    const div = document.createElement("div")
-    div.classList.add("msg")
-    div.classList.add(classe)
-    div.innerText = texto
-    mensagens.insertBefore(div, digitando)
-    mensagens.scrollTop = mensagens.scrollHeight
-    travarTela()
-}
-
-function mostrarDigitando(){
-    digitando.style.display = "block"
-    statusMarina.innerText = "digitando..."
-    statusMarina.style.color = "#aaa"
-    mensagens.scrollTop = mensagens.scrollHeight
-    travarTela()
-}
-
-function esconderDigitando(){
-    digitando.style.display = "none"
-    statusMarina.innerText = "online agora"
-    statusMarina.style.color = "#5cff87"
-}
-
-function mensagemBoasVindas(){
-    const opcoes = [
-        `oii, ${nome}`,
-        `que bom te ver por aqui, ${nome}`,
-        `oi meu bem`,
-        `${nome}... gostei que você entrou`,
-        `hummm, ${nome}... gostei do teu nome`,
-        `tava quietinha aqui antes de tu chegar`,
-        `oii, ${nome}... fala comigo`
-    ]
-
-    return opcoes[Math.floor(Math.random() * opcoes.length)]
-}
-
-function entrar(){
-    nome = nomeInput.value.trim()
-    codigo_usuario = codigoInput.value.trim()
-
-    if(!nome) return
-    if(!codigo_usuario) return
-
-    user_id = criarUserId(nome, codigo_usuario)
-
-    localStorage.setItem("nome", nome)
-    localStorage.setItem("codigo_usuario", codigo_usuario)
-    localStorage.setItem("user_id", user_id)
-
-    nomeBox.style.display = "none"
-    mensagemInput.focus()
-    travarTela()
+    primeiraMensagem();
 
     setTimeout(() => {
-        mostrarDigitando()
-        setTimeout(() => {
-            esconderDigitando()
-            adicionarMensagem(mensagemBoasVindas(), "bot")
-            mensagemInput.focus()
-            travarTela()
-        }, 1800 + Math.random() * 2200)
-    }, 700 + Math.random() * 1200)
+        messageInput.focus();
+    }, 300);
 }
 
-function tempoAntesDigitando(){
-    return Math.floor(Math.random() * 3000) + 1200
-}
+async function primeiraMensagem() {
 
-function tempoDigitando(resposta){
-    let tempo = resposta.length * 45
-    tempo += Math.floor(Math.random() * 2200) + 1200
-    if(tempo < 2200) tempo = 2200
-    if(tempo > 9000) tempo = 9000
-    return tempo
-}
-
-async function enviar(){
-    const texto = mensagemInput.value.trim()
-    if(!texto) return
-
-    adicionarMensagem(texto, "user")
-    mensagemInput.value = ""
-    botaoEnviar.disabled = true
-    travarTela()
-
-    try{
-        const resposta = await fetch("/api/chat",{
-            method:"POST",
-            headers:{"Content-Type":"application/json"},
-            body:JSON.stringify({
-                user_id:user_id,
-                nome:nome,
-                codigo_usuario:codigo_usuario,
-                mensagem:texto
-            })
+    const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            nome: nomeUsuario,
+            codigo_usuario: codigoUsuario,
+            mensagem: 'oi'
         })
+    });
 
-        const data = await resposta.json()
+    const data = await response.json();
 
-        if(data.user_id){
-            user_id = data.user_id
-            localStorage.setItem("user_id", user_id)
-        }
+    userId = data.user_id;
 
-        setTimeout(() => {
-            mostrarDigitando()
-            setTimeout(() => {
-                esconderDigitando()
-                adicionarMensagem(data.resposta, "bot")
-                botaoEnviar.disabled = false
-                mensagemInput.focus()
-                travarTela()
-            }, tempoDigitando(data.resposta))
-        }, tempoAntesDigitando())
-
-    }catch(erro){
-        esconderDigitando()
-        adicionarMensagem("me perdi aqui por um segundo kkk", "bot")
-        botaoEnviar.disabled = false
-        mensagemInput.focus()
-        travarTela()
-    }
+    adicionarMensagem(data.resposta, 'bot');
 }
 
-mensagemInput.addEventListener("focus", function(){
-    setTimeout(travarTela, 120)
-    setTimeout(travarTela, 350)
-    setTimeout(travarTela, 700)
-})
+function adicionarMensagem(texto, tipo) {
 
-mensagemInput.addEventListener("keydown", function(e){
-    if(e.key === "Enter"){
-        e.preventDefault()
-        enviar()
-    }
-})
+    const div = document.createElement('div');
 
-nomeInput.addEventListener("keydown", function(e){
-    if(e.key === "Enter"){
-        e.preventDefault()
-        codigoInput.focus()
-    }
-})
+    div.classList.add('msg');
+    div.classList.add(tipo);
 
-codigoInput.addEventListener("keydown", function(e){
-    if(e.key === "Enter"){
-        e.preventDefault()
-        entrar()
+    div.innerText = texto;
+
+    messages.appendChild(div);
+
+    messages.scrollTop = messages.scrollHeight;
+}
+
+async function enviarMensagem() {
+
+    const texto = messageInput.value.trim();
+
+    if (!texto) return;
+
+    adicionarMensagem(texto, 'user');
+
+    messageInput.value = '';
+
+    const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+            user_id: userId,
+            nome: nomeUsuario,
+            codigo_usuario: codigoUsuario,
+            mensagem: texto
+        })
+    });
+
+    const data = await response.json();
+
+    adicionarMensagem(data.resposta, 'bot');
+}
+
+messageInput.addEventListener('keypress', function(e) {
+    if (e.key === 'Enter') {
+        enviarMensagem();
     }
-})
+});
+
 </script>
 
 </body>
 </html>
+```
