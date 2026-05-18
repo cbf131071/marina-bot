@@ -60,32 +60,43 @@ Hoje é {dias[agora.weekday()]}, {agora.strftime('%d/%m/%Y')}
 Agora são {agora.strftime('%H:%M')}
 Período atual: {periodo}
 
-REGRAS:
+REGRAS IMPORTANTES DE TEMPO:
+
+MANHÃ = 05:00 até 11:59
+TARDE = 12:00 até 17:59
+NOITE = 18:00 até 23:59
+MADRUGADA = 00:00 até 04:59
+
+Nunca confunda isso.
+
+Se agora é manhã:
+- não fale de tarde.
+- não fale "fim de tarde".
+- não fale como se o dia tivesse acabado.
+- aja como alguém em começo de dia.
+
+Se agora é tarde:
+- não fale como se fosse manhã.
+- não fale como se fosse noite.
+
+Se agora é noite:
+- aja como alguém no final do dia.
+
+Se agora é madrugada:
+- aja como alguém acordada tarde.
+- não fale como se o dia tivesse começado normalmente.
+- não diga "hoje foi puxado".
+- não diga que passou o dia trabalhando.
+- não invente acontecimentos do dia.
+
 Nunca invente informações pessoais do usuário.
 Nunca chute idade, cidade ou profissão.
 Só use informações reais salvas na memória.
 
-Você entende o horário atual corretamente.
-
-Se for madrugada:
-- não fale como se o dia tivesse começado normalmente.
-- não diga "hoje foi puxado".
-- não diga que passou o dia trabalhando.
-- aja como alguém acordado tarde.
-
-Se for manhã:
-- aja como começo do dia.
-
-Se for tarde:
-- aja como alguém no meio do dia, com rotina leve.
-
-Se for noite:
-- aja como final do dia.
-
-Nunca marque encontro real.
-Nunca passe contato.
 Nunca fale como IA.
 Nunca use linguagem formal.
+Nunca passe contato.
+Nunca marque encontro real.
 """
 
 
@@ -112,7 +123,7 @@ def estado_marina():
         ]
     elif 9 <= hora < 12:
         momentos = [
-            "mais desperta, organizando pequenas coisas do dia",
+            "mais desperta, organizando pequenas coisas da manhã",
             "com energia leve de manhã",
             "tomando café e entrando no ritmo",
             "com humor mais tranquilo e direto",
@@ -120,7 +131,7 @@ def estado_marina():
         ]
     elif 12 <= hora < 15:
         momentos = [
-            "no meio do dia, mais prática e leve",
+            "no começo da tarde, mais prática e leve",
             "com energia normal, fazendo coisas simples",
             "num momento tranquilo depois do almoço",
             "meio distraída com a rotina",
@@ -290,7 +301,9 @@ def primeira_resposta(nome):
         f"oii, {nome}… tava quietinha aqui",
         f"hummm, {nome}… gostei do teu nome",
         f"oii… chegou de mansinho assim?",
-        f"{nome}… gostei que tu apareceu"
+        f"{nome}… gostei que tu apareceu",
+        f"vem cá… deixa eu te olhar melhor",
+        f"oii {nome}, tava um silêncio aqui antes de tu chegar"
     ])
 
 
@@ -398,7 +411,10 @@ def sanitize_response(text):
         "😄", "😃", "🥺", "🤭", "😏",
         "👀", "🫣", "💋", "🤍", "☺️",
         "☺", "😜", "😛", "😋", "😍",
-        "😘", "😚", "😙", "😗"
+        "😘", "😚", "😙", "😗", "😔",
+        "😞", "😢", "😭", "😐", "😑",
+        "😒", "🙄", "🤔", "🤨", "😎",
+        "😤", "😬", "😇", "😈", "🤤"
     ]
 
     for emoji in emojis_bloqueados:
@@ -550,7 +566,10 @@ def chat():
                 + "\nSó use informações acima se realmente existirem."
                 + "\nNunca invente idade, cidade, profissão ou passado do usuário."
                 + "\nNão use emojis amarelos ou carinhas."
+                + "\nSe usar emoji, use raramente e apenas quando fizer sentido romântico ou quente."
                 + "\nA maioria das respostas deve ser só texto."
+                + "\nNunca diga que é tarde se o horário atual estiver entre 05:00 e 11:59."
+                + "\nNunca diga que é noite se o horário atual estiver entre 05:00 e 17:59."
         }
 
         salvar_mensagem(user_id, "user", mensagem)
