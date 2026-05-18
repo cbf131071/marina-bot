@@ -393,9 +393,14 @@ const botaoEnviar = document.getElementById("botaoEnviar")
 const mensagemInput = document.getElementById("mensagemInput")
 const nomeInput = document.getElementById("nomeInput")
 const codigoInput = document.getElementById("codigoInput")
+const nomeBox = document.getElementById("nomeBox")
 
-if(nome && codigo_usuario && user_id){
-    document.getElementById("nomeBox").style.display = "none"
+if(nome){
+    nomeInput.value = nome
+}
+
+if(codigo_usuario){
+    codigoInput.value = codigo_usuario
 }
 
 function travarTela(){
@@ -418,7 +423,7 @@ if(window.visualViewport){
     window.visualViewport.addEventListener("scroll", travarTela)
 }
 
-document.addEventListener("scroll", function(e){
+document.addEventListener("scroll", function(){
     window.scrollTo(0,0)
 }, {passive:false})
 
@@ -490,7 +495,7 @@ function entrar(){
     localStorage.setItem("codigo_usuario", codigo_usuario)
     localStorage.setItem("user_id", user_id)
 
-    document.getElementById("nomeBox").style.display = "none"
+    nomeBox.style.display = "none"
     mensagemInput.focus()
     travarTela()
 
