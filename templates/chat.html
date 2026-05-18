@@ -8,6 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
 
     <style>
+
         *{
             margin:0;
             padding:0;
@@ -193,6 +194,7 @@
             color:#30ff69;
             font-size:14px;
             margin-top:2px;
+            transition:0.2s;
         }
 
         .messages{
@@ -225,46 +227,6 @@
             background:linear-gradient(135deg, #7c3aed, #9333ea);
             align-self:flex-end;
             border-bottom-right-radius:8px;
-        }
-
-        .typing{
-            display:flex;
-            align-items:center;
-            gap:4px;
-            padding:14px 18px;
-            width:72px;
-        }
-
-        .typing span{
-            width:8px;
-            height:8px;
-            border-radius:50%;
-            background:#fff;
-            opacity:0.7;
-            animation:blink 1.4s infinite;
-        }
-
-        .typing span:nth-child(2){
-            animation-delay:0.2s;
-        }
-
-        .typing span:nth-child(3){
-            animation-delay:0.4s;
-        }
-
-        @keyframes blink{
-            0%{
-                opacity:0.2;
-                transform:translateY(0);
-            }
-            20%{
-                opacity:1;
-                transform:translateY(-2px);
-            }
-            100%{
-                opacity:0.2;
-                transform:translateY(0);
-            }
         }
 
         .input-area{
@@ -332,19 +294,26 @@
             }
 
         }
+
     </style>
+
 </head>
+
 <body>
 
 <div class="screen">
 
     <!-- LOGIN -->
+
     <div id="loginScreen">
 
         <div class="overlay-box">
 
             <div class="welcome-script">Bem vindo</div>
-            <div class="welcome-main">ao meu cantinho</div>
+
+            <div class="welcome-main">
+                ao meu cantinho
+            </div>
 
             <div class="line-heart">♡</div>
 
@@ -354,20 +323,37 @@
             </div>
 
             <div class="input-group">
+
                 <div class="input-icon">♡</div>
-                <input type="text" id="nomeInput" placeholder="Seu nome ou apelido">
+
+                <input
+                    type="text"
+                    id="nomeInput"
+                    placeholder="Seu nome ou apelido"
+                >
+
             </div>
 
             <div class="input-group">
+
                 <div class="input-icon">⌕</div>
-                <input type="text" id="codigoInput" placeholder="Um código pra eu lembrar de você">
+
+                <input
+                    type="text"
+                    id="codigoInput"
+                    placeholder="Um código pra eu lembrar de você"
+                >
+
             </div>
 
             <div class="tip">
                 Use sempre o mesmo nome e código quando voltar ❤️
             </div>
 
-            <button class="enter-btn" onclick="entrarChat()">
+            <button
+                class="enter-btn"
+                onclick="entrarChat()"
+            >
                 Entrar no meu cantinho
             </button>
 
@@ -376,20 +362,35 @@
     </div>
 
     <!-- CHAT -->
+
     <div id="chatScreen" class="hidden">
 
         <div class="chat-header">
 
-            <img src="/static/marina.jpeg" class="avatar">
+            <img
+                src="/static/marina.jpeg"
+                class="avatar"
+            >
 
             <div class="header-info">
+
                 <h2>Marina Alves</h2>
-                <div class="status">online agora</div>
+
+                <div
+                    class="status"
+                    id="statusText"
+                >
+                    online agora
+                </div>
+
             </div>
 
         </div>
 
-        <div class="messages" id="messages"></div>
+        <div
+            class="messages"
+            id="messages"
+        ></div>
 
         <div class="input-area">
 
@@ -400,7 +401,10 @@
                 autocomplete="off"
             >
 
-            <button class="send-btn" onclick="enviarMensagem()">
+            <button
+                class="send-btn"
+                onclick="enviarMensagem()"
+            >
                 Enviar
             </button>
 
@@ -502,36 +506,23 @@ function adicionarMensagem(texto, tipo){
 
 function mostrarDigitando(){
 
-    removerDigitando();
+    const statusText = document.getElementById('statusText');
 
-    const div = document.createElement('div');
+    if(statusText){
 
-    div.classList.add('msg');
-    div.classList.add('bot');
+        statusText.innerText = 'digitando...';
 
-    div.id = 'typingIndicator';
-
-    div.innerHTML = `
-        <div class="typing">
-            <span></span>
-            <span></span>
-            <span></span>
-        </div>
-    `;
-
-    messages.appendChild(div);
-
-    scrollFinal();
+    }
 
 }
 
 function removerDigitando(){
 
-    const typing = document.getElementById('typingIndicator');
+    const statusText = document.getElementById('statusText');
 
-    if(typing){
+    if(statusText){
 
-        typing.remove();
+        statusText.innerText = 'online agora';
 
     }
 
@@ -598,6 +589,7 @@ messageInput.addEventListener('keypress', function(e){
     if(e.key === 'Enter'){
 
         e.preventDefault();
+
         enviarMensagem();
 
     }
