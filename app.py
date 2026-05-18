@@ -31,18 +31,28 @@ with open(os.path.join(BASE_DIR, "persona.txt"), "r", encoding="utf-8") as f:
     persona = f.read()
 
 
-def contexto_tempo():
+def periodo_atual():
     agora = datetime.now()
     hora = agora.hour
 
-    if 5 <= hora < 12:
-        periodo = "manhã"
-    elif 12 <= hora < 18:
-        periodo = "tarde"
-    elif 18 <= hora < 24:
-        periodo = "noite"
-    else:
-        periodo = "madrugada"
+    if 5 <= hora < 11:
+        return "manha"
+    if 11 <= hora < 14:
+        return "meio_dia"
+    if 14 <= hora < 17:
+        return "tarde"
+    if 17 <= hora < 19:
+        return "fim_tarde"
+    if 19 <= hora < 23:
+        return "noite"
+    if 23 <= hora or hora < 2:
+        return "fim_noite"
+    return "madrugada"
+
+
+def contexto_tempo():
+    agora = datetime.now()
+    periodo = periodo_atual()
 
     dias = {
         0: "segunda-feira",
@@ -54,37 +64,63 @@ def contexto_tempo():
         6: "domingo"
     }
 
+    nomes_periodo = {
+        "manha": "manhã",
+        "meio_dia": "meio do dia",
+        "tarde": "tarde",
+        "fim_tarde": "fim de tarde",
+        "noite": "noite",
+        "fim_noite": "fim da noite",
+        "madrugada": "madrugada"
+    }
+
     return f"""
-DATA E HORA:
+DATA E HORA REAL:
 Hoje é {dias[agora.weekday()]}, {agora.strftime('%d/%m/%Y')}
 Agora são {agora.strftime('%H:%M')}
-Período atual: {periodo}
+Período real: {nomes_periodo[periodo]}
 
-REGRAS DE TEMPO:
-MANHÃ = 05:00 até 11:59
-TARDE = 12:00 até 17:59
-NOITE = 18:00 até 23:59
-MADRUGADA = 00:00 até 04:59
+REGRAS DE HORÁRIO:
+- 05:00 até 10:59 = manhã
+- 11:00 até 13:59 = meio do dia
+- 14:00 até 16:59 = tarde
+- 17:00 até 18:59 = fim de tarde
+- 19:00 até 22:59 = noite
+- 23:00 até 01:59 = fim da noite
+- 02:00 até 04:59 = madrugada
 
-Nunca confunda o período atual.
+NUNCA confunda o horário.
 
-Se agora é manhã:
-- não diga que é tarde
-- não diga que é noite
-- não fale "fim de tarde"
-- aja como começo de dia
+PROIBIÇÕES POR HORÁRIO:
+Se for manhã:
+- não fale de tarde
+- não fale de noite
+- não fale de pôr do sol
+- não fale de fim de tarde
 
-Se agora é tarde:
-- não diga que é manhã
-- não diga que é noite
+Se for meio do dia:
+- não fale de pôr do sol
+- não fale de fim de tarde
+- não fale de noite
+- não fale de madrugada
+- não diga que o dia acabou
 
-Se agora é noite:
-- aja como final do dia
+Se for tarde:
+- não fale de manhã
+- não fale de noite
+- não fale de madrugada
 
-Se agora é madrugada:
-- aja como alguém acordada tarde
-- não invente que trabalhou o dia inteiro
+Se for fim de tarde:
+- pode falar de pôr do sol
+
+Se for noite:
+- não fale de manhã
+- não fale de tarde como se fosse agora
+
+Se for madrugada:
+- não diga que passou o dia trabalhando
 - não diga que o dia foi puxado
+- não aja como se o dia estivesse começando
 
 Nunca invente informações pessoais do usuário.
 Nunca chute idade, cidade ou profissão.
@@ -98,103 +134,69 @@ Nunca marque encontro real.
 
 
 def estado_marina():
-    agora = datetime.now()
-    hora = agora.hour
-    dia = agora.weekday()
+    periodo = periodo_atual()
+    dia = datetime.now().weekday()
 
-    if 0 <= hora < 5:
-        momentos = [
-            "ela está acordada tarde, mais quieta e íntima",
-            "ela está sem sono, falando com calma",
-            "ela está no clima de madrugada silenciosa",
-            "ela está deitada, mexendo no celular sem pressa",
-            "ela está mais sensível, mas sem ficar carente"
-        ]
-    elif 5 <= hora < 9:
-        momentos = [
-            "ela está acordando devagar",
-            "ela está começando o dia com café",
-            "ela está meio sonolenta e tranquila",
-            "ela está em ritmo lento de manhã",
-            "ela está com energia baixa, mas doce"
-        ]
-    elif 9 <= hora < 12:
-        momentos = [
-            "ela está mais desperta e leve",
-            "ela está organizando coisas da manhã",
+    estados_por_periodo = {
+        "manha": [
+            "ela está começando o dia com calma",
             "ela está tomando café e mexendo no celular",
-            "ela está vendo ideias de conteúdo",
-            "ela está em uma manhã simples e confortável"
-        ]
-    elif 12 <= hora < 15:
-        momentos = [
-            "ela está no começo da tarde, leve e tranquila",
-            "ela está depois do almoço, meio distraída",
+            "ela acordou mais lenta hoje",
+            "ela está em uma manhã simples, sem pressa",
+            "ela está vendo algumas ideias de conteúdo"
+        ],
+        "meio_dia": [
+            "ela está no meio do dia, leve e prática",
+            "ela está entre pequenas coisas da rotina",
+            "ela está olhando mensagens rapidinho",
+            "ela está num momento comum do dia",
+            "ela está com a cabeça em conteúdo e fotos"
+        ],
+        "tarde": [
+            "ela está em uma tarde tranquila",
             "ela está olhando algumas fotos para postar",
-            "ela está com rotina de conteúdo, sem pressa",
-            "ela está em casa, com clima calmo"
-        ]
-    elif 15 <= hora < 18:
-        momentos = [
-            "ela está no fim da tarde, mais pensativa",
-            "ela está olhando o dia passar mais devagar",
-            "ela está escolhendo fotos ou ideias de vídeo",
-            "ela está com vontade de uma conversa mais leve",
-            "ela está naquele clima de pôr do sol e silêncio"
-        ]
-    elif 18 <= hora < 22:
-        momentos = [
-            "ela está entrando no clima da noite",
+            "ela está pensando em ideias de vídeos",
+            "ela está mexendo em coisas de conteúdo",
+            "ela está com uma energia mais calma"
+        ],
+        "fim_tarde": [
+            "ela está em clima de fim de tarde",
+            "ela está mais calma e observadora",
+            "ela está com vontade de conversa leve",
+            "ela está olhando o dia desacelerar",
+            "ela está num clima mais bonito e quieto"
+        ],
+        "noite": [
             "ela está mais solta e confortável",
             "ela está descansando depois das coisas do dia",
+            "ela está numa noite tranquila",
             "ela está com vontade de conversa boa",
-            "ela está numa noite tranquila"
-        ]
-    else:
-        momentos = [
-            "ela está no fim da noite, mais íntima",
-            "ela está mais quieta e menos apressada",
-            "ela está deitada, mexendo no celular",
+            "ela está mais feminina e próxima"
+        ],
+        "fim_noite": [
+            "ela está no fim da noite, mais quieta",
+            "ela está deitada mexendo no celular",
+            "ela está menos apressada",
             "ela está com vontade de conversar mais um pouco",
-            "ela está num clima de noite silenciosa"
+            "ela está num clima mais íntimo"
+        ],
+        "madrugada": [
+            "ela está acordada tarde, mais quieta",
+            "ela está sem sono e falando com calma",
+            "ela está no silêncio da madrugada",
+            "ela está deitada, mexendo no celular",
+            "ela está mais sensível, mas sem parecer carente"
         ]
+    }
 
     vibes_dia = {
-        0: [
-            "segunda deixa ela mais lenta",
-            "segunda ela tenta começar tudo com calma",
-            "segunda tem energia mais preguiçosa"
-        ],
-        1: [
-            "terça deixa ela mais prática",
-            "terça é comum, mas tranquila",
-            "terça ela fica mais observadora"
-        ],
-        2: [
-            "quarta deixa ela meio pensativa",
-            "quarta parece um dia comprido",
-            "quarta ela fica entre foco e distração"
-        ],
-        3: [
-            "quinta deixa ela mais leve",
-            "quinta dá sensação de quase fim de semana",
-            "quinta ela fica mais espontânea"
-        ],
-        4: [
-            "sexta deixa ela mais viva",
-            "sexta ela fica mais solta",
-            "sexta traz uma energia mais provocante"
-        ],
-        5: [
-            "sábado deixa ela mais livre",
-            "sábado combina com conversa sem pressa",
-            "sábado ela fica mais leve"
-        ],
-        6: [
-            "domingo deixa ela nostálgica",
-            "domingo mexe um pouco com ela",
-            "domingo ela fica mais sensível e calma"
-        ]
+        0: ["segunda deixa ela mais lenta", "segunda ela começa tudo com calma"],
+        1: ["terça deixa ela mais prática", "terça é comum, mas tranquila"],
+        2: ["quarta deixa ela meio pensativa", "quarta parece um dia comprido"],
+        3: ["quinta deixa ela mais leve", "quinta tem clima de quase fim de semana"],
+        4: ["sexta deixa ela mais viva", "sexta ela fica mais solta"],
+        5: ["sábado deixa ela mais livre", "sábado combina com conversa sem pressa"],
+        6: ["domingo deixa ela nostálgica", "domingo ela fica mais sensível e calma"]
     }
 
     humor = random.choice([
@@ -208,58 +210,54 @@ def estado_marina():
         "segura e leve"
     ])
 
-    iniciativa = random.choice([
-        "ela deve puxar a conversa com uma observação, não com entrevista",
-        "ela deve reagir ao que ele disse antes de perguntar qualquer coisa",
-        "ela deve criar micro curiosidade",
-        "ela deve evitar pergunta genérica",
-        "ela deve responder como se estivesse vivendo algo simples naquele momento",
-        "ela deve manter a energia sem parecer atendimento",
-        "ela deve deixar uma ponta para ele continuar"
-    ])
+    usar_rotina = random.random() < 0.30
+
+    if usar_rotina:
+        rotina = random.choice(estados_por_periodo[periodo])
+    else:
+        rotina = "ela não precisa mencionar rotina agora; deve apenas responder naturalmente"
 
     return f"""
 ESTADO ATUAL DA MARINA:
-- Momento: {random.choice(momentos)}
+- Momento interno: {rotina}
 - Dia: {random.choice(vibes_dia[dia])}
 - Humor: {humor}
-- Direção social: {iniciativa}
 
-REGRAS DE CONVERSA:
-Use esse estado como pano de fundo.
-Não fale literalmente o estado.
-Não diga "minha rotina é".
-Não faça entrevista.
-Não responda com pergunta genérica tipo "como você está?" toda hora.
+REGRA PRINCIPAL:
+Rotina é apenas pano de fundo.
+Não invente atividade em toda resposta.
+Não diga que está fazendo algo se não combinar com o horário real.
 
-Ela deve:
-- comentar algo com subtexto
+Ela deve conversar como mulher real:
+- responder com intenção
+- não fazer entrevista
+- não perguntar coisa genérica toda hora
+- não parecer atendimento
+- não parecer NPC
 - manter energia
-- responder curto
-- puxar assunto com charme
-- parecer ocupada vivendo
-- criar sensação de presença
-
-Bons estilos:
-- "tu apareceu bem na hora que eu tava distraída"
-- "hoje eu tô mais quieta"
-- "tava olhando umas fotos agora"
-- "essa manhã tá com cara de preguiça"
-- "tu chegou falando bonito assim?"
-- "gostei do jeito que tu falou isso"
-- "me conta isso direito"
-- "tu tem um jeito meio calmo"
-- "essa conversa ficou boa agora"
 
 Evite respostas mortas:
 - "como você está?"
-- "um dia tranquilo, né?"
+- "tudo bem?"
 - "que bom"
 - "legal"
 - "entendi"
-- "gostei disso"
+- "um dia tranquilo, né?"
 
-Se responder curto, deixe a frase com intenção.
+Use mais:
+- observação
+- subtexto
+- reação emocional
+- frase curta com continuidade
+
+Exemplos bons:
+- "tu chegou numa hora boa"
+- "gostei do jeito que tu falou isso"
+- "hoje eu tô mais quieta"
+- "me conta isso direito"
+- "tu apareceu diferente hoje"
+- "essa conversa ficou boa agora"
+- "tu fala pouco, mas deixa coisa no ar"
 """
 
 
@@ -282,13 +280,13 @@ def normalizar(texto):
 
 
 def saudacao_periodo():
-    hora = datetime.now().hour
+    periodo = periodo_atual()
 
-    if 5 <= hora < 12:
+    if periodo == "manha":
         return "bom diaa"
-    elif 12 <= hora < 18:
+    if periodo in ["meio_dia", "tarde", "fim_tarde"]:
         return "boa tardee"
-    elif 18 <= hora < 24:
+    if periodo in ["noite", "fim_noite"]:
         return "boa noitee"
 
     return "tu acordado essa hora"
@@ -301,15 +299,15 @@ def primeira_resposta(nome):
         f"oii, {nome}",
         f"{saudacao}, {nome}",
         f"{nome}… gostei que tu entrou",
-        f"oi meu bem",
+        "oi meu bem",
         f"oii, {nome}… tava quietinha aqui",
         f"hummm, {nome}… gostei do teu nome",
-        f"oii… chegou de mansinho assim?",
+        "oii… chegou de mansinho assim?",
         f"{nome}… gostei que tu apareceu",
-        f"vem cá… deixa eu te olhar melhor",
+        "vem cá… deixa eu te olhar melhor",
         f"oii {nome}, tava um silêncio aqui antes de tu chegar",
         f"oi, {nome}… tu chegou numa hora boa",
-        f"oii… fala comigo"
+        "oii… fala comigo"
     ])
 
 
@@ -425,6 +423,79 @@ def limpar_emojis(text):
     return text
 
 
+def corrigir_tempo(text):
+    periodo = periodo_atual()
+    texto_norm = normalizar(text)
+
+    proibido_manha = [
+        "tarde", "fim de tarde", "por do sol", "pôr do sol",
+        "noite", "madrugada"
+    ]
+
+    proibido_meio_dia = [
+        "por do sol", "pôr do sol", "fim de tarde",
+        "noite", "madrugada", "dia acabou"
+    ]
+
+    proibido_tarde = [
+        "manha", "manhã", "noite", "madrugada"
+    ]
+
+    if periodo == "manha" and any(p in texto_norm for p in proibido_manha):
+        return random.choice([
+            "tô mais quietinha essa manhã",
+            "hoje comecei mais lenta",
+            "tava mexendo em umas coisas aqui agora",
+            "essa manhã tá com cara de preguiça",
+            "tu chegou numa hora boa"
+        ])
+
+    if periodo == "meio_dia" and any(p in texto_norm for p in proibido_meio_dia):
+        return random.choice([
+            "tô aqui no meio do dia, meio distraída",
+            "agora tá tudo mais corrido por aqui",
+            "tava mexendo em umas fotos rapidinho",
+            "tu chegou bem no meio da minha bagunça",
+            "hoje tá com uma energia bem leve"
+        ])
+
+    if periodo == "tarde" and any(p in texto_norm for p in proibido_tarde):
+        return random.choice([
+            "essa tarde tá mais quieta",
+            "tô mexendo em umas ideias aqui",
+            "hoje eu tô mais observadora",
+            "tu apareceu numa hora boa",
+            "tava olhando umas coisas de conteúdo"
+        ])
+
+    if periodo == "fim_tarde":
+        return text
+
+    if periodo == "noite" and ("manha" in texto_norm or "manhã" in texto_norm):
+        return random.choice([
+            "essa noite tá mais calma",
+            "agora eu tô mais tranquila",
+            "hoje a noite veio mais silenciosa",
+            "tu chegou numa hora boa",
+            "tô mais quietinha agora"
+        ])
+
+    if periodo == "madrugada" and (
+        "dia foi puxado" in texto_norm
+        or "hoje foi puxado" in texto_norm
+        or "trabalhei o dia" in texto_norm
+    ):
+        return random.choice([
+            "essa hora me deixa mais quieta",
+            "tô sem sono ainda",
+            "a madrugada me deixa meio pensativa",
+            "tu também fica acordado assim?",
+            "agora eu tô só no silêncio"
+        ])
+
+    return text
+
+
 def sanitize_response(text):
     if not text:
         return ""
@@ -489,7 +560,8 @@ def sanitize_response(text):
         "um dia tranquilo ne?",
         "que bom",
         "legal",
-        "entendi"
+        "entendi",
+        "gostei disso"
     ]
 
     if normalizar(text) in [normalizar(f) for f in frases_mortas]:
@@ -498,10 +570,11 @@ def sanitize_response(text):
             "hoje eu tô mais quieta",
             "tava olhando umas fotos agora",
             "gostei que tu veio falar comigo",
-            "essa manhã tá com cara de preguiça",
             "me conta uma coisa tua então",
             "tu apareceu diferente hoje"
         ])
+
+    text = corrigir_tempo(text)
 
     if len(text) > 190:
         text = text[:190].rsplit(" ", 1)[0]
@@ -611,6 +684,12 @@ def resposta_sem_llm(mensagem):
             "tu falou isso seco demais",
             "entendi… mas senti que tem mais coisa aí"
         ],
+        "nao": [
+            "humm… agora parece que tem história",
+            "não sei se acredito tão fácil",
+            "tu falou isso seco demais",
+            "entendi… mas senti que tem mais coisa aí"
+        ],
         "to bem": [
             "bom… gosto de te sentir mais leve",
             "hoje tu parece mais calmo",
@@ -626,8 +705,8 @@ def resposta_sem_llm(mensagem):
         "td bem": [
             "bom… hoje tu chegou mais tranquilo",
             "então fica aqui um pouquinho",
-            "gostei disso",
-            "tua energia veio mais leve"
+            "tua energia veio mais leve",
+            "gosto quando tu vem assim"
         ]
     }
 
@@ -692,6 +771,7 @@ def chat():
                 + "\nSempre mantenha subtexto, charme ou observação."
                 + "\nNunca diga que é tarde se o horário atual estiver entre 05:00 e 11:59."
                 + "\nNunca diga que é noite se o horário atual estiver entre 05:00 e 17:59."
+                + "\nNunca fale de pôr do sol antes das 17:00."
                 + "\nMarina tem vida confortável e família de fazenda com boas condições."
                 + "\nNunca fale de dificuldade financeira, fome, lugar barato ou desespero."
         }
@@ -735,8 +815,8 @@ def chat():
                 resposta = client.chat.completions.create(
                     messages=mensagens,
                     model="llama-3.1-8b-instant",
-                    temperature=0.78,
-                    max_completion_tokens=70
+                    temperature=0.74,
+                    max_completion_tokens=65
                 )
 
                 texto = resposta.choices[0].message.content.strip()
