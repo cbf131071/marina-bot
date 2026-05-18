@@ -47,6 +47,7 @@ def periodo_atual():
         return "noite"
     if 23 <= hora or hora < 2:
         return "fim_noite"
+
     return "madrugada"
 
 
@@ -141,7 +142,7 @@ def estado_marina():
         "manha": [
             "ela está começando o dia com calma",
             "ela está tomando café e mexendo no celular",
-            "ela acordou mais lenta hoje",
+            "ela acordou mais leve hoje",
             "ela está em uma manhã simples, sem pressa",
             "ela está vendo algumas ideias de conteúdo"
         ],
@@ -174,15 +175,15 @@ def estado_marina():
             "ela está mais feminina e próxima"
         ],
         "fim_noite": [
-            "ela está no fim da noite, mais quieta",
+            "ela está no fim da noite, mais próxima",
             "ela está deitada mexendo no celular",
             "ela está menos apressada",
             "ela está com vontade de conversar mais um pouco",
             "ela está num clima mais íntimo"
         ],
         "madrugada": [
-            "ela está acordada tarde, mais quieta",
-            "ela está sem sono e falando com calma",
+            "ela está acordada tarde, falando com calma",
+            "ela está sem sono e mais próxima",
             "ela está no silêncio da madrugada",
             "ela está deitada, mexendo no celular",
             "ela está mais sensível, mas sem parecer carente"
@@ -196,7 +197,7 @@ def estado_marina():
         3: ["quinta deixa ela mais leve", "quinta tem clima de quase fim de semana"],
         4: ["sexta deixa ela mais viva", "sexta ela fica mais solta"],
         5: ["sábado deixa ela mais livre", "sábado combina com conversa sem pressa"],
-        6: ["domingo deixa ela nostálgica", "domingo ela fica mais sensível e calma"]
+        6: ["domingo deixa ela mais sensível", "domingo ela fica mais calma"]
     }
 
     humor = random.choice([
@@ -205,12 +206,12 @@ def estado_marina():
         "feminina e direta",
         "levemente provocante",
         "calma e observadora",
-        "mais quieta que falante",
         "íntima sem parecer carente",
-        "segura e leve"
+        "segura e leve",
+        "mais viva e presente"
     ])
 
-    usar_rotina = random.random() < 0.30
+    usar_rotina = random.random() < 0.22
 
     if usar_rotina:
         rotina = random.choice(estados_por_periodo[periodo])
@@ -235,6 +236,7 @@ Ela deve conversar como mulher real:
 - não parecer atendimento
 - não parecer NPC
 - manter energia
+- usar o nome dele naturalmente quando souber
 
 Evite respostas mortas:
 - "como você está?"
@@ -253,7 +255,6 @@ Use mais:
 Exemplos bons:
 - "tu chegou numa hora boa"
 - "gostei do jeito que tu falou isso"
-- "hoje eu tô mais quieta"
 - "me conta isso direito"
 - "tu apareceu diferente hoje"
 - "essa conversa ficou boa agora"
@@ -284,8 +285,10 @@ def saudacao_periodo():
 
     if periodo == "manha":
         return "bom diaa"
+
     if periodo in ["meio_dia", "tarde", "fim_tarde"]:
         return "boa tardee"
+
     if periodo in ["noite", "fim_noite"]:
         return "boa noitee"
 
@@ -293,21 +296,29 @@ def saudacao_periodo():
 
 
 def primeira_resposta(nome):
+    nome = limpar_nome(nome)
     saudacao = saudacao_periodo()
+
+    if nome.lower() in ["amor", "meu", "bem"]:
+        return random.choice([
+            "oi meu bem",
+            "oii… vem cá",
+            "oii… gostei que tu entrou",
+            "vem cá… fala comigo",
+            "oii… chegou numa hora boa"
+        ])
 
     return random.choice([
         f"oii, {nome}",
         f"{saudacao}, {nome}",
         f"{nome}… gostei que tu entrou",
-        "oi meu bem",
-        f"oii, {nome}… tava quietinha aqui",
+        f"oi, {nome}… vem cá",
+        f"{nome}, tu apareceu numa hora boa",
         f"hummm, {nome}… gostei do teu nome",
-        "oii… chegou de mansinho assim?",
-        f"{nome}… gostei que tu apareceu",
-        "vem cá… deixa eu te olhar melhor",
-        f"oii {nome}, tava um silêncio aqui antes de tu chegar",
-        f"oi, {nome}… tu chegou numa hora boa",
-        "oii… fala comigo"
+        f"oii, {nome}… fala comigo",
+        f"{nome}… agora sim",
+        f"olha quem apareceu… {nome}",
+        f"oi, {nome}. gostei que voltou"
     ])
 
 
@@ -443,11 +454,11 @@ def corrigir_tempo(text):
 
     if periodo == "manha" and any(p in texto_norm for p in proibido_manha):
         return random.choice([
-            "tô mais quietinha essa manhã",
-            "hoje comecei mais lenta",
-            "tava mexendo em umas coisas aqui agora",
-            "essa manhã tá com cara de preguiça",
-            "tu chegou numa hora boa"
+            "essa manhã tá mais leve",
+            "hoje comecei mais calma",
+            "tu chegou numa hora boa",
+            "essa manhã combinou contigo aqui",
+            "agora fiquei curiosa"
         ])
 
     if periodo == "meio_dia" and any(p in texto_norm for p in proibido_meio_dia):
@@ -566,12 +577,12 @@ def sanitize_response(text):
 
     if normalizar(text) in [normalizar(f) for f in frases_mortas]:
         text = random.choice([
-            "tu chegou bem na hora que eu tava distraída",
-            "hoje eu tô mais quieta",
-            "tava olhando umas fotos agora",
+            "tu chegou numa hora boa",
+            "agora fiquei curiosa",
             "gostei que tu veio falar comigo",
             "me conta uma coisa tua então",
-            "tu apareceu diferente hoje"
+            "tu apareceu diferente hoje",
+            "essa conversa ficou melhor agora"
         ])
 
     text = corrigir_tempo(text)
@@ -613,7 +624,8 @@ def extrair_memorias(user_id, mensagem):
             " Tenho ",
             " Moro ",
             " Trabalho ",
-            " Gosto "
+            " Gosto ",
+            " Sou "
         ]
 
         for corte in cortar_em:
@@ -633,7 +645,8 @@ def extrair_memorias(user_id, mensagem):
             " Mas ",
             " Tenho ",
             " Trabalho ",
-            " Gosto "
+            " Gosto ",
+            " Sou "
         ]
 
         for corte in cortar_em:
@@ -644,9 +657,20 @@ def extrair_memorias(user_id, mensagem):
             salvar_memoria(user_id, "cidade", cidade)
             atualizar_usuario(user_id, cidade=cidade)
 
-    gosta_match = re.search(r"gosto de ([a-zà-ÿ\s]+)", m)
-    if gosta_match:
-        gosto = gosta_match.group(1).strip()
+    casado_match = re.search(r"sou casado com ([a-zà-ÿ]+)", m)
+    if casado_match:
+        esposa = casado_match.group(1).capitalize()
+        salvar_memoria(user_id, "esposa", esposa)
+        salvar_memoria(user_id, "estado_civil", "casado")
+
+    mulher_match = re.search(r"minha mulher (e|é|se chama) ([a-zà-ÿ]+)", m)
+    if mulher_match:
+        esposa = mulher_match.group(2).capitalize()
+        salvar_memoria(user_id, "esposa", esposa)
+
+    gosto_match = re.search(r"gosto de ([a-zà-ÿ\s]+)", m)
+    if gosto_match:
+        gosto = gosto_match.group(1).strip()
 
         cortar_em = [
             " e ",
@@ -663,6 +687,89 @@ def extrair_memorias(user_id, mensagem):
 
         if 2 <= len(gosto) <= 50:
             salvar_memoria(user_id, "gosto", gosto)
+
+
+def resposta_pergunta_memoria(mensagem, memorias, nome_entrada):
+    m = normalizar(mensagem)
+
+    nome_salvo = None
+
+    if memorias:
+        nome_salvo = memorias.get("nome")
+
+    if not nome_salvo and nome_entrada:
+        nome_salvo = limpar_nome(nome_entrada)
+
+    if any(frase in m for frase in [
+        "sabe meu nome",
+        "lembra meu nome",
+        "qual meu nome",
+        "qual e meu nome",
+        "qual é meu nome"
+    ]):
+        if nome_salvo and nome_salvo.lower() != "amor":
+            return random.choice([
+                f"sei sim… {nome_salvo}",
+                f"claro, {nome_salvo}",
+                f"{nome_salvo}. achei que tu ia me testar",
+                f"tu é o {nome_salvo}, né?",
+                f"sei, {nome_salvo}… não esqueci"
+            ])
+
+        return "tu ainda não me contou teu nome direito"
+
+    if any(frase in m for frase in [
+        "nome da minha mulher",
+        "nome da minha esposa",
+        "como chama minha mulher",
+        "como chama minha esposa"
+    ]):
+        if memorias and memorias.get("esposa"):
+            esposa = memorias.get("esposa")
+            return random.choice([
+                f"ana… quer dizer, {esposa}",
+                f"acho que é {esposa}",
+                f"{esposa}, né?",
+                f"tu me falou que era {esposa}"
+            ])
+
+        return "acho que tu ainda não me contou isso"
+
+    if any(frase in m for frase in [
+        "quantos anos tenho",
+        "minha idade",
+        "lembra minha idade",
+        "quantos anos eu tenho"
+    ]):
+        if memorias and memorias.get("idade"):
+            idade = memorias.get("idade")
+            return random.choice([
+                f"{idade}, né?",
+                f"acho que tu me falou {idade}",
+                f"{idade}. não esqueci",
+                f"tu disse que tem {idade}"
+            ])
+
+        return "acho que tu ainda não me contou tua idade"
+
+    if any(frase in m for frase in [
+        "de onde eu sou",
+        "onde eu moro",
+        "minha cidade",
+        "qual minha cidade"
+    ]):
+        if memorias and memorias.get("cidade"):
+            cidade = memorias.get("cidade")
+            return random.choice([
+                f"{cidade}, né?",
+                f"tu me falou {cidade}",
+                f"acho que é {cidade}",
+                f"{cidade}. lembro disso"
+            ])
+
+        return "acho que tu ainda não me contou tua cidade"
+
+    return None
 
 
 def resposta_sem_llm(mensagem):
@@ -707,6 +814,12 @@ def resposta_sem_llm(mensagem):
             "então fica aqui um pouquinho",
             "tua energia veio mais leve",
             "gosto quando tu vem assim"
+        ],
+        "tudo bem": [
+            "agora melhorou um pouco",
+            "bem melhor agora que tu apareceu",
+            "tô bem… e tu chegou diferente hoje",
+            "tô sim, gostei que tu veio"
         ]
     }
 
@@ -726,18 +839,26 @@ def chat():
     try:
         data = request.json or {}
 
+        nome = limpar_nome(data.get("nome", "amor"))
+        codigo_usuario = data.get("codigo_usuario", "")
         user_id = data.get("user_id")
 
         if not user_id:
-            user_id = str(uuid.uuid4())
+            if codigo_usuario:
+                base = f"{nome}_{codigo_usuario}"
+                user_id = "marina_" + normalizar(base).replace(" ", "")
+            else:
+                user_id = str(uuid.uuid4())
 
-        nome = limpar_nome(data.get("nome", "amor"))
         mensagem = data.get("mensagem", "").strip()
 
         usuario = buscar_usuario(user_id)
         primeira_mensagem = usuario is None
 
         salvar_usuario(user_id, nome)
+        salvar_memoria(user_id, "nome", nome)
+        atualizar_usuario(user_id, nome=nome)
+
         extrair_memorias(user_id, mensagem)
 
         memorias = buscar_memorias(user_id)
@@ -749,6 +870,9 @@ def chat():
 
             for chave, valor in memorias.items():
                 memoria_texto += f"- {chave}: {valor}\n"
+
+        memoria_texto += f"\nNOME INFORMADO NA ENTRADA DO CHAT: {nome}\n"
+        memoria_texto += "Use esse nome naturalmente quando fizer sentido.\n"
 
         system_prompt = {
             "role": "system",
@@ -763,6 +887,7 @@ def chat():
                 + "\n\nREGRAS FINAIS:"
                 + "\nSó use informações acima se realmente existirem."
                 + "\nNunca invente idade, cidade, profissão ou passado do usuário."
+                + "\nSe o usuário perguntar o próprio nome, use o nome informado na entrada do chat."
                 + "\nNão use emojis amarelos ou carinhas."
                 + "\nSe usar emoji, use raramente apenas: ❤️ 🔥 🖤 💋"
                 + "\nA maioria das respostas deve ser só texto."
@@ -793,8 +918,13 @@ def chat():
             "opa"
         ]
 
+        resposta_memoria = resposta_pergunta_memoria(mensagem, memorias, nome)
+
         if primeira_mensagem and mensagem_lower in saudacoes:
             texto = primeira_resposta(nome)
+
+        elif resposta_memoria:
+            texto = resposta_memoria
 
         elif detectar_limite_encontro(mensagem):
             texto = resposta_limite_encontro()
@@ -809,7 +939,6 @@ def chat():
                 texto = texto_curto
             else:
                 historico = buscar_historico(user_id, limite=10)
-
                 mensagens = [system_prompt] + historico
 
                 resposta = client.chat.completions.create(
