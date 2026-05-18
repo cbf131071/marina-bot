@@ -5,6 +5,7 @@ import uuid
 import os
 import random
 import re
+import time
 
 from database import (
     init_db,
@@ -858,6 +859,13 @@ def chat():
                 "me chama de novo"
             ])
 
+        tempo_resposta = random.uniform(1.8, 4.5)
+
+        if len(texto) > 120:
+            tempo_resposta += 1.2
+
+        time.sleep(tempo_resposta)
+
         salvar_mensagem(user_id, "assistant", texto)
 
         return jsonify({
@@ -867,6 +875,8 @@ def chat():
 
     except Exception as erro:
         print("ERRO NO CHAT:", erro)
+
+        time.sleep(random.uniform(1.2, 2.4))
 
         user_id = str(uuid.uuid4())
         texto = random.choice([
