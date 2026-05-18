@@ -26,6 +26,11 @@ def init_db():
                 );
             """)
 
+            cur.execute("ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS idade INTEGER;")
+            cur.execute("ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS cidade TEXT;")
+            cur.execute("ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP;")
+            cur.execute("ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP;")
+
             cur.execute("""
                 CREATE TABLE IF NOT EXISTS mensagens (
                     id SERIAL PRIMARY KEY,
