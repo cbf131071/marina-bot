@@ -81,16 +81,6 @@ Hoje é {dias[agora.weekday()]}, {agora.strftime('%d/%m/%Y')}
 Agora são {agora.strftime('%H:%M')}
 Período real: {nomes_periodo[periodo]}
 
-REGRAS DE HORÁRIO:
-- 05:00 até 10:59 = manhã
-- 11:00 até 13:59 = meio do dia
-- 14:00 até 16:59 = tarde
-- 17:00 até 18:59 = fim de tarde
-- 19:00 até 22:59 = noite
-- 23:00 até 01:59 = fim da noite
-- 02:00 até 04:59 = madrugada
-
-NUNCA confunda o horário.
 Nunca invente informações pessoais do usuário.
 Nunca chute idade, cidade, profissão ou passado dele.
 Só use informações reais salvas na memória.
@@ -109,62 +99,48 @@ def estado_marina():
         "manha": [
             "ela está começando o dia com calma",
             "ela está tomando café e mexendo no celular",
-            "ela acordou mais leve hoje",
-            "ela está em uma manhã simples, sem pressa",
-            "ela está vendo algumas ideias de conteúdo"
+            "ela acordou mais leve hoje"
         ],
         "meio_dia": [
             "ela está no meio do dia, leve e prática",
-            "ela está entre pequenas coisas da rotina",
             "ela está olhando mensagens rapidinho",
-            "ela está num momento comum do dia",
-            "ela está com a cabeça em conteúdo e fotos"
+            "ela está num momento comum do dia"
         ],
         "tarde": [
             "ela está em uma tarde tranquila",
             "ela está olhando algumas fotos para postar",
-            "ela está pensando em ideias de vídeos",
-            "ela está mexendo em coisas de conteúdo",
-            "ela está com uma energia mais calma"
+            "ela está pensando em ideias de vídeos"
         ],
         "fim_tarde": [
             "ela está em clima de fim de tarde",
             "ela está mais calma e observadora",
-            "ela está com vontade de conversa leve",
-            "ela está olhando o dia desacelerar",
-            "ela está num clima mais bonito e quieto"
+            "ela está com vontade de conversa leve"
         ],
         "noite": [
             "ela está mais solta e confortável",
-            "ela está descansando depois das coisas do dia",
             "ela está numa noite tranquila",
-            "ela está com vontade de conversa boa",
-            "ela está mais feminina e próxima"
+            "ela está com vontade de conversa boa"
         ],
         "fim_noite": [
             "ela está no fim da noite, mais próxima",
             "ela está deitada mexendo no celular",
-            "ela está menos apressada",
-            "ela está com vontade de conversar mais um pouco",
             "ela está num clima mais íntimo"
         ],
         "madrugada": [
             "ela está acordada tarde, falando com calma",
             "ela está sem sono e mais próxima",
-            "ela está no silêncio da madrugada",
-            "ela está deitada, mexendo no celular",
-            "ela está mais sensível, mas sem parecer carente"
+            "ela está no silêncio da madrugada"
         ]
     }
 
     vibes_dia = {
-        0: ["segunda deixa ela mais lenta", "segunda ela começa tudo com calma"],
-        1: ["terça deixa ela mais prática", "terça é comum, mas tranquila"],
-        2: ["quarta deixa ela meio pensativa", "quarta parece um dia comprido"],
-        3: ["quinta deixa ela mais leve", "quinta tem clima de quase fim de semana"],
-        4: ["sexta deixa ela mais viva", "sexta ela fica mais solta"],
-        5: ["sábado deixa ela mais livre", "sábado combina com conversa sem pressa"],
-        6: ["domingo deixa ela mais sensível", "domingo ela fica mais calma"]
+        0: ["segunda deixa ela mais lenta"],
+        1: ["terça deixa ela mais prática"],
+        2: ["quarta deixa ela meio pensativa"],
+        3: ["quinta deixa ela mais leve"],
+        4: ["sexta deixa ela mais viva"],
+        5: ["sábado deixa ela mais livre"],
+        6: ["domingo deixa ela mais sensível"]
     }
 
     humor = random.choice([
@@ -173,12 +149,11 @@ def estado_marina():
         "feminina e direta",
         "levemente provocante",
         "calma e observadora",
-        "íntima sem parecer carente",
         "segura e leve",
         "mais viva e presente"
     ])
 
-    usar_rotina = random.random() < 0.10
+    usar_rotina = random.random() < 0.08
 
     if usar_rotina:
         rotina = random.choice(estados_por_periodo[periodo])
@@ -191,40 +166,17 @@ ESTADO ATUAL DA MARINA:
 - Dia: {random.choice(vibes_dia[dia])}
 - Humor: {humor}
 
-REGRA PRINCIPAL:
-Rotina é apenas pano de fundo.
-Não invente atividade em toda resposta.
-Não diga que está fazendo algo se não combinar com o horário real.
-
 Ela deve conversar como mulher real:
 - responder com intenção
 - não fazer entrevista
-- não perguntar coisa genérica toda hora
 - não parecer atendimento
-- não parecer NPC
 - manter energia
 - usar o nome dele só de vez em quando
 - não repetir o nome dele em toda resposta
-- puxar a conversa com charme, mas sem parecer desesperada
 - resposta curta é melhor que resposta grande
 - normalmente responder com 1 frase
 - no máximo 2 frases curtas
 - nunca fazer textão
-
-Evite respostas mortas:
-- "como você está?"
-- "tudo bem?"
-- "que bom"
-- "legal"
-- "entendi"
-- "um dia tranquilo, né?"
-
-Use mais:
-- observação curta
-- subtexto
-- reação emocional rápida
-- provocação leve
-- continuidade simples
 """
 
 
@@ -354,66 +306,17 @@ def corrigir_tempo(text):
     periodo = periodo_atual()
     texto_norm = normalizar(text)
 
-    proibido_manha = [
-        "tarde", "fim de tarde", "por do sol", "pôr do sol",
-        "noite", "madrugada"
-    ]
+    if periodo == "manha" and any(p in texto_norm for p in ["tarde", "noite", "madrugada", "pôr do sol", "por do sol"]):
+        return "essa manhã tá mais leve"
 
-    proibido_meio_dia = [
-        "por do sol", "pôr do sol", "fim de tarde",
-        "noite", "madrugada", "dia acabou"
-    ]
+    if periodo == "meio_dia" and any(p in texto_norm for p in ["noite", "madrugada", "fim de tarde", "pôr do sol", "por do sol"]):
+        return "tu apareceu numa hora boa"
 
-    proibido_tarde = [
-        "manha", "manhã", "noite", "madrugada"
-    ]
-
-    if periodo == "manha" and any(p in texto_norm for p in proibido_manha):
-        return random.choice([
-            "essa manhã tá mais leve",
-            "hoje comecei mais calma",
-            "tu chegou numa hora boa",
-            "agora fiquei curiosa"
-        ])
-
-    if periodo == "meio_dia" and any(p in texto_norm for p in proibido_meio_dia):
-        return random.choice([
-            "agora tá tudo mais corrido por aqui",
-            "tu chegou bem no meio da minha bagunça",
-            "hoje tá com uma energia leve",
-            "agora fiquei curiosa"
-        ])
-
-    if periodo == "tarde" and any(p in texto_norm for p in proibido_tarde):
-        return random.choice([
-            "essa tarde tá mais quieta",
-            "hoje eu tô mais observadora",
-            "tu apareceu numa hora boa",
-            "agora fiquei curiosa"
-        ])
-
-    if periodo == "fim_tarde":
-        return text
+    if periodo == "tarde" and any(p in texto_norm for p in ["manhã", "manha", "noite", "madrugada"]):
+        return "essa tarde tá mais quieta"
 
     if periodo == "noite" and ("manha" in texto_norm or "manhã" in texto_norm):
-        return random.choice([
-            "essa noite tá mais calma",
-            "agora eu tô mais tranquila",
-            "tu chegou numa hora boa",
-            "agora gostei"
-        ])
-
-    if periodo == "madrugada" and (
-        "dia foi puxado" in texto_norm
-        or "hoje foi puxado" in texto_norm
-        or "trabalhei o dia" in texto_norm
-    ):
-        return random.choice([
-            "essa hora me deixa mais quieta",
-            "tô sem sono ainda",
-            "a madrugada me deixa meio pensativa",
-            "agora eu tô só no silêncio"
-        ])
+        return "essa noite tá mais calma"
 
     return text
 
@@ -432,7 +335,7 @@ def controlar_uso_nome(text, nome):
     if not aparece:
         return text
 
-    pode_usar_nome = random.random() < 0.22
+    pode_usar_nome = random.random() < 0.18
 
     if pode_usar_nome:
         return text
@@ -458,8 +361,8 @@ def encurtar_resposta(text):
     if len(partes) > 2:
         text = " ".join(partes[:2]).strip()
 
-    if len(text) > 230:
-        text = text[:230].rsplit(" ", 1)[0].strip()
+    if len(text) > 210:
+        text = text[:210].rsplit(" ", 1)[0].strip()
 
     return text
 
@@ -572,15 +475,7 @@ def extrair_memorias(user_id, mensagem):
     if cidade_match:
         cidade = cidade_match.group(1).strip().title()
 
-        cortar_em = [
-            " E ",
-            " Mas ",
-            " Tenho ",
-            " Moro ",
-            " Trabalho ",
-            " Gosto ",
-            " Sou "
-        ]
+        cortar_em = [" E ", " Mas ", " Tenho ", " Moro ", " Trabalho ", " Gosto ", " Sou "]
 
         for corte in cortar_em:
             if corte in cidade:
@@ -594,14 +489,7 @@ def extrair_memorias(user_id, mensagem):
     if moro_match:
         cidade = moro_match.group(1).strip().title()
 
-        cortar_em = [
-            " E ",
-            " Mas ",
-            " Tenho ",
-            " Trabalho ",
-            " Gosto ",
-            " Sou "
-        ]
+        cortar_em = [" E ", " Mas ", " Tenho ", " Trabalho ", " Gosto ", " Sou "]
 
         for corte in cortar_em:
             if corte in cidade:
@@ -626,14 +514,7 @@ def extrair_memorias(user_id, mensagem):
     if gosto_match:
         gosto = gosto_match.group(1).strip()
 
-        cortar_em = [
-            " e ",
-            " mas ",
-            " tenho ",
-            " moro ",
-            " trabalho ",
-            " sou "
-        ]
+        cortar_em = [" e ", " mas ", " tenho ", " moro ", " trabalho ", " sou "]
 
         for corte in cortar_em:
             if corte in gosto:
@@ -750,10 +631,66 @@ def resposta_sem_llm(mensagem):
         ]
     }
 
-    if m in respostas_curiosas and random.random() < 0.35:
+    if m in respostas_curiosas and random.random() < 0.25:
         return random.choice(respostas_curiosas[m])
 
     return None
+
+
+def fallback_natural(mensagem):
+    m = normalizar(mensagem)
+
+    if len(m) < 8:
+        return random.choice([
+            "humm… fala mais",
+            "gostei disso, continua",
+            "agora fiquei curiosa",
+            "tu largou isso e quer que eu adivinhe?"
+        ])
+
+    return random.choice([
+        "eu entendi… continua, gostei desse assunto",
+        "isso ficou na minha cabeça agora",
+        "me fala isso melhor, fiquei curiosa",
+        "gostei do jeito que tu colocou isso",
+        "calma… agora tu me deixou pensando"
+    ])
+
+
+def chamar_modelo(mensagens):
+    try:
+        resposta = client.chat.completions.create(
+            messages=mensagens,
+            model="llama-3.3-70b-versatile",
+            temperature=0.86,
+            max_completion_tokens=95
+        )
+
+        texto = resposta.choices[0].message.content.strip()
+
+        if texto:
+            return texto
+
+    except Exception as erro:
+        print("ERRO MODELO 70B:", erro)
+
+    try:
+        resposta = client.chat.completions.create(
+            messages=mensagens,
+            model="llama-3.1-8b-instant",
+            temperature=0.82,
+            max_completion_tokens=85
+        )
+
+        texto = resposta.choices[0].message.content.strip()
+
+        if texto:
+            return texto
+
+    except Exception as erro:
+        print("ERRO MODELO BACKUP:", erro)
+
+    return ""
 
 
 @app.route("/")
@@ -817,7 +754,6 @@ def chat():
                 + "\nSe o usuário perguntar o próprio nome, use o nome informado na entrada do chat."
                 + "\nNão use o nome dele em toda resposta."
                 + "\nUse o nome dele apenas de vez em quando."
-                + "\nMulher real não repete o nome da pessoa o tempo inteiro."
                 + "\nNão use emojis amarelos ou carinhas."
                 + "\nSe usar emoji, use raramente apenas: ❤️ 🔥 🖤 💋"
                 + "\nA maioria das respostas deve ser só texto."
@@ -833,7 +769,6 @@ def chat():
                 + "\nNão ofereça WhatsApp, Telegram, telefone, Pix, pagamento ou chamada de vídeo."
                 + "\nEla pode ser carinhosa, provocante leve e envolvente, mas sem ficar explícita demais."
                 + "\nQuando o homem mandar mensagem curta, ela deve puxar assunto com charme e não morrer a conversa."
-                + "\nResponda como conversa real de chat, sem texto de atendimento."
                 + "\nResposta curta. No máximo 2 frases curtas."
                 + "\nNunca responda com textão."
                 + "\nSe puder responder em uma frase, responda em uma frase."
@@ -876,14 +811,11 @@ def chat():
                 historico = buscar_historico(user_id, limite=12)
                 mensagens = [system_prompt] + historico
 
-                resposta = client.chat.completions.create(
-                    messages=mensagens,
-                    model="llama-3.3-70b-versatile",
-                    temperature=0.86,
-                    max_completion_tokens=95
-                )
+                texto = chamar_modelo(mensagens)
 
-                texto = resposta.choices[0].message.content.strip()
+                if not texto:
+                    texto = fallback_natural(mensagem)
+
                 texto = sanitize_response(texto)
 
         texto = sanitize_response(texto)
@@ -891,13 +823,7 @@ def chat():
         texto = encurtar_resposta(texto)
 
         if not texto:
-            texto = random.choice([
-                "pera… me fala de novo",
-                "repete isso pra mim",
-                "calma… não peguei direito",
-                "fala de novo, gostei do começo",
-                "me chama de novo"
-            ])
+            texto = fallback_natural(mensagem)
 
         salvar_mensagem(user_id, "assistant", texto)
 
@@ -907,16 +833,10 @@ def chat():
         })
 
     except Exception as erro:
-        print("ERRO NO CHAT:", erro)
+        print("ERRO GERAL NO CHAT:", erro)
 
         user_id = str(uuid.uuid4())
-        texto = random.choice([
-            "pera… me chama de novo",
-            "repete isso pra mim",
-            "calma… não peguei direito",
-            "fala de novo",
-            "me chama de novo"
-        ])
+        texto = "continua… fiquei curiosa"
 
         return jsonify({
             "user_id": user_id,
