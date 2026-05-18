@@ -20,7 +20,6 @@
             overflow:hidden;
             background:#000;
             font-family:'Poppins', sans-serif;
-            -webkit-font-smoothing:antialiased;
         }
 
         body{
@@ -40,8 +39,6 @@
         .hidden{
             display:none !important;
         }
-
-        /* LOGIN */
 
         #loginScreen{
             width:100%;
@@ -65,7 +62,6 @@
             padding:18px 18px 20px;
             border:1px solid rgba(255,255,255,0.08);
             backdrop-filter:blur(2px);
-            margin-bottom:0;
         }
 
         .welcome-script{
@@ -74,7 +70,6 @@
             text-align:center;
             color:#ffd2ad;
             line-height:0.9;
-            text-shadow:0 0 18px rgba(255,150,120,0.28);
         }
 
         .welcome-main{
@@ -83,14 +78,12 @@
             color:#ffd9b9;
             margin-top:2px;
             font-weight:400;
-            letter-spacing:-0.5px;
         }
 
         .line-heart{
             text-align:center;
             margin:7px 0 11px;
             color:#ff4b67;
-            opacity:0.95;
             font-size:13px;
         }
 
@@ -151,10 +144,7 @@
             font-family:'Great Vibes', cursive;
             font-size:34px;
             cursor:pointer;
-            box-shadow:0 10px 30px rgba(255,40,90,0.30);
         }
-
-        /* CHAT */
 
         #chatScreen{
             width:100%;
@@ -200,7 +190,6 @@
             color:#30ff69;
             font-size:14px;
             margin-top:4px;
-            transition:0.2s;
         }
 
         .messages{
@@ -425,6 +414,14 @@ window.onload = () => {
     ajustarTecladoMobile();
 };
 
+function esperar(ms){
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function tempoAntesDeDigitar(){
+    return Math.floor(Math.random() * (15000 - 5000 + 1)) + 5000;
+}
+
 function entrarChat(){
 
     const nome = document.getElementById('nomeInput').value.trim();
@@ -451,7 +448,11 @@ function entrarChat(){
 
 async function primeiraMensagem(){
 
+    await esperar(1200);
+
     mostrarDigitando();
+
+    await esperar(900);
 
     try{
 
@@ -471,16 +472,14 @@ async function primeiraMensagem(){
 
         userId = data.user_id;
 
-        setTimeout(() => {
-            removerDigitando();
+        removerDigitando();
 
-            const nomeLimpo = limparNome(nomeUsuario);
+        const nomeLimpo = limparNome(nomeUsuario);
 
-            adicionarMensagem(
-                `Boa tarde, ${nomeLimpo}... adorei te ver por aqui. Vem, fica tranquilo comigo ❤️`,
-                'bot'
-            );
-        }, 600);
+        adicionarMensagem(
+            `Boa tarde, ${nomeLimpo}... adorei te ver por aqui. Vem, fica tranquilo comigo ❤️`,
+            'bot'
+        );
 
     } catch(error){
 
@@ -547,6 +546,10 @@ async function enviarMensagem(){
 
     messageInput.value = '';
 
+    removerDigitando();
+
+    await esperar(tempoAntesDeDigitar());
+
     mostrarDigitando();
 
     try{
@@ -575,7 +578,7 @@ async function enviarMensagem(){
         removerDigitando();
 
         adicionarMensagem(
-            'ai... deu um errinho aqui, mas já voltou ❤️',
+            'pera… me chama de novo',
             'bot'
         );
 
