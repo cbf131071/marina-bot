@@ -6,12 +6,7 @@
 <title>Marina Alves</title>
 
 <style>
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:Arial, Helvetica, sans-serif;
-}
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial, Helvetica, sans-serif;}
 
 body{
     background:#050505;
@@ -50,15 +45,8 @@ body{
     flex-shrink:0;
 }
 
-.nome h1{
-    font-size:17px;
-    color:white;
-}
-
-.nome span{
-    color:#5cff87;
-    font-size:13px;
-}
+.nome h1{font-size:17px;color:white;}
+.nome span{color:#5cff87;font-size:13px;}
 
 .mensagens{
     flex:1;
@@ -78,15 +66,8 @@ body{
     word-wrap:break-word;
 }
 
-.user{
-    align-self:flex-end;
-    background:#7c3aed;
-}
-
-.bot{
-    align-self:flex-start;
-    background:#262626;
-}
+.user{align-self:flex-end;background:#7c3aed;}
+.bot{align-self:flex-start;background:#262626;}
 
 .digitando{
     align-self:flex-start;
@@ -128,14 +109,8 @@ body{
     transition:0.2s;
 }
 
-button:hover{
-    opacity:0.92;
-}
-
-button:disabled{
-    opacity:0.6;
-    cursor:not-allowed;
-}
+button:hover{opacity:0.92;}
+button:disabled{opacity:0.6;cursor:not-allowed;}
 
 /* ENTRADA PREMIUM */
 
@@ -167,10 +142,17 @@ button:disabled{
     position:absolute;
     inset:0;
     background:
-        linear-gradient(to bottom, rgba(0,0,0,0.05) 0%, rgba(0,0,0,0.25) 42%, rgba(0,0,0,0.92) 78%, #020202 100%),
+        linear-gradient(to bottom,
+            rgba(0,0,0,0.02) 0%,
+            rgba(0,0,0,0.08) 28%,
+            rgba(0,0,0,0.46) 55%,
+            rgba(0,0,0,0.90) 78%,
+            #020202 100%
+        ),
+        radial-gradient(circle at 50% 25%, rgba(255,190,145,0.14), transparent 42%),
         url('/static/imagem_chat.jpeg');
     background-size:cover;
-    background-position:center top;
+    background-position:center 18%;
     z-index:1;
 }
 
@@ -178,7 +160,9 @@ button:disabled{
     content:"";
     position:absolute;
     inset:0;
-    background:radial-gradient(circle at center 35%, rgba(255,70,70,0.12), transparent 48%);
+    background:
+        linear-gradient(to right, rgba(0,0,0,0.42), transparent 25%, transparent 75%, rgba(0,0,0,0.42)),
+        radial-gradient(circle at center 35%, rgba(255,70,70,0.10), transparent 48%);
     z-index:2;
     pointer-events:none;
 }
@@ -187,7 +171,7 @@ button:disabled{
     position:relative;
     z-index:3;
     width:100%;
-    padding:0 28px 36px;
+    padding:0 28px 34px;
     display:flex;
     flex-direction:column;
     align-items:center;
@@ -195,31 +179,32 @@ button:disabled{
 
 .titulo-script{
     font-family:"Brush Script MT", "Segoe Script", cursive;
-    font-size:45px;
+    font-size:41px;
     font-weight:400;
-    line-height:0.95;
+    line-height:0.9;
     color:#ffe6c9;
     text-shadow:0 0 18px rgba(255,120,90,0.55);
-    margin-bottom:2px;
+    margin-bottom:0;
 }
 
 .titulo-principal{
     font-family:Georgia, "Times New Roman", serif;
-    font-size:47px;
+    font-size:43px;
     line-height:0.95;
     color:#ffe4bf;
     text-align:center;
     text-shadow:0 0 18px rgba(255,120,90,0.35);
-    margin-bottom:14px;
+    margin-bottom:10px;
 }
 
 .divisor{
-    width:78%;
+    width:72%;
     display:flex;
     align-items:center;
-    gap:12px;
-    margin:4px 0 16px;
+    gap:10px;
+    margin:0 0 12px;
     color:#e44752;
+    font-size:18px;
 }
 
 .divisor::before,
@@ -231,12 +216,13 @@ button:disabled{
 }
 
 .subtexto{
-    color:#c8b9ad;
-    font-size:16px;
+    color:#d8c8bd;
+    font-size:15px;
     line-height:1.35;
     text-align:center;
     max-width:310px;
-    margin-bottom:24px;
+    margin-bottom:20px;
+    text-shadow:0 2px 8px rgba(0,0,0,0.7);
 }
 
 .form-box{
@@ -248,10 +234,10 @@ button:disabled{
 
 .campo{
     width:100%;
-    height:58px;
+    height:56px;
     border-radius:16px;
     background:rgba(30,20,15,0.72);
-    border:1px solid rgba(255,205,175,0.18);
+    border:1px solid rgba(255,205,175,0.20);
     display:flex;
     align-items:center;
     padding:0 16px;
@@ -261,8 +247,9 @@ button:disabled{
 }
 
 .campo span{
-    opacity:0.7;
-    font-size:20px;
+    opacity:0.75;
+    font-size:18px;
+    color:#e7d1c3;
 }
 
 .campo input{
@@ -274,26 +261,25 @@ button:disabled{
     font-size:15px;
 }
 
-.campo input::placeholder{
-    color:#a99c94;
-}
+.campo input::placeholder{color:#b9aaa1;}
 
 .aviso{
-    color:#b7a9a1;
+    color:#c8b8ae;
     font-size:13px;
     text-align:center;
-    margin:2px 0 8px;
+    margin:0 0 6px;
+    text-shadow:0 2px 8px rgba(0,0,0,0.7);
 }
 
 .entrar-btn{
     width:100%;
-    height:64px;
+    height:62px;
     border:none;
     border-radius:22px;
     background:linear-gradient(135deg, #a71928, #d44749, #8f1422);
     color:#ffe7c9;
     font-family:"Brush Script MT", "Segoe Script", cursive;
-    font-size:33px;
+    font-size:31px;
     cursor:pointer;
     box-shadow:0 12px 35px rgba(196,32,44,0.35);
     transition:0.2s;
@@ -305,31 +291,19 @@ button:disabled{
 }
 
 @media(max-height:720px){
-    .titulo-script{
-        font-size:36px;
-    }
-
-    .titulo-principal{
-        font-size:39px;
-    }
-
-    .subtexto{
-        font-size:14px;
-        margin-bottom:16px;
+    .nome-card::before{
+        background-position:center 12%;
     }
 
     .entrada-content{
-        padding:0 26px 24px;
+        padding:0 26px 22px;
     }
 
-    .campo{
-        height:52px;
-    }
-
-    .entrar-btn{
-        height:58px;
-        font-size:29px;
-    }
+    .titulo-script{font-size:34px;}
+    .titulo-principal{font-size:37px;}
+    .subtexto{font-size:13px;margin-bottom:14px;}
+    .campo{height:50px;}
+    .entrar-btn{height:56px;font-size:28px;}
 }
 </style>
 </head>
