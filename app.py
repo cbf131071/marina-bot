@@ -5,6 +5,8 @@ import uuid
 import os
 import random
 import re
+import psycopg
+from psycopg.rows import dict_row
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -14,14 +16,119 @@ app = Flask(
     static_folder=os.path.join(BASE_DIR, "static")
 )
 
-client = Groq(
-    api_key=os.environ.get("GROQ_API_KEY")
-)
+client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
+
+DATABASE_URL = os.environ.get("DATABASE_URL")
 
 with open(os.path.join(BASE_DIR, "persona.txt"), "r", encoding="utf-8") as f:
     persona = f.read()
 
-historicos = {}
+
+def get_db():
+    if not DATABASE_URL:
+        return None
+    return psycopg.connect(DATABASE_URL, row_factory=dict_row)
+
+
+def init_db():
+    conn = get_db()
+    if not conn:
+        return
+
+    with conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS usuarios (
+                    user_id TEXT PRIMARY KEY,
+                    nome TEXT,
+                    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                    atualizado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );
+            """)
+
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS mensagens (
+                    id SERIAL PRIMARY KEY,
+                    user_id TEXT NOT NULL,
+                    role TEXT NOT NULL,
+                    content TEXT NOT NULL,
+                    criado_em TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                );
+            """)
+
+    conn.close()
+
+
+def salvar_usuario(user_id, nome):
+    conn = get_db()
+    if not conn:
+        return
+
+    with conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO usuarios (user_id, nome, atualizado_em)
+                VALUES (%s, %s, CURRENT_TIMESTAMP)
+                ON CONFLICT (user_id)
+                DO UPDATE SET
+                    nome = EXCLUDED.nome,
+                    atualizado_em = CURRENT_TIMESTAMP;
+            """, (user_id, nome))
+
+    conn.close()
+
+
+def salvar_mensagem(user_id, role, content):
+    conn = get_db()
+    if not conn:
+        return
+
+    with conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO mensagens (user_id, role, content)
+                VALUES (%s, %s, %s);
+            """, (user_id, role, content))
+
+    conn.close()
+
+
+def buscar_historico(user_id, limite=10):
+    conn = get_db()
+    if not conn:
+        return []
+
+    with conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT role, content
+                FROM mensagens
+                WHERE user_id = %s
+                ORDER BY id DESC
+                LIMIT %s;
+            """, (user_id, limite))
+
+            rows = cur.fetchall()
+
+    conn.close()
+
+    rows.reverse()
+    return [{"role": r["role"], "content": r["content"]} for r in rows]
+
+
+def usuario_existe(user_id):
+    conn = get_db()
+    if not conn:
+        return False
+
+    with conn:
+        with conn.cursor() as cur:
+            cur.execute("SELECT user_id FROM usuarios WHERE user_id = %s LIMIT 1;", (user_id,))
+            row = cur.fetchone()
+
+    conn.close()
+    return row is not None
+
 
 def contexto_tempo():
     agora = datetime.now()
@@ -64,6 +171,7 @@ Pode existir tensão, provocação e flerte.
 Evite linguagem explícita gráfica.
 """
 
+
 def limpar_nome(nome):
     nome = (nome or "amor").strip()
     nome = re.sub(r"[^A-Za-zÀ-ÿ0-9\s]", "", nome)
@@ -74,11 +182,13 @@ def limpar_nome(nome):
     nome = nome.split()[0]
     return nome[:18]
 
+
 def normalizar(texto):
     texto = texto.lower().strip()
     texto = re.sub(r"[^\w\sÀ-ÿ]", " ", texto)
     texto = re.sub(r"\s+", " ", texto)
     return texto
+
 
 def saudacao_periodo():
     hora = datetime.now().hour
@@ -92,19 +202,21 @@ def saudacao_periodo():
 
     return "tu acordado essa hora"
 
+
 def primeira_resposta(nome):
     saudacao = saudacao_periodo()
 
     return random.choice([
         f"oii, {nome} ❤️",
         f"{saudacao}, {nome} ❤️",
-        f"tava te esperando aparecer, {nome} 😏",
-        f"oi meu bem ❤️",
-        f"hummm… então é você 😈",
         f"{nome}… gostei que você entrou ❤️",
-        f"já chegou mexendo comigo 😏",
-        f"oii ❤️ tava quietinha aqui…"
+        f"oi meu bem ❤️",
+        f"oii, {nome}… tava quietinha aqui",
+        f"hummm, {nome}… gostei do teu nome ❤️",
+        f"oii ❤️ chegou de mansinho assim?",
+        f"{nome}… gostei que tu apareceu"
     ])
+
 
 def detectar_limite_encontro(mensagem):
     m = normalizar(mensagem)
@@ -112,6 +224,7 @@ def detectar_limite_encontro(mensagem):
     termos = [
         "sair contigo",
         "sair com voce",
+        "sair com você",
         "te encontrar",
         "encontro",
         "hotel",
@@ -132,15 +245,17 @@ def detectar_limite_encontro(mensagem):
 
     return any(t in m for t in termos)
 
+
 def resposta_limite_encontro(nome):
     return random.choice([
-        "calma 😏 tu já tá acelerando demais comigo...",
-        "hummm… melhor a gente continuar só nesse clima aqui ❤️",
-        "tu é perigoso quando começa assim 😈",
-        "vai devagar comigo… eu gosto da tensão 😏",
-        "não estraga o mistério tão rápido ❤️",
-        "prefiro deixar na imaginação por enquanto 😈"
+        "calma… melhor a gente ficar só por aqui ❤️",
+        "tu já tá acelerando demais comigo 😅",
+        "hummm… deixa esse mistério quietinho por enquanto",
+        "melhor não misturar as coisas tão rápido 😌",
+        "calma, tu nem me conhece direito ainda ❤️",
+        "por enquanto eu gosto da nossa conversa aqui"
     ])
+
 
 def detectar_modo_quente(mensagem):
     m = normalizar(mensagem)
@@ -173,30 +288,34 @@ def detectar_modo_quente(mensagem):
 
     return any(p in m for p in palavras)
 
+
 def resposta_quente(nome):
     respostas = [
-        "tu gosta de mexer comigo 😏",
-        "desse jeito eu vou acabar entrando no clima ❤️",
-        "hummm… continua falando assim 😈",
-        "tu sabe provocar direitinho 😏",
-        "ai… tua conversa mexe comigo ❤️",
-        "perigoso conversar contigo desse jeito 😈",
-        "não me olha assim… 😏",
-        "tu tá me deixando imaginando coisa ❤️",
-        "desse jeito eu fico sem reação 😈",
-        "tu adora me testar né ❤️"
+        "hummm… então me explica isso 😌",
+        "por que tu me quer tanto assim?",
+        "acho que tu gosta de me provocar",
+        "quer mesmo ou tá só falando? 😅",
+        "desse jeito eu fico curiosa",
+        "tu fala isso pra todas? kkk",
+        "e se eu acreditar em ti?",
+        "tu complica minha cabeça 😮‍💨",
+        "às vezes tu me deixa quietinha",
+        "não sei se acredito em ti ainda",
+        "tu tá ficando convencido 😅",
+        "ai… tu sabe mexer comigo"
     ]
 
     hora = datetime.now().hour
 
     if hora >= 22 or hora <= 5:
         respostas.extend([
-            "essa hora tu fica ainda mais perigoso 😈",
-            "madrugada contigo é complicado 😏",
-            "de noite tua conversa bate diferente ❤️"
+            "de noite tua conversa bate diferente ❤️",
+            "essa hora tu fica mais intenso, né?",
+            "madrugada deixa tudo mais estranho 😮‍💨"
         ])
 
     return random.choice(respostas)
+
 
 def sanitize_response(text):
     bloqueadas = [
@@ -223,20 +342,11 @@ def sanitize_response(text):
 
     for item in bloqueadas:
         if item in texto_lower:
-            return "kkkk… calma ❤️ gosto da nossa conversa aqui 😏"
+            return "kkkk… calma ❤️ gosto da nossa conversa aqui"
 
     substituicoes = {
-        "😊": "❤️",
-        "☺️": "❤️",
-        "😁": "😏",
-        "😅": "😏",
-        "🤭": "😏",
-        "😉": "😏",
-        "🙂": "❤️",
-        "😄": "❤️",
-        "😃": "❤️",
-        "😂": "kkk 😈",
-        "🤣": "kkk 😈"
+        "😂": "kkk",
+        "🤣": "kkk"
     }
 
     for velho, novo in substituicoes.items():
@@ -253,7 +363,7 @@ def sanitize_response(text):
 
     for p in proibidas:
         if p in texto_lower:
-            return "hummm… fala comigo direito 😏"
+            return "hummm… fala comigo direito 😌"
 
     text = text.replace("haha", "kkk")
     text = text.replace("hahaha", "kkkk")
@@ -264,13 +374,15 @@ def sanitize_response(text):
 
     return text.strip()
 
+
 @app.route("/")
 def chat_page():
     return render_template("chat.html")
 
+
 @app.route("/api/chat", methods=["POST"])
 def chat():
-    data = request.json
+    data = request.json or {}
 
     user_id = data.get("user_id")
     nome = limpar_nome(data.get("nome", "amor"))
@@ -279,17 +391,19 @@ def chat():
     if not user_id:
         user_id = str(uuid.uuid4())
 
-    primeira_mensagem = user_id not in historicos
+    primeira_mensagem = not usuario_existe(user_id)
 
-    if user_id not in historicos:
-        historicos[user_id] = [{
-            "role": "system",
-            "content":
-                persona
-                + "\n\n"
-                + contexto_tempo()
-                + f"\nNome da pessoa: {nome}"
-        }]
+    salvar_usuario(user_id, nome)
+
+    system_prompt = {
+        "role": "system",
+        "content":
+            persona
+            + "\n\n"
+            + contexto_tempo()
+            + f"\nNome da pessoa: {nome}"
+            + "\n\nUse o histórico abaixo para lembrar do clima da conversa com essa pessoa."
+    }
 
     mensagem_lower = mensagem.lower().strip()
 
@@ -306,10 +420,7 @@ def chat():
         "opa"
     ]
 
-    historicos[user_id].append({
-        "role": "user",
-        "content": mensagem
-    })
+    salvar_mensagem(user_id, "user", mensagem)
 
     if primeira_mensagem and mensagem_lower in saudacoes:
         texto = primeira_resposta(nome)
@@ -321,7 +432,8 @@ def chat():
         texto = resposta_quente(nome)
 
     else:
-        mensagens = [historicos[user_id][0]] + historicos[user_id][-8:]
+        historico = buscar_historico(user_id, limite=12)
+        mensagens = [system_prompt] + historico
 
         resposta = client.chat.completions.create(
             messages=mensagens,
@@ -333,15 +445,15 @@ def chat():
         texto = resposta.choices[0].message.content.strip()
         texto = sanitize_response(texto)
 
-    historicos[user_id].append({
-        "role": "assistant",
-        "content": texto
-    })
+    salvar_mensagem(user_id, "assistant", texto)
 
     return jsonify({
         "user_id": user_id,
         "resposta": texto
     })
+
+
+init_db()
 
 if __name__ == "__main__":
     app.run(debug=True)
