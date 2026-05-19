@@ -178,19 +178,22 @@ def primeira_resposta(nome):
     saudacao = saudacao_periodo()
 
     if nome.lower() in ["amor", "meu", "bem"]:
-        return random.choice([
-            f"{saudacao}… gostei que tu entrou",
-            "oii… gostei que tu apareceu",
-            "vem cá… agora gostei",
-            "oii… chegou numa hora boa"
-        ])
+        nome = "meu bem"
 
-    return random.choice([
-        f"{saudacao}, {nome}… gostei que tu entrou",
+    recepcoes = [
+        f"{saudacao}, {nome}… gostei que tu veio",
+        f"{saudacao}, {nome}… entra, fica comigo",
         f"oi, {nome}… gostei de te ver aqui",
-        f"{nome}, tu apareceu numa hora boa",
-        f"oii, {nome}… fala comigo"
-    ])
+        f"{nome}… agora sim, vem conversar comigo",
+        f"oii, {nome}… chegou numa hora boa",
+        f"{nome}, adorei que tu apareceu",
+        f"{saudacao}, {nome}… vem com calma",
+        f"oi, {nome}… tava bom te ver por aqui",
+        f"{nome}… gostei que tu entrou",
+        f"oii, {nome}… fica tranquilo comigo"
+    ]
+
+    return random.choice(recepcoes)
 
 
 def detectar_limite_encontro(mensagem):
@@ -557,25 +560,6 @@ def resposta_pergunta_memoria(mensagem, memorias, nome_entrada):
     return None
 
 
-def resposta_simples_local(mensagem):
-    m = normalizar(mensagem)
-
-    respostas = {
-        "td bem": ["tô bem sim", "sim e tu?", "tô tranquila agora", "tô sim kkk"],
-        "tudo bem": ["tô bem sim", "sim e tu?", "tô tranquila agora", "tô sim kkk"],
-        "oi": ["oii", "oii, tudo bem?", "oii ❤️"],
-        "oii": ["oii", "oii, tudo bem?", "oii ❤️"],
-        "bom dia": ["bom dia", "bom diaa", "bom dia ❤️"],
-        "boa tarde": ["boa tarde", "boa tardee", "boa tarde ❤️"],
-        "boa noite": ["boa noite", "boa noitee", "boa noite ❤️"]
-    }
-
-    if m in respostas:
-        return random.choice(respostas[m])
-
-    return None
-
-
 def fallback_natural():
     return random.choice([
         "humm",
@@ -696,24 +680,9 @@ def chat():
 
         salvar_mensagem(user_id, "user", mensagem)
 
-        mensagem_lower = mensagem.lower().strip()
-
-        saudacoes = [
-            "oi",
-            "oii",
-            "oiii",
-            "ola",
-            "olá",
-            "bom dia",
-            "boa tarde",
-            "boa noite",
-            "eai",
-            "opa"
-        ]
-
         resposta_memoria = resposta_pergunta_memoria(mensagem, memorias, nome)
 
-        if primeira_mensagem and mensagem_lower in saudacoes:
+        if primeira_mensagem:
             texto = primeira_resposta(nome)
 
         elif resposta_memoria:
@@ -723,18 +692,13 @@ def chat():
             texto = resposta_limite_encontro()
 
         else:
-            texto_local = resposta_simples_local(mensagem)
+            historico = buscar_historico(user_id, limite=12)
+            mensagens = [system_prompt] + historico
 
-            if texto_local:
-                texto = texto_local
-            else:
-                historico = buscar_historico(user_id, limite=12)
-                mensagens = [system_prompt] + historico
+            texto = chamar_modelo(mensagens)
 
-                texto = chamar_modelo(mensagens)
-
-                if not texto:
-                    texto = fallback_natural()
+            if not texto:
+                texto = fallback_natural()
 
         texto = sanitize_response(texto)
         texto = controlar_uso_nome(texto, nome)
