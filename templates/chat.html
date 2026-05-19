@@ -8,323 +8,65 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
 
     <style>
-        *{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
-        }
-
-        html, body{
-            width:100%;
-            height:100%;
-            overflow:hidden;
-            background:#000;
-            font-family:'Poppins', sans-serif;
-        }
-
-        body{
-            color:white;
-        }
-
-        .screen{
-            width:100%;
-            max-width:430px;
-            height:100dvh;
-            margin:0 auto;
-            position:relative;
-            overflow:hidden;
-            background:#000;
-        }
-
-        .hidden{
-            display:none !important;
-        }
+        *{margin:0;padding:0;box-sizing:border-box}
+        html,body{width:100%;height:100%;overflow:hidden;background:#000;font-family:'Poppins',sans-serif}
+        body{color:white}
+        .screen{width:100%;max-width:430px;height:100dvh;margin:0 auto;position:relative;overflow:hidden;background:#000}
+        .hidden{display:none!important}
 
         #loginScreen{
-            width:100%;
-            height:100%;
+            width:100%;height:100%;
             background:
                 linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.55) 34%, rgba(0,0,0,0.10) 72%),
                 url('/static/imagem_chat.jpeg');
-            background-size:cover;
-            background-position:center top;
-            display:flex;
-            justify-content:flex-end;
-            align-items:center;
-            flex-direction:column;
+            background-size:cover;background-position:center top;
+            display:flex;justify-content:flex-end;align-items:center;flex-direction:column;
             padding:0 26px 26px;
         }
 
-        .overlay-box{
-            width:100%;
-            background:rgba(0,0,0,0.30);
-            border-radius:26px;
-            padding:18px 18px 20px;
-            border:1px solid rgba(255,255,255,0.08);
-            backdrop-filter:blur(2px);
-        }
+        .overlay-box{width:100%;background:rgba(0,0,0,0.30);border-radius:26px;padding:18px 18px 20px;border:1px solid rgba(255,255,255,0.08);backdrop-filter:blur(2px)}
+        .welcome-script{font-family:'Great Vibes',cursive;font-size:52px;text-align:center;color:#ffd2ad;line-height:.9}
+        .welcome-main{text-align:center;font-size:27px;color:#ffd9b9;margin-top:2px;font-weight:400}
+        .line-heart{text-align:center;margin:7px 0 11px;color:#ff4b67;font-size:13px}
+        .welcome-sub{text-align:center;font-size:14px;line-height:1.35;color:rgba(255,255,255,.94);margin-bottom:16px}
+        .input-group{position:relative;margin-bottom:11px}
+        .input-group input{width:100%;height:52px;border-radius:17px;border:1px solid rgba(255,255,255,.12);background:rgba(20,10,10,.72);color:white;padding:0 18px 0 44px;font-size:15px;outline:none}
+        .input-group input::placeholder{color:rgba(255,255,255,.52)}
+        .input-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);opacity:.70;font-size:14px}
+        .tip{text-align:center;font-size:12px;line-height:1.35;color:rgba(255,255,255,.78);margin-top:4px;margin-bottom:14px}
+        .enter-btn{width:100%;height:58px;border:none;border-radius:22px;background:linear-gradient(135deg,#b8132c,#ff3d63);color:white;font-family:'Great Vibes',cursive;font-size:34px;cursor:pointer}
 
-        .welcome-script{
-            font-family:'Great Vibes', cursive;
-            font-size:52px;
-            text-align:center;
-            color:#ffd2ad;
-            line-height:0.9;
-        }
-
-        .welcome-main{
-            text-align:center;
-            font-size:27px;
-            color:#ffd9b9;
-            margin-top:2px;
-            font-weight:400;
-        }
-
-        .line-heart{
-            text-align:center;
-            margin:7px 0 11px;
-            color:#ff4b67;
-            font-size:13px;
-        }
-
-        .welcome-sub{
-            text-align:center;
-            font-size:14px;
-            line-height:1.35;
-            color:rgba(255,255,255,0.94);
-            margin-bottom:16px;
-        }
-
-        .input-group{
-            position:relative;
-            margin-bottom:11px;
-        }
-
-        .input-group input{
-            width:100%;
-            height:52px;
-            border-radius:17px;
-            border:1px solid rgba(255,255,255,0.12);
-            background:rgba(20,10,10,0.72);
-            color:white;
-            padding:0 18px 0 44px;
-            font-size:15px;
-            outline:none;
-        }
-
-        .input-group input::placeholder{
-            color:rgba(255,255,255,0.52);
-        }
-
-        .input-icon{
-            position:absolute;
-            left:16px;
-            top:50%;
-            transform:translateY(-50%);
-            opacity:0.70;
-            font-size:14px;
-        }
-
-        .tip{
-            text-align:center;
-            font-size:12px;
-            line-height:1.35;
-            color:rgba(255,255,255,0.78);
-            margin-top:4px;
-            margin-bottom:14px;
-        }
-
-        .enter-btn{
-            width:100%;
-            height:58px;
-            border:none;
-            border-radius:22px;
-            background:linear-gradient(135deg, #b8132c, #ff3d63);
-            color:white;
-            font-family:'Great Vibes', cursive;
-            font-size:34px;
-            cursor:pointer;
-        }
-
-        #chatScreen{
-            width:100%;
-            height:100%;
-            background:#0b0b0f;
-            position:relative;
-            overflow:hidden;
-        }
-
-        .chat-header{
-            position:fixed;
-            top:0;
-            left:50%;
-            transform:translateX(-50%);
-            width:100%;
-            max-width:430px;
-            z-index:1000;
-            display:flex;
-            align-items:center;
-            gap:14px;
-            padding:calc(10px + env(safe-area-inset-top)) 16px 14px;
-            min-height:84px;
-            background:rgba(10,10,10,0.98);
-            border-bottom:1px solid rgba(255,255,255,0.08);
-            backdrop-filter:blur(12px);
-        }
-
-        .avatar{
-            width:58px;
-            height:58px;
-            border-radius:50%;
-            object-fit:cover;
-            flex-shrink:0;
-        }
-
-        .header-info h2{
-            font-size:20px;
-            font-weight:700;
-            line-height:1.1;
-        }
-
-        .status{
-            color:#30ff69;
-            font-size:14px;
-            margin-top:4px;
-        }
-
-        .messages{
-            position:absolute;
-            top:92px;
-            left:0;
-            right:0;
-            bottom:86px;
-            overflow-y:auto;
-            padding:18px 14px 24px;
-            display:flex;
-            flex-direction:column;
-            gap:14px;
-            scroll-behavior:smooth;
-        }
-
-        .msg{
-            max-width:80%;
-            padding:16px 18px;
-            border-radius:24px;
-            line-height:1.45;
-            font-size:16px;
-            word-wrap:break-word;
-            animation:fadeIn 0.2s ease;
-        }
-
-        .msg.bot{
-            background:#232326;
-            align-self:flex-start;
-            border-bottom-left-radius:8px;
-        }
-
-        .msg.user{
-            background:linear-gradient(135deg, #7c3aed, #9333ea);
-            align-self:flex-end;
-            border-bottom-right-radius:8px;
-        }
-
-        .input-area{
-            position:fixed;
-            left:50%;
-            transform:translateX(-50%);
-            bottom:0;
-            width:100%;
-            max-width:430px;
-            z-index:999;
-            padding:12px 12px calc(12px + env(safe-area-inset-bottom));
-            background:rgba(11,11,15,0.99);
-            border-top:1px solid rgba(255,255,255,0.08);
-            display:flex;
-            gap:10px;
-            backdrop-filter:blur(12px);
-        }
-
-        .input-area input{
-            flex:1;
-            height:58px;
-            border:none;
-            outline:none;
-            border-radius:20px;
-            background:#19191d;
-            color:white;
-            padding:0 18px;
-            font-size:17px;
-            min-width:0;
-        }
-
-        .input-area input::placeholder{
-            color:rgba(255,255,255,0.42);
-        }
-
-        .send-btn{
-            width:82px;
-            border:none;
-            border-radius:20px;
-            background:linear-gradient(135deg, #7c3aed, #9333ea);
-            color:white;
-            font-size:17px;
-            font-weight:600;
-            cursor:pointer;
-            flex-shrink:0;
-        }
-
-        @keyframes fadeIn{
-            from{
-                opacity:0;
-                transform:translateY(4px);
-            }
-            to{
-                opacity:1;
-                transform:translateY(0);
-            }
-        }
-
-        @media (max-width:480px){
-            .screen{
-                max-width:100%;
-            }
-
-            .chat-header,
-            .input-area{
-                max-width:100%;
-            }
-
-            .welcome-script{
-                font-size:50px;
-            }
-
-            .welcome-main{
-                font-size:26px;
-            }
-
-            .msg{
-                font-size:15px;
-            }
+        #chatScreen{width:100%;height:100%;background:#0b0b0f;position:relative;overflow:hidden}
+        .chat-header{position:fixed;top:0;left:50%;transform:translateX(-50%);width:100%;max-width:430px;z-index:1000;display:flex;align-items:center;gap:14px;padding:calc(10px + env(safe-area-inset-top)) 16px 14px;min-height:84px;background:rgba(10,10,10,.98);border-bottom:1px solid rgba(255,255,255,.08);backdrop-filter:blur(12px)}
+        .avatar{width:58px;height:58px;border-radius:50%;object-fit:cover;flex-shrink:0}
+        .header-info h2{font-size:20px;font-weight:700;line-height:1.1}
+        .status{color:#30ff69;font-size:14px;margin-top:4px}
+        .messages{position:absolute;top:92px;left:0;right:0;bottom:86px;overflow-y:auto;padding:18px 14px 24px;display:flex;flex-direction:column;gap:14px;scroll-behavior:smooth}
+        .msg{max-width:80%;padding:16px 18px;border-radius:24px;line-height:1.45;font-size:16px;word-wrap:break-word;animation:fadeIn .2s ease}
+        .msg.bot{background:#232326;align-self:flex-start;border-bottom-left-radius:8px}
+        .msg.user{background:linear-gradient(135deg,#7c3aed,#9333ea);align-self:flex-end;border-bottom-right-radius:8px}
+        .input-area{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:430px;z-index:999;padding:12px 12px calc(12px + env(safe-area-inset-bottom));background:rgba(11,11,15,.99);border-top:1px solid rgba(255,255,255,.08);display:flex;gap:10px;backdrop-filter:blur(12px)}
+        .input-area input{flex:1;height:58px;border:none;outline:none;border-radius:20px;background:#19191d;color:white;padding:0 18px;font-size:17px;min-width:0}
+        .input-area input::placeholder{color:rgba(255,255,255,.42)}
+        .send-btn{width:82px;border:none;border-radius:20px;background:linear-gradient(135deg,#7c3aed,#9333ea);color:white;font-size:17px;font-weight:600;cursor:pointer;flex-shrink:0}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+        @media(max-width:480px){
+            .screen,.chat-header,.input-area{max-width:100%}
+            .welcome-script{font-size:50px}
+            .welcome-main{font-size:26px}
+            .msg{font-size:15px}
         }
     </style>
 </head>
 
 <body>
-
 <div class="screen">
 
     <div id="loginScreen">
-
         <div class="overlay-box">
-
             <div class="welcome-script">Bem vindo</div>
-
-            <div class="welcome-main">
-                ao meu cantinho
-            </div>
-
+            <div class="welcome-main">ao meu cantinho</div>
             <div class="line-heart">♡</div>
-
             <div class="welcome-sub">
                 Para a gente conversar tranquilo<br>
                 sem ser incomodado ❤️
@@ -332,66 +74,37 @@
 
             <div class="input-group">
                 <div class="input-icon">♡</div>
-                <input
-                    type="text"
-                    id="nomeInput"
-                    placeholder="Seu nome ou apelido"
-                    autocomplete="off"
-                >
+                <input type="text" id="nomeInput" placeholder="Seu nome ou apelido" autocomplete="off">
             </div>
 
             <div class="input-group">
                 <div class="input-icon">⌕</div>
-                <input
-                    type="text"
-                    id="codigoInput"
-                    placeholder="Um código pra eu lembrar de você"
-                    autocomplete="off"
-                >
+                <input type="text" id="codigoInput" placeholder="Um código pra eu lembrar de você" autocomplete="off">
             </div>
 
             <div class="tip">
                 Use sempre o mesmo nome e código quando voltar ❤️
             </div>
 
-            <button class="enter-btn" onclick="entrarChat()">
-                Entrar no meu cantinho
-            </button>
-
+            <button class="enter-btn" onclick="entrarChat()">Entrar no meu cantinho</button>
         </div>
-
     </div>
 
     <div id="chatScreen" class="hidden">
-
         <div class="chat-header" id="chatHeader">
-
             <img src="/static/marina.jpeg" class="avatar">
-
             <div class="header-info">
                 <h2>Marina Alves</h2>
                 <div class="status" id="statusText">online agora</div>
             </div>
-
         </div>
 
         <div class="messages" id="messages"></div>
 
         <div class="input-area" id="inputArea">
-
-            <input
-                type="text"
-                id="messageInput"
-                placeholder="Mensagem..."
-                autocomplete="off"
-            >
-
-            <button class="send-btn" onclick="enviarMensagem()">
-                Enviar
-            </button>
-
+            <input type="text" id="messageInput" placeholder="Mensagem..." autocomplete="off">
+            <button class="send-btn" onclick="enviarMensagem()">Enviar</button>
         </div>
-
     </div>
 
 </div>
@@ -422,8 +135,17 @@ function tempoAntesDeDigitar(){
     return Math.floor(Math.random() * (15000 - 5000 + 1)) + 5000;
 }
 
-function entrarChat(){
+function saudacaoLocal(){
+    const hora = new Date().getHours();
 
+    if(hora >= 5 && hora < 12) return 'bom dia';
+    if(hora >= 12 && hora < 18) return 'boa tarde';
+    if(hora >= 18 && hora < 24) return 'boa noite';
+
+    return 'tu acordado essa hora';
+}
+
+function entrarChat(){
     const nome = document.getElementById('nomeInput').value.trim();
     const codigo = document.getElementById('codigoInput').value.trim();
 
@@ -434,6 +156,8 @@ function entrarChat(){
 
     nomeUsuario = nome;
     codigoUsuario = codigo;
+
+    messages.innerHTML = '';
 
     loginScreen.classList.add('hidden');
     chatScreen.classList.remove('hidden');
@@ -447,20 +171,14 @@ function entrarChat(){
 }
 
 async function primeiraMensagem(){
-
     await esperar(1200);
-
     mostrarDigitando();
-
     await esperar(900);
 
     try{
-
         const response = await fetch('/api/chat', {
             method:'POST',
-            headers:{
-                'Content-Type':'application/json'
-            },
+            headers:{'Content-Type':'application/json'},
             body:JSON.stringify({
                 nome:nomeUsuario,
                 codigo_usuario:codigoUsuario,
@@ -474,23 +192,15 @@ async function primeiraMensagem(){
 
         removerDigitando();
 
-        const nomeLimpo = limparNome(nomeUsuario);
-
-        adicionarMensagem(
-            `Boa tarde, ${nomeLimpo}... adorei te ver por aqui. Vem, fica tranquilo comigo ❤️`,
-            'bot'
-        );
+        if(data && data.resposta){
+            adicionarMensagem(data.resposta, 'bot');
+        } else {
+            adicionarMensagem(`${saudacaoLocal()}, ${limparNome(nomeUsuario)}… gostei que tu entrou`, 'bot');
+        }
 
     } catch(error){
-
         removerDigitando();
-
-        const nomeLimpo = limparNome(nomeUsuario);
-
-        adicionarMensagem(
-            `Boa tarde, ${nomeLimpo}... entra com calma, gostei de te ver por aqui ❤️`,
-            'bot'
-        );
+        adicionarMensagem(`${saudacaoLocal()}, ${limparNome(nomeUsuario)}… gostei que tu entrou`, 'bot');
     }
 }
 
@@ -503,16 +213,13 @@ function limparNome(nome){
 }
 
 function adicionarMensagem(texto, tipo){
-
     const div = document.createElement('div');
 
     div.classList.add('msg');
     div.classList.add(tipo);
-
     div.innerText = texto;
 
     messages.appendChild(div);
-
     scrollFinal();
 }
 
@@ -535,7 +242,6 @@ function scrollFinal(){
 }
 
 async function enviarMensagem(){
-
     const texto = messageInput.value.trim();
 
     if(!texto || enviando) return;
@@ -543,7 +249,6 @@ async function enviarMensagem(){
     enviando = true;
 
     adicionarMensagem(texto, 'user');
-
     messageInput.value = '';
 
     removerDigitando();
@@ -553,12 +258,9 @@ async function enviarMensagem(){
     mostrarDigitando();
 
     try{
-
         const response = await fetch('/api/chat', {
             method:'POST',
-            headers:{
-                'Content-Type':'application/json'
-            },
+            headers:{'Content-Type':'application/json'},
             body:JSON.stringify({
                 user_id:userId,
                 nome:nomeUsuario,
@@ -574,18 +276,12 @@ async function enviarMensagem(){
         adicionarMensagem(data.resposta, 'bot');
 
     } catch(error){
-
         removerDigitando();
 
-        adicionarMensagem(
-            'pera… me chama de novo',
-            'bot'
-        );
+        adicionarMensagem('pera… me chama de novo', 'bot');
 
     } finally{
-
         enviando = false;
-
     }
 }
 
@@ -597,11 +293,9 @@ messageInput.addEventListener('keydown', function(e){
 });
 
 function ajustarTecladoMobile(){
-
     if(!window.visualViewport) return;
 
     const ajustar = () => {
-
         const viewport = window.visualViewport;
         const alturaTeclado = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop);
 
