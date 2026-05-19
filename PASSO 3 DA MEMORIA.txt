@@ -1,0 +1,58 @@
+1. FRONTEND (index.html)
+
+Precisamos:
+
+adicionar campo do código
+salvar nome + código
+enviar os dois pro backend
+
+Aqui muda:
+
+tela de entrada
+javascript do chat
+2. app.py
+
+Precisamos:
+
+receber codigo_usuario
+criar user_id baseado nele
+parar de gerar ID aleatório
+
+Hoje:
+
+user_id = uuid.uuid4()
+
+Vai virar algo tipo:
+
+user_id = f"{nome}_{codigo}"
+
+ou hash disso.
+
+3. database.py
+
+Quase nada.
+
+Só garantir:
+
+mesmo código = mesmo usuário
+busca memória pelo user_id novo
+
+A ORDEM CERTA:
+
+primeiro ajustar index.html
+depois app.py
+testar
+depois refinamos segurança e UX
+
+Porque sem frontend mandando o código, backend não recebe nada.
+
+
+
+
+
+
+
+
+
+
+ela pode perguntar de repente se a pessoa tem um apelido ou quer ser chamado carinhosamente por outro nome , tu entendeu né ?
