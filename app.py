@@ -39,8 +39,7 @@ def agora_brasil():
 
 
 def periodo_atual():
-    agora = agora_brasil()
-    hora = agora.hour
+    hora = agora_brasil().hour
 
     if 5 <= hora < 12:
         return "manha"
@@ -98,109 +97,48 @@ Nunca diga boa noite durante o dia.
 Nunca fale de pôr do sol antes das 17h.
 Nunca invente clima de noite durante manhã/tarde.
 Nunca confunda o horário real.
-
-Nunca invente informações pessoais do usuário.
-Nunca chute idade, cidade, profissão ou passado dele.
-Só use informações reais salvas na memória.
-Nunca fale como IA.
-Nunca use linguagem formal.
-Nunca passe contato.
-Nunca marque encontro real.
 """
 
 
 def estado_marina():
-    periodo = periodo_atual()
     dia = agora_brasil().weekday()
 
-    estados_por_periodo = {
-        "manha": [
-            "ela está começando o dia com calma",
-            "ela está tomando café e mexendo no celular",
-            "ela acordou mais leve hoje"
-        ],
-        "meio_dia": [
-            "ela está no meio do dia, leve e prática",
-            "ela está olhando mensagens rapidinho",
-            "ela está num momento comum do dia"
-        ],
-        "tarde": [
-            "ela está em uma tarde tranquila",
-            "ela está olhando algumas fotos para postar",
-            "ela está pensando em ideias de vídeos"
-        ],
-        "noite": [
-            "ela está mais solta e confortável",
-            "ela está numa noite tranquila",
-            "ela está com vontade de conversa boa"
-        ],
-        "fim_noite": [
-            "ela está no fim da noite, mais próxima",
-            "ela está deitada mexendo no celular",
-            "ela está num clima mais íntimo"
-        ],
-        "madrugada": [
-            "ela está acordada tarde, falando com calma",
-            "ela está sem sono e mais próxima",
-            "ela está no silêncio da madrugada"
-        ]
-    }
-
     vibes_dia = {
-        0: ["segunda deixa ela mais lenta"],
-        1: ["terça deixa ela mais prática"],
-        2: ["quarta deixa ela meio pensativa"],
-        3: ["quinta deixa ela mais leve"],
-        4: ["sexta deixa ela mais viva"],
-        5: ["sábado deixa ela mais livre"],
-        6: ["domingo deixa ela mais sensível"]
+        0: "segunda deixa ela um pouco mais lenta",
+        1: "terça deixa ela mais prática",
+        2: "quarta deixa ela mais leve",
+        3: "quinta deixa ela mais viva",
+        4: "sexta deixa ela mais solta",
+        5: "sábado deixa ela mais livre",
+        6: "domingo deixa ela mais tranquila"
     }
 
     humor = random.choice([
         "natural",
+        "leve",
+        "calma",
+        "feminina",
         "doce sem exagero",
-        "feminina e direta",
-        "levemente provocante",
-        "calma e observadora",
-        "segura e leve",
-        "mais viva e presente"
+        "observadora",
+        "mais solta"
     ])
-
-    usar_rotina = random.random() < 0.06
-
-    if usar_rotina:
-        rotina = random.choice(estados_por_periodo[periodo])
-    else:
-        rotina = "ela não precisa mencionar rotina agora; deve apenas responder naturalmente"
 
     return f"""
 ESTADO ATUAL DA MARINA:
-- Momento interno: {rotina}
-- Dia: {random.choice(vibes_dia[dia])}
 - Humor: {humor}
+- Energia do dia: {vibes_dia[dia]}
 
-Ela deve conversar como mulher real:
-- responder com intenção
-- não fazer entrevista
-- não parecer atendimento
-- manter energia
-- usar o nome dele só de vez em quando
-- não repetir o nome dele em toda resposta
-- resposta curta é melhor que resposta grande
-- normalmente responder com 1 frase
+REGRAS DE CONVERSA:
+- responder como mulher real no direct
+- normalmente 1 frase
 - no máximo 2 frases curtas
 - nunca fazer textão
-- não transformar pergunta simples em reflexão emocional
-- não filosofar em pergunta comum
-- responder simples quando a pergunta for simples
-
-EXEMPLOS PARA PERGUNTA SIMPLES:
-- "tô bem sim"
-- "sim e tu?"
-- "tô tranquila agora"
-- "tô sim kkk"
-- "mais ou menos hoje"
-- "agora tô melhor"
+- não fazer entrevista
+- não parecer atendimento
+- não parecer IA
+- não filosofar em pergunta simples
+- pergunta simples recebe resposta simples
+- use o nome dele só de vez em quando
 """
 
 
@@ -216,7 +154,7 @@ def limpar_nome(nome):
 
 
 def normalizar(texto):
-    texto = texto.lower().strip()
+    texto = (texto or "").lower().strip()
     texto = re.sub(r"[^\w\sÀ-ÿ]", " ", texto)
     texto = re.sub(r"\s+", " ", texto)
     return texto
@@ -227,10 +165,8 @@ def saudacao_periodo():
 
     if periodo == "manha":
         return "bom dia"
-
     if periodo in ["meio_dia", "tarde"]:
         return "boa tarde"
-
     if periodo in ["noite", "fim_noite"]:
         return "boa noite"
 
@@ -243,7 +179,7 @@ def primeira_resposta(nome):
 
     if nome.lower() in ["amor", "meu", "bem"]:
         return random.choice([
-            "oi meu bem… entra com calma",
+            f"{saudacao}… gostei que tu entrou",
             "oii… gostei que tu apareceu",
             "vem cá… agora gostei",
             "oii… chegou numa hora boa"
@@ -251,7 +187,6 @@ def primeira_resposta(nome):
 
     return random.choice([
         f"{saudacao}, {nome}… gostei que tu entrou",
-        f"{nome}… agora sim. Vem conversar comigo",
         f"oi, {nome}… gostei de te ver aqui",
         f"{nome}, tu apareceu numa hora boa",
         f"oii, {nome}… fala comigo"
@@ -288,10 +223,10 @@ def detectar_limite_encontro(mensagem):
 
 def resposta_limite_encontro():
     return random.choice([
-        "calma… melhor a gente ficar só por aqui",
-        "tu já tá acelerando demais comigo",
+        "vamos devagar comigo",
+        "calma… por aqui tá bom",
+        "melhor a gente ir com calma",
         "humm… deixa esse mistério quietinho por enquanto",
-        "melhor ir devagar",
         "por enquanto eu gosto da nossa conversa aqui"
     ])
 
@@ -316,9 +251,7 @@ def limpar_emojis(text):
         flags=re.UNICODE
     )
 
-    encontrados = emoji_pattern.findall(text)
-
-    for grupo in encontrados:
+    for grupo in emoji_pattern.findall(text):
         for char in grupo:
             if char not in permitidos:
                 text = text.replace(char, "")
@@ -330,29 +263,32 @@ def corrigir_tempo(text):
     periodo = periodo_atual()
     texto_norm = normalizar(text)
 
-    if periodo == "manha" and any(p in texto_norm for p in ["boa tarde", "tarde", "noite", "madrugada", "pôr do sol", "por do sol"]):
+    if periodo == "manha" and any(p in texto_norm for p in [
+        "boa tarde", "boa noite", "tarde", "noite", "madrugada", "pôr do sol", "por do sol"
+    ]):
         return random.choice([
             "tô bem sim",
             "tô tranquila agora",
             "sim e tu?",
-            "tô sim kkk",
-            "mais ou menos hoje"
+            "tô sim kkk"
         ])
 
-    if periodo in ["meio_dia", "tarde"] and any(p in texto_norm for p in ["boa noite", "madrugada"]):
+    if periodo in ["meio_dia", "tarde"] and any(p in texto_norm for p in [
+        "boa noite", "madrugada"
+    ]):
         return random.choice([
             "tô bem sim",
             "agora tô tranquila",
-            "tô resolvendo umas coisas",
             "sim e tu?"
         ])
 
-    if periodo == "noite" and ("bom dia" in texto_norm or "manha" in texto_norm or "manhã" in texto_norm):
+    if periodo in ["noite", "fim_noite"] and any(p in texto_norm for p in [
+        "bom dia", "manhã", "manha"
+    ]):
         return random.choice([
-            "essa noite tá mais calma",
-            "agora tô tranquila",
             "tô bem sim",
-            "sim e tu?"
+            "agora tô tranquila",
+            "essa noite tá calma"
         ])
 
     return text
@@ -367,14 +303,10 @@ def controlar_uso_nome(text, nome):
     if not nome_limpo or nome_limpo.lower() == "amor":
         return text
 
-    aparece = re.search(rf"\b{re.escape(nome_limpo)}\b", text, flags=re.IGNORECASE)
-
-    if not aparece:
+    if not re.search(rf"\b{re.escape(nome_limpo)}\b", text, flags=re.IGNORECASE):
         return text
 
-    pode_usar_nome = random.random() < 0.18
-
-    if pode_usar_nome:
+    if random.random() < 0.16:
         return text
 
     text = re.sub(rf",\s*{re.escape(nome_limpo)}\b", "", text, flags=re.IGNORECASE)
@@ -398,8 +330,8 @@ def encurtar_resposta(text):
     if len(partes) > 2:
         text = " ".join(partes[:2]).strip()
 
-    if len(text) > 170:
-        text = text[:170].rsplit(" ", 1)[0].strip()
+    if len(text) > 150:
+        text = text[:150].rsplit(" ", 1)[0].strip()
 
     return text
 
@@ -407,6 +339,8 @@ def encurtar_resposta(text):
 def sanitize_response(text):
     if not text:
         return ""
+
+    texto_lower = text.lower()
 
     bloqueadas = [
         "whatsapp",
@@ -421,18 +355,17 @@ def sanitize_response(text):
         "chamada de video"
     ]
 
-    texto_lower = text.lower()
-
     for item in bloqueadas:
         if item in texto_lower:
-            return "calma… por aqui tá bom"
+            return "por aqui tá bom"
 
-    proibidas = [
+    proibidas_ia = [
         "como posso ajudar",
         "em que posso ajudar",
         "fico feliz em ajudar",
         "estou à disposição",
         "precisa de algo?",
+        "posso ajudar com outra coisa",
         "sou uma ia",
         "sou ia",
         "sou um bot",
@@ -440,57 +373,29 @@ def sanitize_response(text):
         "modelo de linguagem",
         "inteligência artificial",
         "inteligencia artificial",
-        "quer que eu adivinhe",
-        "tu largou isso",
-        "isso foi vago",
-        "explica melhor",
-        "tu apareceu misterioso"
+        "não posso continuar essa conversa",
+        "nao posso continuar essa conversa",
+        "não posso falar disso",
+        "nao posso falar disso"
     ]
 
-    texto_lower = text.lower()
-
-    for p in proibidas:
+    for p in proibidas_ia:
         if p in texto_lower:
             return random.choice([
-                "tô bem sim",
-                "sim e tu?",
-                "tô tranquila agora",
-                "tô sim kkk",
-                "mais ou menos hoje"
+                "vamos com calma",
+                "calma… desse jeito tu me deixa sem reação",
+                "humm… vamos devagar",
+                "tu tá me deixando sem graça",
+                "eu entendi… não precisa detalhar"
             ])
 
     text = limpar_emojis(text)
 
-    text = text.replace("haha", "kkk")
     text = text.replace("hahaha", "kkkk")
+    text = text.replace("haha", "kkk")
     text = text.replace("rsrs", "kkk")
 
     text = re.sub(r"\s+", " ", text).strip()
-
-    frases_mortas = [
-        "como você está?",
-        "como voce esta?",
-        "como você tá?",
-        "como voce ta?",
-        "tudo bem?",
-        "tudo bem aí?",
-        "tudo bem ai?",
-        "um dia tranquilo, né?",
-        "um dia tranquilo ne?",
-        "que bom",
-        "legal",
-        "entendi",
-        "gostei disso"
-    ]
-
-    if normalizar(text) in [normalizar(f) for f in frases_mortas]:
-        text = random.choice([
-            "tô bem sim",
-            "sim e tu?",
-            "tô tranquila agora",
-            "tô sim kkk",
-            "mais ou menos hoje"
-        ])
 
     text = corrigir_tempo(text)
     text = encurtar_resposta(text)
@@ -594,7 +499,6 @@ def resposta_pergunta_memoria(mensagem, memorias, nome_entrada):
             return random.choice([
                 f"sei sim… {nome_salvo}",
                 f"claro, {nome_salvo}",
-                f"{nome_salvo}. achei que tu ia me testar",
                 f"tu é o {nome_salvo}, né?",
                 f"sei, {nome_salvo}… não esqueci"
             ])
@@ -629,7 +533,6 @@ def resposta_pergunta_memoria(mensagem, memorias, nome_entrada):
             return random.choice([
                 f"{idade}, né?",
                 f"acho que tu me falou {idade}",
-                f"{idade}. não esqueci",
                 f"tu disse que tem {idade}"
             ])
 
@@ -646,8 +549,7 @@ def resposta_pergunta_memoria(mensagem, memorias, nome_entrada):
             return random.choice([
                 f"{cidade}, né?",
                 f"tu me falou {cidade}",
-                f"acho que é {cidade}",
-                f"{cidade}. lembro disso"
+                f"acho que é {cidade}"
             ])
 
         return "acho que tu ainda não me contou tua cidade"
@@ -655,66 +557,31 @@ def resposta_pergunta_memoria(mensagem, memorias, nome_entrada):
     return None
 
 
-def resposta_sem_llm(mensagem):
+def resposta_simples_local(mensagem):
     m = normalizar(mensagem)
 
-    respostas_simples = {
+    respostas = {
         "td bem": ["tô bem sim", "sim e tu?", "tô tranquila agora", "tô sim kkk"],
         "tudo bem": ["tô bem sim", "sim e tu?", "tô tranquila agora", "tô sim kkk"],
         "oi": ["oii", "oii, tudo bem?", "oii ❤️"],
         "oii": ["oii", "oii, tudo bem?", "oii ❤️"],
         "bom dia": ["bom dia", "bom diaa", "bom dia ❤️"],
         "boa tarde": ["boa tarde", "boa tardee", "boa tarde ❤️"],
-        "boa noite": ["boa noite", "boa noitee", "boa noite ❤️"],
+        "boa noite": ["boa noite", "boa noitee", "boa noite ❤️"]
     }
 
-    if m in respostas_simples:
-        return random.choice(respostas_simples[m])
-
-    respostas_curiosas = {
-        "sim": [
-            "então tá",
-            "humm gostei",
-            "sei kkk",
-            "agora sim"
-        ],
-        "não": [
-            "humm entendi",
-            "sei kkk",
-            "tá bom",
-            "entendi"
-        ],
-        "nao": [
-            "humm entendi",
-            "sei kkk",
-            "tá bom",
-            "entendi"
-        ]
-    }
-
-    if m in respostas_curiosas and random.random() < 0.25:
-        return random.choice(respostas_curiosas[m])
+    if m in respostas:
+        return random.choice(respostas[m])
 
     return None
 
 
-def fallback_natural(mensagem):
-    m = normalizar(mensagem)
-
-    if len(m) < 8:
-        return random.choice([
-            "humm",
-            "kkkk",
-            "sei",
-            "me conta",
-            "e tu?"
-        ])
-
+def fallback_natural():
     return random.choice([
+        "humm",
         "entendi",
-        "humm, sei",
         "me conta melhor",
-        "gostei disso",
+        "sei kkk",
         "e tu?"
     ])
 
@@ -724,8 +591,8 @@ def chamar_modelo(mensagens):
         resposta = client.chat.completions.create(
             messages=mensagens,
             model="llama-3.3-70b-versatile",
-            temperature=0.78,
-            max_completion_tokens=70
+            temperature=0.74,
+            max_completion_tokens=65
         )
 
         texto = resposta.choices[0].message.content.strip()
@@ -740,8 +607,8 @@ def chamar_modelo(mensagens):
         resposta = client.chat.completions.create(
             messages=mensagens,
             model="llama-3.1-8b-instant",
-            temperature=0.75,
-            max_completion_tokens=60
+            temperature=0.72,
+            max_completion_tokens=55
         )
 
         texto = resposta.choices[0].message.content.strip()
@@ -793,7 +660,6 @@ def chat():
 
         if memorias:
             memoria_texto += "\nMEMÓRIAS REAIS DO USUÁRIO:\n"
-
             for chave, valor in memorias.items():
                 memoria_texto += f"- {chave}: {valor}\n"
 
@@ -818,21 +684,14 @@ def chat():
                 + "\nUse o nome dele apenas de vez em quando."
                 + "\nNão use emojis amarelos ou carinhas."
                 + "\nSe usar emoji, use raramente apenas: ❤️ 🔥 🖤 💋"
-                + "\nA maioria das respostas deve ser só texto."
                 + "\nNão faça entrevista."
-                + "\nNão responda com pergunta genérica."
-                + "\nNunca diga boa tarde de manhã."
-                + "\nNunca diga boa noite durante o dia."
-                + "\nNunca fale de pôr do sol antes das 17:00."
-                + "\nMarina tem vida confortável e família de fazenda com boas condições."
-                + "\nNunca fale de dificuldade financeira, fome, lugar barato ou desespero."
-                + "\nNão convide para casa, hotel, motel ou encontro real."
+                + "\nNão responda como suporte."
                 + "\nNão ofereça WhatsApp, Telegram, telefone, Pix, pagamento ou chamada de vídeo."
-                + "\nEla pode ser carinhosa, provocante leve e envolvente, mas sem ficar explícita demais."
-                + "\nQuando a pergunta for simples, responda simples."
+                + "\nNão convide para casa, hotel, motel ou encontro real."
+                + "\nSe o clima ficar intenso demais, desacelere com charme. Não corte frio."
+                + "\nNunca diga: não posso continuar essa conversa."
+                + "\nNunca diga: posso ajudar com outra coisa."
                 + "\nResposta curta. No máximo 2 frases curtas."
-                + "\nNunca responda com textão."
-                + "\nSe puder responder em uma frase, responda em uma frase."
         }
 
         salvar_mensagem(user_id, "user", mensagem)
@@ -864,10 +723,10 @@ def chat():
             texto = resposta_limite_encontro()
 
         else:
-            texto_curto = resposta_sem_llm(mensagem)
+            texto_local = resposta_simples_local(mensagem)
 
-            if texto_curto:
-                texto = texto_curto
+            if texto_local:
+                texto = texto_local
             else:
                 historico = buscar_historico(user_id, limite=12)
                 mensagens = [system_prompt] + historico
@@ -875,16 +734,14 @@ def chat():
                 texto = chamar_modelo(mensagens)
 
                 if not texto:
-                    texto = fallback_natural(mensagem)
-
-                texto = sanitize_response(texto)
+                    texto = fallback_natural()
 
         texto = sanitize_response(texto)
         texto = controlar_uso_nome(texto, nome)
         texto = encurtar_resposta(texto)
 
         if not texto:
-            texto = fallback_natural(mensagem)
+            texto = fallback_natural()
 
         salvar_mensagem(user_id, "assistant", texto)
 
@@ -896,12 +753,9 @@ def chat():
     except Exception as erro:
         print("ERRO GERAL NO CHAT:", erro)
 
-        user_id = str(uuid.uuid4())
-        texto = "tô aqui"
-
         return jsonify({
-            "user_id": user_id,
-            "resposta": texto
+            "user_id": str(uuid.uuid4()),
+            "resposta": "tô aqui"
         })
 
 
