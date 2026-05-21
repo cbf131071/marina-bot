@@ -7,19 +7,47 @@
 
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
+        html,body{width:100%;height:100%}
         body{font-family:Arial,Helvetica,sans-serif;background:#0b0b10;color:#fff;height:100vh;overflow:hidden}
-        .app{display:grid;grid-template-columns:360px 1fr;height:100vh}
-        .sidebar{background:#12121a;border-right:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;min-width:0}
-        .top{padding:18px;border-bottom:1px solid rgba(255,255,255,.08)}
+
+        .app{
+            display:grid;
+            grid-template-columns:360px 1fr;
+            height:100vh;
+            min-height:0;
+            overflow:hidden;
+        }
+
+        .sidebar{
+            background:#12121a;
+            border-right:1px solid rgba(255,255,255,.08);
+            display:flex;
+            flex-direction:column;
+            min-width:0;
+            min-height:0;
+            overflow:hidden;
+        }
+
+        .top{padding:18px;border-bottom:1px solid rgba(255,255,255,.08);flex:0 0 auto}
         .top h1{font-size:22px;margin-bottom:6px}
         .top p{font-size:13px;color:#aaa}
-        .cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px}
+
+        .cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px;flex:0 0 auto}
         .card{background:#1b1b26;border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:14px}
         .card small{display:block;color:#aaa;font-size:12px;margin-bottom:8px}
         .card strong{font-size:24px}
-        .search{padding:0 14px 12px}
+
+        .search{padding:0 14px 12px;flex:0 0 auto}
         .search input{width:100%;height:42px;border:none;outline:none;border-radius:12px;background:#20202d;color:#fff;padding:0 14px;font-size:14px}
-        .users{overflow:auto;padding:0 10px 14px;flex:1}
+
+        .users{
+            overflow-y:auto;
+            overflow-x:hidden;
+            padding:0 10px 14px;
+            flex:1 1 auto;
+            min-height:0;
+        }
+
         .user{padding:12px;border-radius:14px;margin-bottom:8px;background:#181823;border:1px solid rgba(255,255,255,.05);cursor:pointer;transition:.15s}
         .user:hover,.user.active{background:#242436;border-color:rgba(255,255,255,.16)}
         .user-row{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:5px}
@@ -29,35 +57,72 @@
         .recente{background:#3d3212;color:#ffd35a}
         .offline{background:#333;color:#aaa}
         .user-meta{font-size:12px;color:#aaa;line-height:1.45;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-        .main{display:flex;flex-direction:column;min-width:0;background:#0b0b10}
-        .chat-head{height:82px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:center;padding:0 22px;background:#101018}
+
+        .main{
+            display:flex;
+            flex-direction:column;
+            min-width:0;
+            min-height:0;
+            background:#0b0b10;
+            overflow:hidden;
+        }
+
+        .chat-head{
+            height:82px;
+            min-height:82px;
+            border-bottom:1px solid rgba(255,255,255,.08);
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            padding:0 22px;
+            background:#101018;
+            flex:0 0 auto;
+        }
+
         .chat-title h2{font-size:21px;margin-bottom:5px}
         .chat-title p{font-size:13px;color:#aaa}
         .refresh{border:none;background:#7c3aed;color:#fff;padding:12px 16px;border-radius:12px;cursor:pointer;font-weight:700}
-        .content{display:grid;grid-template-columns:1fr 300px;flex:1;min-height:0}
+
+        .content{
+            display:grid;
+            grid-template-columns:minmax(0,1fr) 300px;
+            flex:1 1 auto;
+            min-height:0;
+            overflow:hidden;
+        }
 
         .chat-box{
+            height:100%;
+            min-height:0;
+            overflow-y:auto;
+            overflow-x:hidden;
             padding:18px;
-            overflow:auto;
             display:flex;
             flex-direction:column;
             gap:8px;
-            align-items:stretch;
         }
 
-        .empty{height:100%;display:flex;align-items:center;justify-content:center;color:#777;text-align:center;font-size:16px}
+        .empty{
+            height:100%;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            color:#777;
+            text-align:center;
+            font-size:16px;
+        }
 
         .msg{
-            display:block;
-            width:max-content;
-            max-width:42%;
-            min-width:0;
-            padding:7px 10px;
-            border-radius:13px;
+            display:inline-block;
+            width:fit-content;
+            max-width:46%;
+            padding:8px 11px;
+            border-radius:14px;
             line-height:1.25;
             font-size:14px;
             white-space:pre-wrap;
-            word-break:break-word;
+            overflow-wrap:anywhere;
+            word-break:normal;
         }
 
         .msg.user{
@@ -74,24 +139,33 @@
 
         .msg small{
             display:block;
-            margin-top:4px;
-            opacity:.6;
+            margin-top:5px;
+            opacity:.58;
             font-size:10px;
+            line-height:1.2;
         }
 
-        .memories{border-left:1px solid rgba(255,255,255,.08);background:#111119;padding:16px;overflow:auto}
+        .memories{
+            border-left:1px solid rgba(255,255,255,.08);
+            background:#111119;
+            padding:16px;
+            overflow-y:auto;
+            overflow-x:hidden;
+            min-height:0;
+        }
+
         .memories h3{font-size:17px;margin-bottom:12px}
         .memory{background:#1b1b26;border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:11px;margin-bottom:8px}
         .memory small{display:block;color:#999;font-size:11px;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
-        .memory strong{font-size:14px;font-weight:600}
+        .memory strong{font-size:14px;font-weight:600;word-break:break-word}
         .hint{font-size:12px;color:#888;margin-top:14px;line-height:1.4}
 
         @media(max-width:900px){
             body{overflow:auto}
-            .app{grid-template-columns:1fr;height:auto;min-height:100vh}
+            .app{grid-template-columns:1fr;height:auto;min-height:100vh;overflow:visible}
             .sidebar{height:52vh}
-            .content{grid-template-columns:1fr}
-            .memories{border-left:none;border-top:1px solid rgba(255,255,255,.08)}
+            .content{grid-template-columns:1fr;overflow:visible}
+            .memories{border-left:none;border-top:1px solid rgba(255,255,255,.08);max-height:260px}
             .chat-box{height:55vh}
             .chat-head{position:sticky;top:0;z-index:5}
             .msg{max-width:82%}
@@ -181,6 +255,39 @@ function statusClasse(status){
     return 'offline';
 }
 
+function normalizarListaUsuarios(data){
+    if(Array.isArray(data)) return data;
+    if(data && Array.isArray(data.usuarios)) return data.usuarios;
+    if(data && Array.isArray(data.data)) return data.data;
+    if(data && Array.isArray(data.lista)) return data.lista;
+    if(data && Array.isArray(data.resultado)) return data.resultado;
+    return [];
+}
+
+function normalizarMemorias(memorias){
+    if(!memorias) return [];
+    if(Array.isArray(memorias)) return memorias.map((item, index) => {
+        if(item && typeof item === 'object'){
+            return [
+                item.chave || item.key || item.nome || `memória ${index + 1}`,
+                item.valor || item.value || item.content || item.texto || JSON.stringify(item)
+            ];
+        }
+        return [`memória ${index + 1}`, item];
+    });
+
+    if(typeof memorias === 'object'){
+        return Object.entries(memorias).map(([chave, valor]) => {
+            if(valor && typeof valor === 'object'){
+                return [chave, valor.valor || valor.value || valor.content || valor.texto || JSON.stringify(valor)];
+            }
+            return [chave, valor];
+        });
+    }
+
+    return [['memória', memorias]];
+}
+
 async function carregarResumo(){
     const r = await fetch(apiUrl('/api/admin/resumo'));
     if(!r.ok) throw new Error('Erro ao carregar resumo');
@@ -197,21 +304,7 @@ async function carregarUsuarios(){
     if(!r.ok) throw new Error('Erro ao carregar usuários');
 
     const data = await r.json();
-
-    if (Array.isArray(data)) {
-        usuarios = data;
-    } else if (Array.isArray(data.usuarios)) {
-        usuarios = data.usuarios;
-    } else if (Array.isArray(data.data)) {
-        usuarios = data.data;
-    } else if (Array.isArray(data.lista)) {
-        usuarios = data.lista;
-    } else if (Array.isArray(data.resultado)) {
-        usuarios = data.resultado;
-    } else {
-        usuarios = [];
-        console.log('Formato inesperado em /api/admin/usuarios:', data);
-    }
+    usuarios = normalizarListaUsuarios(data);
 
     renderUsuarios();
 }
@@ -263,7 +356,7 @@ async function carregarConversa(userId){
         const data = await r.json();
 
         const usuario = data.usuario || {};
-        const mensagens = data.mensagens || [];
+        const mensagens = Array.isArray(data.mensagens) ? data.mensagens : [];
         const memorias = data.memorias || {};
 
         $('tituloChat').innerText = usuario.nome || userId;
@@ -287,7 +380,8 @@ async function carregarConversa(userId){
         }
 
         const memBox = $('memoriasBox');
-        const entradas = Object.entries(memorias);
+        const entradas = normalizarMemorias(memorias);
+
         if(entradas.length === 0){
             memBox.innerHTML = '<div class="hint">Nenhuma memória salva para esse usuário ainda.</div>';
         } else {
