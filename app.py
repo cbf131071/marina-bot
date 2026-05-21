@@ -432,12 +432,20 @@ def sanitize_response(text):
         "seu cheiro",
         "te vi",
         "teu rosto",
-        "seu rosto"
+        "seu rosto",
+        "😌",
+        "😊",
+        "😉",
+        "😂",
+        "🤣",
+        "🙂",
+        "😍",
+        "😘"
     ]
 
     for item in bloqueadas:
         if item in texto_lower:
-            return "por aqui tá bom"
+            return "vamos ficar só no texto por aqui"
 
     proibidas_ia = [
         "como posso ajudar",
@@ -485,12 +493,15 @@ def sanitize_response(text):
 
 def extrair_memorias(user_id, mensagem):
     m = normalizar(mensagem)
+    novas = {}
 
     nome_match = re.search(r"meu nome e ([a-zà-ÿ]+)", m)
     if nome_match:
         nome = nome_match.group(1).capitalize()
         salvar_memoria(user_id, "nome", nome)
         atualizar_usuario(user_id, nome=nome)
+        novas["nome"] = nome
+        novas["nome"] = nome
 
     nome_match_2 = re.search(r"me chamo ([a-zà-ÿ]+)", m)
     if nome_match_2:
@@ -503,6 +514,7 @@ def extrair_memorias(user_id, mensagem):
         idade = int(idade_match.group(1))
         salvar_memoria(user_id, "idade", str(idade))
         atualizar_usuario(user_id, idade=idade)
+        novas["idade"] = str(idade)
 
     cidade_match = re.search(r"sou de ([a-zà-ÿ\s]+)", m)
     if cidade_match:
@@ -517,6 +529,8 @@ def extrair_memorias(user_id, mensagem):
         if len(cidade) <= 40:
             salvar_memoria(user_id, "cidade", cidade)
             atualizar_usuario(user_id, cidade=cidade)
+            novas["cidade"] = cidade
+            novas["cidade"] = cidade
 
     moro_match = re.search(r"moro em ([a-zà-ÿ\s]+)", m)
     if moro_match:
@@ -556,6 +570,41 @@ def extrair_memorias(user_id, mensagem):
         if 2 <= len(gosto) <= 50:
             salvar_memoria(user_id, "gosto", gosto)
 
+
+
+def resposta_memoria_nova(mem_novas, nome):
+    nome = limpar_nome(nome)
+    cidade = mem_novas.get("cidade")
+    idade = mem_novas.get("idade")
+    gosto = mem_novas.get("gosto")
+
+    opcoes = []
+    if cidade and idade:
+        opcoes += [
+            f"{cidade} e {idade} anos… agora eu vou lembrar melhor de ti",
+            f"gostei de saber… {cidade}, {idade} anos"
+        ]
+    elif cidade:
+        opcoes += [
+            f"{cidade}… gostei de saber isso de ti",
+            f"então tu é de {cidade}… vou guardar isso"
+        ]
+    elif idade:
+        opcoes += [
+            f"{idade} anos… gostei de saber",
+            f"entendi… {idade}, vou lembrar"
+        ]
+
+    if gosto:
+        opcoes += [
+            f"gosto disso… vou lembrar que tu gosta de {gosto}",
+            f"entendi… {gosto} combina contigo"
+        ]
+
+    if not opcoes:
+        return None
+
+    return random.choice(opcoes)
 
 def resposta_pergunta_memoria(mensagem, memorias, nome_entrada):
     m = normalizar(mensagem)
@@ -798,7 +847,7 @@ def chat():
         salvar_memoria(user_id, "nome", nome)
         atualizar_usuario(user_id, nome=nome)
 
-        extrair_memorias(user_id, mensagem)
+        memorias_novas = extrair_memorias(user_id, mensagem)
 
         memorias = buscar_memorias(user_id)
 
@@ -839,6 +888,7 @@ def chat():
         salvar_mensagem(user_id, "user", mensagem)
 
         resposta_memoria = resposta_pergunta_memoria(mensagem, memorias, nome)
+        resposta_nova_memoria = resposta_memoria_nova(memorias_novas, nome)
 
         if primeira_mensagem:
             texto = primeira_resposta(nome)
@@ -848,6 +898,9 @@ def chat():
 
         elif resposta_memoria:
             texto = resposta_memoria
+
+        elif resposta_nova_memoria:
+            texto = resposta_nova_memoria
 
         elif detectar_limite_encontro(mensagem):
             texto = resposta_limite_encontro()
