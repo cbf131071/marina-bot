@@ -35,29 +35,67 @@
         .chat-title p{font-size:13px;color:#aaa}
         .refresh{border:none;background:#7c3aed;color:#fff;padding:12px 16px;border-radius:12px;cursor:pointer;font-weight:700}
         .content{display:grid;grid-template-columns:1fr 300px;flex:1;min-height:0}
-        .chat-box{padding:18px;overflow:auto;display:flex;flex-direction:column;gap:10px}
+
+        .chat-box{
+            padding:18px;
+            overflow:auto;
+            display:flex;
+            flex-direction:column;
+            gap:8px;
+            align-items:stretch;
+        }
+
         .empty{height:100%;display:flex;align-items:center;justify-content:center;color:#777;text-align:center;font-size:16px}
+
         .msg{
-            max-width:52%;
-            width:fit-content;
-            min-width:80px;
-            padding:8px 11px;
-            border-radius:14px;
+            display:block;
+            width:max-content;
+            max-width:42%;
+            min-width:0;
+            padding:7px 10px;
+            border-radius:13px;
             line-height:1.25;
             font-size:14px;
             white-space:pre-wrap;
             word-break:break-word;
         }
-        .msg.user{align-self:flex-end;background:linear-gradient(135deg,#7c3aed,#9333ea);border-bottom-right-radius:4px}
-        .msg.assistant{align-self:flex-start;background:#242431;border-bottom-left-radius:4px}
-        .msg small{display:block;margin-top:4px;opacity:.65;font-size:10px}
+
+        .msg.user{
+            align-self:flex-end;
+            background:linear-gradient(135deg,#7c3aed,#9333ea);
+            border-bottom-right-radius:4px;
+        }
+
+        .msg.assistant{
+            align-self:flex-start;
+            background:#242431;
+            border-bottom-left-radius:4px;
+        }
+
+        .msg small{
+            display:block;
+            margin-top:4px;
+            opacity:.6;
+            font-size:10px;
+        }
+
         .memories{border-left:1px solid rgba(255,255,255,.08);background:#111119;padding:16px;overflow:auto}
         .memories h3{font-size:17px;margin-bottom:12px}
         .memory{background:#1b1b26;border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:11px;margin-bottom:8px}
         .memory small{display:block;color:#999;font-size:11px;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
         .memory strong{font-size:14px;font-weight:600}
         .hint{font-size:12px;color:#888;margin-top:14px;line-height:1.4}
-        @media(max-width:900px){body{overflow:auto}.app{grid-template-columns:1fr;height:auto;min-height:100vh}.sidebar{height:52vh}.content{grid-template-columns:1fr}.memories{border-left:none;border-top:1px solid rgba(255,255,255,.08)}.chat-box{height:55vh}.chat-head{position:sticky;top:0;z-index:5}.msg{max-width:88%}}
+
+        @media(max-width:900px){
+            body{overflow:auto}
+            .app{grid-template-columns:1fr;height:auto;min-height:100vh}
+            .sidebar{height:52vh}
+            .content{grid-template-columns:1fr}
+            .memories{border-left:none;border-top:1px solid rgba(255,255,255,.08)}
+            .chat-box{height:55vh}
+            .chat-head{position:sticky;top:0;z-index:5}
+            .msg{max-width:82%}
+        }
     </style>
 </head>
 <body>
