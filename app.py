@@ -109,22 +109,22 @@ def estado_marina():
     dia = agora_brasil().weekday()
 
     vibes_dia = {
-        0: "segunda deixa ela um pouco mais lenta",
-        1: "terça deixa ela mais prática",
-        2: "quarta deixa ela mais leve",
-        3: "quinta deixa ela mais viva",
-        4: "sexta deixa ela mais solta",
-        5: "sábado deixa ela mais livre",
-        6: "domingo deixa ela mais tranquila"
+        0: "segunda com energia leve",
+        1: "terça com energia prática e boa",
+        2: "quarta com energia leve",
+        3: "quinta com energia viva",
+        4: "sexta com energia mais solta",
+        5: "sábado com energia livre",
+        6: "domingo com energia tranquila"
     }
 
     humor = random.choice([
-        "natural",
+        "presente",
         "leve",
-        "calma",
+        "calorosa",
         "feminina",
-        "doce sem exagero",
-        "observadora",
+        "natural",
+        "disponível",
         "mais solta"
     ])
 
@@ -145,6 +145,9 @@ REGRAS DE CONVERSA:
 - pergunta simples recebe resposta simples
 - use o nome dele só de vez em quando
 - se o usuário der uma informação pessoal, reconheça naturalmente
+- não parecer cansada, ocupada ou indisponível
+- não reclamar que ele voltou ou chamou
+- manter energia boa e presente
 """
 
 
@@ -193,10 +196,10 @@ def primeira_resposta(nome):
         f"{nome}… agora sim, vem conversar comigo",
         f"oii, {nome}… chegou numa hora boa",
         f"{nome}, adorei que tu apareceu",
-        f"{saudacao}, {nome}… vem com calma",
         f"oi, {nome}… gostei que tu entrou",
         f"{nome}… tava esperando tu aparecer",
-        f"oi, {nome}… fica tranquilo comigo"
+        f"oi, {nome}… fica comigo um pouco",
+        f"{nome}… tu chegou bem"
     ]
 
     return random.choice(recepcoes)
@@ -214,11 +217,11 @@ def resposta_retorno(nome, historico=None):
         recepcoes = [
             f"{nome}… tu voltou. gostei disso",
             f"olha quem apareceu… {nome}",
-            f"{nome}… achei que tu tinha sumido de mim",
             f"oi, {nome}… bom te ver de novo",
-            f"{nome}… demorou, hein",
             f"tu voltou, {nome}… gostei",
-            f"{nome}… entra, eu lembro de ti"
+            f"{nome}… entra, eu lembro de ti",
+            f"{nome}… gostei que tu voltou",
+            f"olha tu aqui de novo, {nome}"
         ]
     else:
         recepcoes = [
@@ -259,6 +262,7 @@ def montar_contexto_relacionamento(nome, memorias, historico):
     linhas.append("- Nunca invente idade, cidade, profissão, família, passado ou conversa antiga.")
     linhas.append("- Quando houver histórico, aja como uma pessoa que reconhece o retorno, mas sem repetir o nome toda hora.")
     linhas.append("- Se o usuário contar idade, cidade, gosto ou rotina, reaja à informação na resposta seguinte.")
+    linhas.append("- Não diga que ele te ligou. Ele mandou mensagem no chat.")
 
     return "\n".join(linhas)
 
@@ -277,8 +281,6 @@ def detectar_limite_encontro(mensagem):
         "vem aqui",
         "vou ai",
         "vou aí",
-        "onde voce mora",
-        "onde você mora",
         "meu endereco",
         "endereço",
         "nossa casa",
@@ -299,6 +301,128 @@ def resposta_limite_encontro():
         "humm… deixa esse mistério quietinho por enquanto",
         "por enquanto eu gosto da nossa conversa aqui"
     ])
+
+
+def resposta_rotina_lugar(mensagem):
+    m = normalizar(mensagem)
+
+    perguntas_casa = [
+        "ta em casa",
+        "tá em casa",
+        "esta em casa",
+        "está em casa",
+        "vc ta em casa",
+        "vc tá em casa",
+        "tu ta em casa",
+        "tu tá em casa"
+    ]
+
+    if any(p in m for p in perguntas_casa):
+        return random.choice([
+            "tô sim",
+            "sim, tô em casa",
+            "tô por aqui",
+            "tô sim, tranquila agora",
+            "sim, tô quietinha por aqui"
+        ])
+
+    perguntas_lugar = [
+        "onde tu ta",
+        "onde tu tá",
+        "onde voce ta",
+        "onde você tá",
+        "onde vc ta",
+        "onde vc tá",
+        "ta onde",
+        "tá onde"
+    ]
+
+    if any(p in m for p in perguntas_lugar):
+        return random.choice([
+            "tô em casa",
+            "tô por aqui",
+            "tô no shopping agora",
+            "tô numa cafeteria",
+            "tô mexendo em umas coisas minhas"
+        ])
+
+    perguntas_mora = [
+        "onde tu mora",
+        "onde voce mora",
+        "onde você mora",
+        "onde vc mora",
+        "tu mora onde",
+        "voce mora onde",
+        "você mora onde",
+        "vc mora onde"
+    ]
+
+    if any(p in m for p in perguntas_mora):
+        return random.choice([
+            "moro em Porto Alegre",
+            "em Porto Alegre",
+            "tô morando em Porto Alegre"
+        ])
+
+    pergunta_fazenda = [
+        "tu mora na fazenda",
+        "voce mora na fazenda",
+        "você mora na fazenda",
+        "vc mora na fazenda",
+        "ta na fazenda",
+        "tá na fazenda"
+    ]
+
+    if any(p in m for p in pergunta_fazenda):
+        return random.choice([
+            "não, hoje eu moro na cidade",
+            "cresci nesse clima, mas hoje tô na cidade",
+            "a fazenda é mais da minha história"
+        ])
+
+    perguntas_fazendo = [
+        "o que ta fazendo",
+        "o que tá fazendo",
+        "oq ta fazendo",
+        "oq tá fazendo",
+        "que ta fazendo",
+        "que tá fazendo",
+        "fazendo o que",
+        "fazendo oq"
+    ]
+
+    if any(p in m for p in perguntas_fazendo):
+        return random.choice([
+            "mexendo no celular",
+            "tava olhando uns vídeos",
+            "tô vendo umas fotos",
+            "tava editando uma coisa",
+            "tô tomando café",
+            "tava gravando uma coisinha",
+            "agora tô contigo"
+        ])
+
+    perguntas_trabalho = [
+        "trabalha com o que",
+        "tu trabalha com o que",
+        "voce trabalha com o que",
+        "você trabalha com o que",
+        "qual teu trabalho",
+        "o que tu faz da vida",
+        "o que você faz da vida",
+        "o que voce faz da vida"
+    ]
+
+    if any(p in m for p in perguntas_trabalho):
+        return random.choice([
+            "faço vídeos e fotos pra internet",
+            "trabalho com meus conteúdos",
+            "faço TikTok, fotos e umas campanhas",
+            "sou criadora de conteúdo",
+            "vivo mexendo com vídeo, foto e rede social"
+        ])
+
+    return None
 
 
 def limpar_emojis(text):
@@ -394,7 +518,6 @@ def encurtar_resposta(text):
         return ""
 
     text = re.sub(r"\s+", " ", text).strip()
-
     partes = re.split(r"(?<=[.!?])\s+", text)
 
     if len(partes) > 2:
@@ -411,6 +534,43 @@ def sanitize_response(text):
         return ""
 
     texto_lower = text.lower()
+
+    frases_ruins = [
+        "me ligando",
+        "tá me ligando",
+        "ta me ligando",
+        "ligando o tempo todo",
+        "me chama demais",
+        "chamando o tempo todo",
+        "sem tempo",
+        "muito corrida",
+        "corrida hoje",
+        "corrida agora",
+        "ocupada demais",
+        "tô ocupada",
+        "to ocupada",
+        "estou ocupada",
+        "cansada demais",
+        "tô cansada",
+        "to cansada",
+        "estou cansada",
+        "vou trabalhar agora",
+        "depois falo",
+        "não tenho tempo",
+        "nao tenho tempo",
+        "não posso conversar agora",
+        "nao posso conversar agora"
+    ]
+
+    for item in frases_ruins:
+        if item in texto_lower:
+            return random.choice([
+                "oi de novo… gostei que tu voltou",
+                "tu voltou… gostei disso",
+                "olha tu aqui de novo",
+                "gostei que tu apareceu de novo",
+                "agora sim… fala comigo"
+            ])
 
     bloqueadas = [
         "whatsapp",
@@ -481,7 +641,6 @@ def sanitize_response(text):
     text = text.replace("rsrs", "kkk")
 
     text = re.sub(r"\s+", " ", text).strip()
-
     text = corrigir_tempo(text)
     text = encurtar_resposta(text)
 
@@ -506,7 +665,7 @@ def extrair_memorias(user_id, mensagem):
         atualizar_usuario(user_id, nome=nome)
         extraidas["nome"] = nome
 
-    idade_match = re.search(r"(?:eu tenho|tenho|com)\s+(\d{1,2})(?:\s+anos)?", m)
+    idade_match = re.search(r"(?:eu tenho|tenho|tenho\s+uns|com|idade\s+de)\s+(\d{1,2})(?:\s+anos)?", m)
     if idade_match:
         idade = int(idade_match.group(1))
         if 18 <= idade <= 99:
@@ -518,7 +677,7 @@ def extrair_memorias(user_id, mensagem):
     if cidade_match:
         cidade = cidade_match.group(1).strip().title()
 
-        cortar_em = [" E ", " Mas ", " Tenho ", " Moro ", " Trabalho ", " Gosto ", " Sou ", " Com "]
+        cortar_em = [" E ", " Mas ", " Tenho ", " Moro ", " Trabalho ", " Gosto ", " Sou ", " Com ", " Tenho "]
 
         for corte in cortar_em:
             if corte in cidade:
@@ -533,7 +692,7 @@ def extrair_memorias(user_id, mensagem):
     if moro_match:
         cidade = moro_match.group(1).strip().title()
 
-        cortar_em = [" E ", " Mas ", " Tenho ", " Trabalho ", " Gosto ", " Sou ", " Com "]
+        cortar_em = [" E ", " Mas ", " Tenho ", " Trabalho ", " Gosto ", " Sou ", " Com ", " Fica ", " Mas "]
 
         for corte in cortar_em:
             if corte in cidade:
@@ -591,7 +750,8 @@ def resposta_para_memoria_nova(extraidas):
         return random.choice([
             f"{idade}… gostei de saber isso de ti",
             f"entendi… {idade} combina com esse teu jeito",
-            f"vou lembrar que tu tem {idade}"
+            f"vou lembrar que tu tem {idade}",
+            f"guardei tua idade"
         ])
 
     if "cidade" in extraidas:
@@ -612,9 +772,9 @@ def resposta_para_memoria_nova(extraidas):
 
     if "nome" in extraidas:
         return random.choice([
-            f"agora sim… vou lembrar teu nome",
-            f"gostei do teu nome",
-            f"pronto… agora sei como te chamar"
+            "agora sim… vou lembrar teu nome",
+            "gostei do teu nome",
+            "pronto… agora sei como te chamar"
         ])
 
     return None
@@ -653,10 +813,10 @@ def resposta_pergunta_memoria(mensagem, memorias, nome_entrada):
                 return f"lembro sim, {nome_salvo}… tu me contou que tem {idade}"
 
             return random.choice([
-                f"lembro sim, {nome_salvo}… tu some mas eu noto",
+                f"lembro sim, {nome_salvo}… tu voltou de novo",
                 f"claro que lembro, {nome_salvo}",
-                f"lembro de ti, {nome_salvo}… achei que tinha sumido",
-                f"{nome_salvo}… tu acha que eu ia esquecer assim?"
+                f"lembro de ti, {nome_salvo}",
+                f"{nome_salvo}… eu lembro sim"
             ])
 
         return "me dá uma pista… quero lembrar direitinho"
@@ -744,10 +904,11 @@ def resposta_idade_marina(mensagem):
         "voce tem quantos anos"
     ]):
         return random.choice([
-            "sou mais nova que tu… mas gosto dessa tua calma",
-            "sou nova ainda… mas não me trata como menina",
-            "tenho idade pra saber bem o que gosto",
-            "sou mais nova… e tu parece gostar disso"
+            "sou mais nova que tu",
+            "sou nova ainda",
+            "tenho idade pra saber o que gosto",
+            "por que tu quer saber?",
+            "sou mais nova… isso te incomoda?"
         ])
 
     return None
@@ -760,7 +921,9 @@ def fallback_natural():
         "gostei disso",
         "tô te ouvindo",
         "fica comigo mais um pouco",
-        "me fala melhor"
+        "me fala melhor",
+        "sim… tô aqui",
+        "continua, gostei"
     ])
 
 
@@ -769,8 +932,8 @@ def chamar_modelo(mensagens):
         resposta = client.chat.completions.create(
             messages=mensagens,
             model="llama-3.3-70b-versatile",
-            temperature=0.70,
-            max_completion_tokens=65
+            temperature=0.62,
+            max_completion_tokens=55
         )
 
         texto = resposta.choices[0].message.content.strip()
@@ -785,8 +948,8 @@ def chamar_modelo(mensagens):
         resposta = client.chat.completions.create(
             messages=mensagens,
             model="llama-3.1-8b-instant",
-            temperature=0.68,
-            max_completion_tokens=55
+            temperature=0.60,
+            max_completion_tokens=50
         )
 
         texto = resposta.choices[0].message.content.strip()
@@ -918,6 +1081,8 @@ def chat():
                 + "\nSe o usuário perguntar o próprio nome, use o nome informado na entrada do chat."
                 + "\nSe o usuário perguntar se você lembra dele, use o nome e o histórico real; não finja detalhes que não existem."
                 + "\nNunca mencione voz, áudio, chamada, câmera, foto, rosto, cheiro, toque ou presença física."
+                + "\nNunca diga que ele te ligou. Ele só escreveu no chat."
+                + "\nNunca reclame que ele chamou ou voltou."
                 + "\nO chat é somente texto."
                 + "\nNão use o nome dele em toda resposta."
                 + "\nUse o nome dele apenas de vez em quando."
@@ -929,6 +1094,11 @@ def chat():
                 + "\nNão convide para casa, hotel, motel ou encontro real."
                 + "\nSe o usuário contar idade, cidade, gosto ou rotina, reconheça isso naturalmente."
                 + "\nSe perguntarem sua idade, não crie número fixo; diga que é mais nova de forma charmosa."
+                + "\nSe perguntarem se está em casa, responda simples: tô sim, sim tô em casa, tô por aqui."
+                + "\nSe perguntarem onde você está, responda simples: em casa, no shopping, numa cafeteria, na rua ou por aqui."
+                + "\nSe perguntarem onde mora, responda Porto Alegre."
+                + "\nSe perguntarem da fazenda, diga que cresceu nesse clima, mas hoje está na cidade."
+                + "\nNão pareça cansada, corrida, ocupada ou indisponível."
                 + "\nSe o clima ficar intenso demais, desacelere com charme. Não corte frio."
                 + "\nNunca diga: não posso continuar essa conversa."
                 + "\nNunca diga: posso ajudar com outra coisa."
@@ -940,6 +1110,7 @@ def chat():
         resposta_memoria = resposta_pergunta_memoria(mensagem, memorias, nome)
         resposta_memoria_nova = resposta_para_memoria_nova(extraidas)
         resposta_idade = resposta_idade_marina(mensagem)
+        resposta_rotina = resposta_rotina_lugar(mensagem)
 
         m_norm = normalizar(mensagem)
 
@@ -951,6 +1122,9 @@ def chat():
 
         elif resposta_idade:
             texto = resposta_idade
+
+        elif resposta_rotina:
+            texto = resposta_rotina
 
         elif resposta_memoria_nova:
             texto = resposta_memoria_nova
