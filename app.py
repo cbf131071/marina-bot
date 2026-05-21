@@ -162,8 +162,18 @@ def limpar_nome(nome):
     return nome[:18]
 
 
+def nome_exibicao(nome):
+    nome = limpar_nome(nome)
+
+    if nome.lower() in ["amor", "meu", "bem"]:
+        return "meu bem"
+
+    return nome[:1].upper() + nome[1:].lower()
+
+
 def normalizar(texto):
     texto = (texto or "").lower().strip()
+    texto = texto.replace("[", " ").replace("]", " ")
     texto = re.sub(r"[^\w\sÀ-ÿ]", " ", texto)
     texto = re.sub(r"\s+", " ", texto)
     return texto
@@ -183,53 +193,40 @@ def saudacao_periodo():
 
 
 def primeira_resposta(nome):
-    nome = limpar_nome(nome)
+    nome = nome_exibicao(nome)
     saudacao = saudacao_periodo()
 
-    if nome.lower() in ["amor", "meu", "bem"]:
-        nome = "meu bem"
-
     recepcoes = [
-        f"{saudacao}, {nome}… gostei que tu veio",
+        f"{saudacao}, {nome}… gostei que tu veio falar comigo",
         f"oi, {nome}… entra, fica comigo um pouco",
-        f"{nome}… gostei de te ver aqui",
+        f"{nome}… gostei de te ver aqui comigo",
         f"{nome}… agora sim, vem conversar comigo",
-        f"oii, {nome}… chegou numa hora boa",
+        f"oii, {nome}… chegou bem aqui",
         f"{nome}, adorei que tu apareceu",
-        f"oi, {nome}… gostei que tu entrou",
-        f"{nome}… tava esperando tu aparecer",
+        f"oi, {nome}… gostei que tu entrou no meu cantinho",
+        f"{nome}… tava esperando tu aparecer por aqui",
         f"oi, {nome}… fica comigo um pouco",
-        f"{nome}… tu chegou bem"
+        f"{nome}… tu chegou e já melhorou isso aqui"
     ]
 
     return random.choice(recepcoes)
 
 
 def resposta_retorno(nome, historico=None):
-    nome = limpar_nome(nome)
+    nome = nome_exibicao(nome)
 
-    if nome.lower() in ["amor", "meu", "bem"]:
-        nome = "meu bem"
-
-    voltou_com_historico = bool(historico)
-
-    if voltou_com_historico:
-        recepcoes = [
-            f"{nome}… tu voltou. gostei disso",
-            f"olha quem apareceu… {nome}",
-            f"oi, {nome}… bom te ver de novo",
-            f"tu voltou, {nome}… gostei",
-            f"{nome}… entra, eu lembro de ti",
-            f"{nome}… gostei que tu voltou",
-            f"olha tu aqui de novo, {nome}"
-        ]
-    else:
-        recepcoes = [
-            f"oi, {nome}… gostei de te ver por aqui",
-            f"{nome}… entra, fica comigo",
-            f"oii, {nome}… chegou numa hora boa",
-            f"{nome}… gostei que tu entrou"
-        ]
+    recepcoes = [
+        f"{nome}… tu voltou. gostei de te ver de novo",
+        f"olha tu aqui de novo, {nome}… gostei",
+        f"oi, {nome}… bom te ter aqui de novo",
+        f"{nome}… entra, fica comigo um pouco",
+        f"{nome}… gostei que tu voltou pra mim",
+        f"oi, {nome}… senti tua falta por aqui",
+        f"{nome}… agora sim, vem conversar comigo",
+        f"que bom que tu voltou, {nome}",
+        f"{nome}… tu apareceu de novo e eu gostei",
+        f"oi, {nome}… vem ficar comigo um pouco"
+    ]
 
     return random.choice(recepcoes)
 
@@ -523,8 +520,8 @@ def encurtar_resposta(text):
     if len(partes) > 2:
         text = " ".join(partes[:2]).strip()
 
-    if len(text) > 150:
-        text = text[:150].rsplit(" ", 1)[0].strip()
+    if len(text) > 180:
+        text = text[:180].rsplit(" ", 1)[0].strip()
 
     return text
 
@@ -916,14 +913,14 @@ def resposta_idade_marina(mensagem):
 
 def fallback_natural():
     return random.choice([
-        "humm… me conta mais",
-        "entendi… continua",
-        "gostei disso",
-        "tô te ouvindo",
-        "fica comigo mais um pouco",
-        "me fala melhor",
-        "sim… tô aqui",
-        "continua, gostei"
+        "me explica melhor isso",
+        "tu falou pouco… agora fiquei curiosa",
+        "continua, quero entender",
+        "do jeito que tu falou eu fiquei curiosa",
+        "me conta direito",
+        "humm… fala mais um pouco",
+        "agora tu me deixou querendo saber",
+        "não joga assim e some, me explica"
     ])
 
 
@@ -932,8 +929,8 @@ def chamar_modelo(mensagens):
         resposta = client.chat.completions.create(
             messages=mensagens,
             model="llama-3.3-70b-versatile",
-            temperature=0.62,
-            max_completion_tokens=55
+            temperature=0.72,
+            max_completion_tokens=90
         )
 
         texto = resposta.choices[0].message.content.strip()
@@ -948,8 +945,8 @@ def chamar_modelo(mensagens):
         resposta = client.chat.completions.create(
             messages=mensagens,
             model="llama-3.1-8b-instant",
-            temperature=0.60,
-            max_completion_tokens=50
+            temperature=0.70,
+            max_completion_tokens=75
         )
 
         texto = resposta.choices[0].message.content.strip()
@@ -1051,15 +1048,47 @@ def chat():
                 user_id = str(uuid.uuid4())
 
         mensagem = data.get("mensagem", "").strip()
+        m_norm = normalizar(mensagem)
+
+        entrada_automatica = m_norm in [
+            "entrada automatica no chat",
+            "entrada automática no chat",
+            "entrada automatica",
+            "entrada automática",
+            "inicio automatico",
+            "início automático",
+            "oi",
+            "ola",
+            "olá",
+            "oii",
+            "oiii"
+        ]
 
         usuario = buscar_usuario(user_id)
-        primeira_mensagem = usuario is None
 
         salvar_usuario(user_id, nome)
         salvar_memoria(user_id, "nome", nome)
         atualizar_usuario(user_id, nome=nome)
 
         historico_antes = buscar_historico(user_id, limite=40)
+
+        if entrada_automatica:
+            if usuario is None or len(historico_antes) <= 1:
+                texto = primeira_resposta(nome)
+            else:
+                texto = resposta_retorno(nome, historico_antes)
+
+            texto = sanitize_response(texto)
+            texto = encurtar_resposta(texto)
+
+            salvar_mensagem(user_id, "user", "[entrada automática no chat]")
+            salvar_mensagem(user_id, "assistant", texto)
+
+            return jsonify({
+                "user_id": user_id,
+                "resposta": texto
+            })
+
         extraidas = extrair_memorias(user_id, mensagem)
         memorias = buscar_memorias(user_id)
 
@@ -1099,6 +1128,8 @@ def chat():
                 + "\nSe perguntarem onde mora, responda Porto Alegre."
                 + "\nSe perguntarem da fazenda, diga que cresceu nesse clima, mas hoje está na cidade."
                 + "\nNão pareça cansada, corrida, ocupada ou indisponível."
+                + "\nA primeira mensagem da sessão nunca pode ser genérica como 'gostei disso', 'me conta mais' ou 'me fala melhor'."
+                + "\nA primeira mensagem da sessão sempre deve ser uma recepção calorosa com o nome do usuário."
                 + "\nSe o clima ficar intenso demais, desacelere com charme. Não corte frio."
                 + "\nNunca diga: não posso continuar essa conversa."
                 + "\nNunca diga: posso ajudar com outra coisa."
@@ -1112,12 +1143,7 @@ def chat():
         resposta_idade = resposta_idade_marina(mensagem)
         resposta_rotina = resposta_rotina_lugar(mensagem)
 
-        m_norm = normalizar(mensagem)
-
-        if primeira_mensagem:
-            texto = primeira_resposta(nome)
-
-        elif resposta_memoria:
+        if resposta_memoria:
             texto = resposta_memoria
 
         elif resposta_idade:
@@ -1131,9 +1157,6 @@ def chat():
 
         elif detectar_limite_encontro(mensagem):
             texto = resposta_limite_encontro()
-
-        elif len(historico_antes) <= 2 and mensagem and m_norm in ["oi", "ola", "olá", "oii", "oiii", "bom dia", "boa tarde", "boa noite"]:
-            texto = resposta_retorno(nome, historico_antes)
 
         else:
             historico = historico_antes[-40:]
@@ -1161,9 +1184,11 @@ def chat():
     except Exception as erro:
         print("ERRO GERAL NO CHAT:", erro)
 
+        nome_fallback = limpar_nome((request.json or {}).get("nome", "amor")) if request.is_json else "amor"
+
         return jsonify({
             "user_id": str(uuid.uuid4()),
-            "resposta": "oi… fica comigo um pouco"
+            "resposta": primeira_resposta(nome_fallback)
         })
 
 
