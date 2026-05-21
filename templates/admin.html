@@ -10,44 +10,18 @@
         html,body{width:100%;height:100%}
         body{font-family:Arial,Helvetica,sans-serif;background:#0b0b10;color:#fff;height:100vh;overflow:hidden}
 
-        .app{
-            display:grid;
-            grid-template-columns:360px 1fr;
-            height:100vh;
-            min-height:0;
-            overflow:hidden;
-        }
-
-        .sidebar{
-            background:#12121a;
-            border-right:1px solid rgba(255,255,255,.08);
-            display:flex;
-            flex-direction:column;
-            min-width:0;
-            min-height:0;
-            overflow:hidden;
-        }
-
+        .app{display:grid;grid-template-columns:360px 1fr;height:100vh;min-height:0;overflow:hidden}
+        .sidebar{background:#12121a;border-right:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden}
         .top{padding:18px;border-bottom:1px solid rgba(255,255,255,.08);flex:0 0 auto}
         .top h1{font-size:22px;margin-bottom:6px}
         .top p{font-size:13px;color:#aaa}
-
         .cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px;flex:0 0 auto}
         .card{background:#1b1b26;border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:14px}
         .card small{display:block;color:#aaa;font-size:12px;margin-bottom:8px}
         .card strong{font-size:24px}
-
         .search{padding:0 14px 12px;flex:0 0 auto}
         .search input{width:100%;height:42px;border:none;outline:none;border-radius:12px;background:#20202d;color:#fff;padding:0 14px;font-size:14px}
-
-        .users{
-            overflow-y:auto;
-            overflow-x:hidden;
-            padding:0 10px 14px;
-            flex:1 1 auto;
-            min-height:0;
-        }
-
+        .users{overflow-y:auto;overflow-x:hidden;padding:0 10px 14px;flex:1 1 auto;min-height:0}
         .user{padding:12px;border-radius:14px;margin-bottom:8px;background:#181823;border:1px solid rgba(255,255,255,.05);cursor:pointer;transition:.15s}
         .user:hover,.user.active{background:#242436;border-color:rgba(255,255,255,.16)}
         .user-row{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:5px}
@@ -58,65 +32,31 @@
         .offline{background:#333;color:#aaa}
         .user-meta{font-size:12px;color:#aaa;line-height:1.45;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
-        .main{
-            display:flex;
-            flex-direction:column;
-            min-width:0;
-            min-height:0;
-            background:#0b0b10;
-            overflow:hidden;
-        }
-
-        .chat-head{
-            height:82px;
-            min-height:82px;
-            border-bottom:1px solid rgba(255,255,255,.08);
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            padding:0 22px;
-            background:#101018;
-            flex:0 0 auto;
-        }
-
+        .main{display:flex;flex-direction:column;min-width:0;min-height:0;background:#0b0b10;overflow:hidden}
+        .chat-head{height:82px;min-height:82px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:center;padding:0 22px;background:#101018;flex:0 0 auto}
         .chat-title h2{font-size:21px;margin-bottom:5px}
         .chat-title p{font-size:13px;color:#aaa}
         .refresh{border:none;background:#7c3aed;color:#fff;padding:12px 16px;border-radius:12px;cursor:pointer;font-weight:700}
 
-        .content{
-            display:grid;
-            grid-template-columns:minmax(0,1fr) 300px;
-            flex:1 1 auto;
-            min-height:0;
-            overflow:hidden;
-        }
+        .content{display:grid;grid-template-columns:minmax(0,1fr) 300px;flex:1 1 auto;min-height:0;overflow:hidden}
 
         .chat-box{
             height:100%;
             min-height:0;
             overflow-y:auto;
             overflow-x:hidden;
-            padding:18px;
+            padding:16px 18px;
             display:flex;
             flex-direction:column;
             gap:7px;
         }
 
-        .empty{
-            height:100%;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            color:#777;
-            text-align:center;
-            font-size:16px;
-        }
+        .empty{height:100%;display:flex;align-items:center;justify-content:center;color:#777;text-align:center;font-size:16px}
 
         .msg{
-            display:inline-block;
-            width:auto;
-            min-width:80px;
-            max-width:32%;
+            display:block;
+            width:fit-content;
+            max-width:min(360px, 38%);
             padding:6px 9px;
             border-radius:12px;
             line-height:1.18;
@@ -146,15 +86,7 @@
             line-height:1.1;
         }
 
-        .memories{
-            border-left:1px solid rgba(255,255,255,.08);
-            background:#111119;
-            padding:16px;
-            overflow-y:auto;
-            overflow-x:hidden;
-            min-height:0;
-        }
-
+        .memories{border-left:1px solid rgba(255,255,255,.08);background:#111119;padding:16px;overflow-y:auto;overflow-x:hidden;min-height:0}
         .memories h3{font-size:17px;margin-bottom:12px}
         .memory{background:#1b1b26;border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:11px;margin-bottom:8px}
         .memory small{display:block;color:#999;font-size:11px;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
