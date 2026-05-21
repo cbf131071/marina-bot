@@ -115,6 +115,11 @@ let nomeUsuario = '';
 let codigoUsuario = '';
 let enviando = false;
 
+let cutucadaTimer1 = null;
+let cutucadaTimer2 = null;
+let cutucadasEnviadas = 0;
+let ultimaAtividadeUsuario = Date.now();
+
 const loginScreen = document.getElementById('loginScreen');
 const chatScreen = document.getElementById('chatScreen');
 const messages = document.getElementById('messages');
@@ -133,6 +138,14 @@ function esperar(ms){
 
 function tempoAntesDeDigitar(){
     return Math.floor(Math.random() * (15000 - 5000 + 1)) + 5000;
+}
+
+function tempoCutucada1(){
+    return Math.floor(Math.random() * (30000 - 22000 + 1)) + 22000;
+}
+
+function tempoCutucada2(){
+    return Math.floor(Math.random() * (80000 - 65000 + 1)) + 65000;
 }
 
 function saudacaoLocal(){
@@ -156,7 +169,10 @@ function entrarChat(){
 
     nomeUsuario = nome;
     codigoUsuario = codigo;
+    cutucadasEnviadas = 0;
+    ultimaAtividadeUsuario = Date.now();
 
+    limparCutucadas();
     messages.innerHTML = '';
 
     loginScreen.classList.add('hidden');
@@ -198,9 +214,12 @@ async function primeiraMensagem(){
             adicionarMensagem(`${saudacaoLocal()}, ${limparNome(nomeUsuario)}… gostei que tu entrou`, 'bot');
         }
 
+        iniciarCutucadas();
+
     } catch(error){
         removerDigitando();
         adicionarMensagem(`${saudacaoLocal()}, ${limparNome(nomeUsuario)}… gostei que tu entrou`, 'bot');
+        iniciarCutucadas();
     }
 }
 
@@ -241,12 +260,107 @@ function scrollFinal(){
     }, 50);
 }
 
+function limparCutucadas(){
+    if(cutucadaTimer1){
+        clearTimeout(cutucadaTimer1);
+        cutucadaTimer1 = null;
+    }
+
+    if(cutucadaTimer2){
+        clearTimeout(cutucadaTimer2);
+        cutucadaTimer2 = null;
+    }
+}
+
+function iniciarCutucadas(){
+    limparCutucadas();
+
+    if(!chatScreen || chatScreen.classList.contains('hidden')) return;
+    if(enviando) return;
+    if(cutucadasEnviadas >= 2) return;
+
+    cutucadaTimer1 = setTimeout(() => {
+        enviarCutucada(1);
+    }, tempoCutucada1());
+
+    cutucadaTimer2 = setTimeout(() => {
+        enviarCutucada(2);
+    }, tempoCutucada2());
+}
+
+function textoCutucada(numero){
+    const nome = limparNome(nomeUsuario);
+
+    const primeiras = [
+        `não vai mais falar comigo, ${nome}?`,
+        'ficou quietinho aí?',
+        'sumiu de mim?',
+        'tá ocupado agora?',
+        'me deixou aqui esperando?',
+        'vai ficar só me olhando?'
+    ];
+
+    const segundas = [
+        'ainda tá aí?',
+        'volta aqui um pouquinho',
+        'fiquei curiosa com teu silêncio',
+        'tá tudo bem por aí?',
+        'não some assim de mim',
+        'vou ficar quietinha então… mas tô aqui'
+    ];
+
+    if(numero === 1){
+        return primeiras[Math.floor(Math.random() * primeiras.length)];
+    }
+
+    return segundas[Math.floor(Math.random() * segundas.length)];
+}
+
+async function enviarCutucada(numero){
+    if(enviando) return;
+    if(!userId) return;
+    if(!chatScreen || chatScreen.classList.contains('hidden')) return;
+    if(document.hidden) return;
+
+    const tempoSemUsuario = Date.now() - ultimaAtividadeUsuario;
+
+    if(numero === 1 && tempoSemUsuario < 20000) return;
+    if(numero === 2 && tempoSemUsuario < 60000) return;
+
+    cutucadasEnviadas += 1;
+
+    mostrarDigitando();
+    await esperar(Math.floor(Math.random() * (2500 - 1200 + 1)) + 1200);
+    removerDigitando();
+
+    const texto = textoCutucada(numero);
+    adicionarMensagem(texto, 'bot');
+
+    try{
+        await fetch('/api/chat', {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body:JSON.stringify({
+                user_id:userId,
+                nome:nomeUsuario,
+                codigo_usuario:codigoUsuario,
+                mensagem:`[cutucada automática enviada pela Marina: ${texto}]`
+            })
+        });
+    } catch(error){
+        console.log('Erro ao registrar cutucada:', error);
+    }
+}
+
 async function enviarMensagem(){
     const texto = messageInput.value.trim();
 
     if(!texto || enviando) return;
 
     enviando = true;
+    ultimaAtividadeUsuario = Date.now();
+    cutucadasEnviadas = 0;
+    limparCutucadas();
 
     adicionarMensagem(texto, 'user');
     messageInput.value = '';
@@ -282,6 +396,8 @@ async function enviarMensagem(){
 
     } finally{
         enviando = false;
+        ultimaAtividadeUsuario = Date.now();
+        iniciarCutucadas();
     }
 }
 
@@ -289,6 +405,30 @@ messageInput.addEventListener('keydown', function(e){
     if(e.key === 'Enter'){
         e.preventDefault();
         enviarMensagem();
+    }
+});
+
+messageInput.addEventListener('input', function(){
+    ultimaAtividadeUsuario = Date.now();
+    limparCutucadas();
+});
+
+messageInput.addEventListener('blur', function(){
+    ultimaAtividadeUsuario = Date.now();
+    iniciarCutucadas();
+});
+
+messageInput.addEventListener('focus', function(){
+    ultimaAtividadeUsuario = Date.now();
+    limparCutucadas();
+});
+
+document.addEventListener('visibilitychange', function(){
+    if(document.hidden){
+        limparCutucadas();
+    } else {
+        ultimaAtividadeUsuario = Date.now();
+        iniciarCutucadas();
     }
 });
 
