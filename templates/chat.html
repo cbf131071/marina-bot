@@ -160,6 +160,34 @@ function saudacaoLocal(){
     return 'tu acordado essa hora';
 }
 
+function limparNome(nome){
+    if(!nome) return 'meu amor';
+
+    const primeiroNome = nome.trim().split(' ')[0];
+
+    return primeiroNome.charAt(0).toUpperCase() + primeiroNome.slice(1).toLowerCase();
+}
+
+function recepcaoInicial(nome){
+    const nomeLimpo = limparNome(nome);
+    const saudacao = saudacaoLocal();
+
+    const frases = [
+        `${saudacao}, ${nomeLimpo}… gostei que tu veio falar comigo`,
+        `oi, ${nomeLimpo}… entra, fica comigo um pouco`,
+        `${nomeLimpo}… gostei de te ver aqui comigo`,
+        `${nomeLimpo}… agora sim, vem conversar comigo`,
+        `oii, ${nomeLimpo}… chegou bem aqui`,
+        `${nomeLimpo}, adorei que tu apareceu`,
+        `oi, ${nomeLimpo}… gostei que tu entrou no meu cantinho`,
+        `${nomeLimpo}… tava esperando tu aparecer por aqui`,
+        `oi, ${nomeLimpo}… fica comigo um pouco`,
+        `${nomeLimpo}… tu chegou e já melhorou isso aqui`
+    ];
+
+    return frases[Math.floor(Math.random() * frases.length)];
+}
+
 function entrarChat(){
     const nome = document.getElementById('nomeInput').value.trim();
     const codigo = document.getElementById('codigoInput').value.trim();
@@ -189,9 +217,13 @@ function entrarChat(){
 }
 
 async function primeiraMensagem(){
-    await esperar(1200);
+    await esperar(900);
     mostrarDigitando();
     await esperar(900);
+    removerDigitando();
+
+    const textoRecepcao = recepcaoInicial(nomeUsuario);
+    adicionarMensagem(textoRecepcao, 'bot');
 
     try{
         const response = await fetch('/api/chat', {
@@ -206,31 +238,15 @@ async function primeiraMensagem(){
 
         const data = await response.json();
 
-        userId = data.user_id;
-
-        removerDigitando();
-
-        if(data && data.resposta){
-            adicionarMensagem(data.resposta, 'bot');
-        } else {
-            adicionarMensagem(`${saudacaoLocal()}, ${limparNome(nomeUsuario)}… gostei que tu entrou`, 'bot');
+        if(data && data.user_id){
+            userId = data.user_id;
         }
 
-        iniciarCutucadas();
-
     } catch(error){
-        removerDigitando();
-        adicionarMensagem(`${saudacaoLocal()}, ${limparNome(nomeUsuario)}… gostei que tu entrou`, 'bot');
-        iniciarCutucadas();
+        console.log('Erro ao registrar entrada automática:', error);
     }
-}
 
-function limparNome(nome){
-    if(!nome) return 'meu amor';
-
-    const primeiroNome = nome.trim().split(' ')[0];
-
-    return primeiroNome.charAt(0).toUpperCase() + primeiroNome.slice(1).toLowerCase();
+    iniciarCutucadas();
 }
 
 function adicionarMensagem(texto, tipo){
