@@ -45,25 +45,34 @@
             min-height:0;
             overflow-y:auto;
             overflow-x:hidden;
-            padding:16px 18px;
+            padding:14px 18px;
             display:flex;
             flex-direction:column;
-            gap:7px;
+            gap:8px;
         }
 
         .empty{height:100%;display:flex;align-items:center;justify-content:center;color:#777;text-align:center;font-size:16px}
 
         .msg{
-            display:block;
-            width:fit-content;
-            max-width:min(360px, 38%);
-            padding:6px 9px;
-            border-radius:12px;
-            line-height:1.18;
-            font-size:13px;
-            white-space:pre-wrap;
+            display:flex;
+            flex-direction:column;
+            width:auto;
+            min-width:70px;
+            max-width:260px;
+            padding:5px 8px 4px;
+            border-radius:11px;
+            line-height:1.15;
+            font-size:12.5px;
+            white-space:normal;
             overflow-wrap:anywhere;
             word-break:normal;
+        }
+
+        .msg-text{
+            display:block;
+            width:auto;
+            max-width:244px;
+            white-space:pre-wrap;
         }
 
         .msg.user{
@@ -81,9 +90,10 @@
         .msg small{
             display:block;
             margin-top:3px;
-            opacity:.55;
-            font-size:9px;
-            line-height:1.1;
+            opacity:.52;
+            font-size:8.5px;
+            line-height:1.05;
+            white-space:nowrap;
         }
 
         .memories{border-left:1px solid rgba(255,255,255,.08);background:#111119;padding:16px;overflow-y:auto;overflow-x:hidden;min-height:0}
@@ -102,6 +112,7 @@
             .chat-box{height:55vh}
             .chat-head{position:sticky;top:0;z-index:5}
             .msg{max-width:82%}
+            .msg-text{max-width:100%}
         }
     </style>
 </head>
@@ -304,7 +315,7 @@ async function carregarConversa(userId){
                 const autor = tipo === 'assistant' ? 'Marina' : 'Usuário';
                 return `
                     <div class="msg ${tipo}">
-                        ${escapar(m.content || '')}
+                        <span class="msg-text">${escapar(m.content || '')}</span>
                         <small>${autor} • ${formatarData(m.criado_em)}</small>
                     </div>
                 `;
