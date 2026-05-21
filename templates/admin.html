@@ -147,24 +147,7 @@ async function carregarResumo(){
 async function carregarUsuarios(){
     const r = await fetch(apiUrl('/api/admin/usuarios'));
     if(!r.ok) throw new Error('Erro ao carregar usuários');
-
-    const data = await r.json();
-
-    if (Array.isArray(data)) {
-        usuarios = data;
-    } else if (Array.isArray(data.usuarios)) {
-        usuarios = data.usuarios;
-    } else if (Array.isArray(data.data)) {
-        usuarios = data.data;
-    } else if (Array.isArray(data.lista)) {
-        usuarios = data.lista;
-    } else if (Array.isArray(data.resultado)) {
-        usuarios = data.resultado;
-    } else {
-        usuarios = [];
-        console.log('Formato inesperado em /api/admin/usuarios:', data);
-    }
-
+    usuarios = await r.json();
     renderUsuarios();
 }
 
