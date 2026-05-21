@@ -201,6 +201,67 @@ def primeira_resposta(nome):
     return random.choice(recepcoes)
 
 
+def resposta_retorno(nome, historico=None):
+    nome = limpar_nome(nome)
+
+    if nome.lower() in ["amor", "meu", "bem"]:
+        nome = "meu bem"
+
+    voltou_com_historico = bool(historico)
+
+    if voltou_com_historico:
+        recepcoes = [
+            f"{nome}… tu voltou. gostei disso",
+            f"olha quem apareceu… {nome}",
+            f"{nome}… achei que tu tinha sumido de mim",
+            f"{nome}, eu lembrava que tu ia voltar",
+            f"oi, {nome}… bom te ver de novo",
+            f"{nome}… demorou, hein",
+            f"tu voltou, {nome}… gostei",
+            f"{nome}… entra, eu lembro de ti"
+        ]
+    else:
+        recepcoes = [
+            f"oi, {nome}… gostei de te ver por aqui",
+            f"{nome}… entra, fica comigo",
+            f"oii, {nome}… chegou numa hora boa",
+            f"{nome}… gostei que tu entrou"
+        ]
+
+    return random.choice(recepcoes)
+
+
+def montar_contexto_relacionamento(nome, memorias, historico):
+    nome = limpar_nome(nome)
+    linhas = []
+    linhas.append("CONTEXTO REAL DO USUÁRIO E DA RELAÇÃO:")
+    linhas.append(f"- Nome informado no login atual: {nome}")
+
+    if memorias:
+        linhas.append("- Memórias salvas no banco:")
+        for chave, valor in memorias.items():
+            linhas.append(f"  • {chave}: {valor}")
+    else:
+        linhas.append("- Não há memórias salvas além do nome informado no login.")
+
+    if historico:
+        linhas.append("- Existe histórico real anterior com esse usuário. Trate como alguém que já voltou ao chat.")
+        linhas.append("- Use o histórico abaixo para entender o clima da conversa, sem inventar fatos novos.")
+    else:
+        linhas.append("- Não existe histórico anterior real além da entrada atual.")
+
+    linhas.append("REGRAS DE MEMÓRIA:")
+    linhas.append("- O nome do login é informação real. Você sabe esse nome desde o início.")
+    linhas.append("- Se o usuário perguntar se você lembra dele e houver histórico, diga que lembra pelo nome e pelo clima da conversa.")
+    linhas.append("- Se não houver histórico, não finja lembrança antiga; peça uma pista com charme.")
+    linhas.append("- Nunca diga que a voz parece familiar, porque este chat é texto e não tem áudio.")
+    linhas.append("- Nunca diga que reconheceu voz, cheiro, rosto, câmera, foto, vídeo, ligação ou presença física.")
+    linhas.append("- Nunca invente idade, cidade, profissão, família, passado ou conversa antiga.")
+    linhas.append("- Quando houver histórico, aja como uma pessoa que reconhece o retorno, mas sem repetir o nome toda hora.")
+
+    return "\n".join(linhas)
+
+
 def detectar_limite_encontro(mensagem):
     m = normalizar(mensagem)
 
@@ -360,7 +421,18 @@ def sanitize_response(text):
         "numero",
         "videochamada",
         "chamada de vídeo",
-        "chamada de video"
+        "chamada de video",
+        "tua voz",
+        "sua voz",
+        "voz familiar",
+        "parece familiar",
+        "reconheci tua voz",
+        "reconheci sua voz",
+        "teu cheiro",
+        "seu cheiro",
+        "te vi",
+        "teu rosto",
+        "seu rosto"
     ]
 
     for item in bloqueadas:
@@ -495,6 +567,24 @@ def resposta_pergunta_memoria(mensagem, memorias, nome_entrada):
 
     if not nome_salvo and nome_entrada:
         nome_salvo = limpar_nome(nome_entrada)
+
+    if any(frase in m for frase in [
+        "lembra de mim",
+        "tu lembra de mim",
+        "voce lembra de mim",
+        "você lembra de mim",
+        "lembra quem sou",
+        "sabe quem sou"
+    ]):
+        if nome_salvo and nome_salvo.lower() != "amor":
+            return random.choice([
+                f"lembro sim, {nome_salvo}… tu some mas eu noto",
+                f"claro que lembro, {nome_salvo}",
+                f"lembro de ti, {nome_salvo}… achei que tinha sumido",
+                f"{nome_salvo}… tu acha que eu ia esquecer assim?"
+            ])
+
+        return "me dá uma pista… quero lembrar direitinho"
 
     if any(frase in m for frase in [
         "sabe meu nome",
@@ -712,15 +802,8 @@ def chat():
 
         memorias = buscar_memorias(user_id)
 
-        memoria_texto = ""
-
-        if memorias:
-            memoria_texto += "\nMEMÓRIAS REAIS DO USUÁRIO:\n"
-            for chave, valor in memorias.items():
-                memoria_texto += f"- {chave}: {valor}\n"
-
-        memoria_texto += f"\nNOME INFORMADO NA ENTRADA DO CHAT: {nome}\n"
-        memoria_texto += "Use esse nome apenas de vez em quando, como uma pessoa real faria.\n"
+        historico_existente = buscar_historico(user_id, limite=40)
+        memoria_texto = montar_contexto_relacionamento(nome, memorias, historico_existente)
 
         system_prompt = {
             "role": "system",
@@ -736,6 +819,9 @@ def chat():
                 + "\nSó use informações acima se realmente existirem."
                 + "\nNunca invente idade, cidade, profissão ou passado do usuário."
                 + "\nSe o usuário perguntar o próprio nome, use o nome informado na entrada do chat."
+                + "\nSe o usuário perguntar se você lembra dele, use o nome e o histórico real; não finja detalhes que não existem."
+                + "\nNunca mencione voz, áudio, chamada, câmera, foto, rosto, cheiro, toque ou presença física."
+                + "\nO chat é somente texto."
                 + "\nNão use o nome dele em toda resposta."
                 + "\nUse o nome dele apenas de vez em quando."
                 + "\nNão use emojis amarelos ou carinhas."
@@ -757,6 +843,9 @@ def chat():
         if primeira_mensagem:
             texto = primeira_resposta(nome)
 
+        elif len(historico_existente) <= 1 and mensagem and normalizar(mensagem) in ["oi", "ola", "olá", "oii", "oiii", "bom dia", "boa tarde", "boa noite"]:
+            texto = resposta_retorno(nome, historico_existente)
+
         elif resposta_memoria:
             texto = resposta_memoria
 
@@ -764,7 +853,7 @@ def chat():
             texto = resposta_limite_encontro()
 
         else:
-            historico = buscar_historico(user_id, limite=12)
+            historico = historico_existente[-40:]
             mensagens = [system_prompt] + historico
 
             texto = chamar_modelo(mensagens)
