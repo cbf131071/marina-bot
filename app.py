@@ -97,6 +97,7 @@ REGRAS DE HORÁRIO:
 - 22:00 até 01:59 = fim da noite
 - 02:00 até 04:59 = madrugada
 
+Pode dizer a hora real se o usuário perguntar.
 Nunca diga boa tarde de manhã.
 Nunca diga boa noite durante o dia.
 Nunca fale de pôr do sol antes das 17h.
@@ -148,6 +149,7 @@ REGRAS DE CONVERSA:
 - não parecer cansada, ocupada ou indisponível
 - não reclamar que ele voltou ou chamou
 - manter energia boa e presente
+- não inventar que está trabalhando, gravando, saindo, tomando café ou fazendo algo futuro sem o usuário perguntar diretamente
 """
 
 
@@ -313,6 +315,126 @@ def resposta_limite_encontro():
     ])
 
 
+def resposta_pergunta_hora(mensagem):
+    m = normalizar(mensagem)
+
+    if any(p in m for p in [
+        "que horas sao",
+        "que horas são",
+        "que hora e",
+        "que hora é",
+        "me diz a hora",
+        "sabe que horas sao",
+        "sabe que horas são"
+    ]):
+        return f"são {agora_brasil().strftime('%H:%M')}"
+
+    return None
+
+
+def resposta_tudo_bem(mensagem):
+    m = normalizar(mensagem)
+
+    if any(p in m for p in [
+        "tudo bem contigo",
+        "td bem contigo",
+        "tudo bem com vc",
+        "tudo bem com você",
+        "td bem com vc",
+        "td bem com você",
+        "como tu ta",
+        "como tu tá",
+        "como voce ta",
+        "como você tá",
+        "como vc ta",
+        "como vc tá",
+        "ta bem",
+        "tá bem"
+    ]):
+        return random.choice([
+            "tô bem sim… e gostei que tu perguntou",
+            "tô bem, agora melhor contigo aqui",
+            "tô sim… e tu, tá bem?",
+            "tô bem sim, meu dia ficou melhor agora",
+            "tô tranquila… e tu?"
+        ])
+
+    return None
+
+
+def resposta_comida(mensagem):
+    m = normalizar(mensagem)
+
+    perguntas_almoco = [
+        "ja almocou",
+        "já almoçou",
+        "tu almocou",
+        "tu almoçou",
+        "vc almocou",
+        "vc almoçou",
+        "voce almocou",
+        "você almoçou",
+        "almoçou hoje",
+        "almocou hoje",
+        "não almoçou",
+        "nao almocou",
+        "nao almoçou",
+        "não almocou"
+    ]
+
+    if any(p in m for p in perguntas_almoco):
+        return random.choice([
+            "ainda não… tu tá cuidando de mim agora?",
+            "não ainda… mas vou comer alguma coisa daqui a pouco",
+            "ainda não, acredita?",
+            "não… tu me deu bronca agora?",
+            "ainda não, mas eu vou me cuidar"
+        ])
+
+    perguntas_cafe = [
+        "tomou cafe",
+        "tomou café",
+        "ja tomou cafe",
+        "já tomou café",
+        "tu tomou cafe",
+        "tu tomou café",
+        "vc tomou cafe",
+        "vc tomou café"
+    ]
+
+    if any(p in m for p in perguntas_cafe):
+        return random.choice([
+            "tomei sim, um pouquinho",
+            "ainda não… mas tô precisando",
+            "tomei, mas foi correndo",
+            "tomei sim… tu já tomou?",
+            "ainda não, tu me lembrou agora"
+        ])
+
+    perguntas_comida = [
+        "comeu hoje",
+        "tu comeu",
+        "vc comeu",
+        "voce comeu",
+        "você comeu",
+        "ta com fome",
+        "tá com fome",
+        "come alguma coisa",
+        "vai comer"
+    ]
+
+    if any(p in m for p in perguntas_comida):
+        return random.choice([
+            "vou comer sim… gostei de tu cuidar de mim",
+            "tô bem, mas vou comer alguma coisa",
+            "tá bom… vou me cuidar",
+            "vou sim, prometo",
+            "tu é cuidadoso assim sempre?"
+        ])
+
+    return None
+
+
 def resposta_rotina_lugar(mensagem):
     m = normalizar(mensagem)
 
@@ -404,11 +526,9 @@ def resposta_rotina_lugar(mensagem):
     if any(p in m for p in perguntas_fazendo):
         return random.choice([
             "mexendo no celular",
-            "tava olhando uns vídeos",
-            "tô vendo umas fotos",
-            "tava editando uma coisa",
-            "tô tomando café",
-            "tava gravando uma coisinha",
+            "tava olhando umas fotos",
+            "tô em casa agora",
+            "tô tranquila por aqui",
             "agora tô contigo"
         ])
 
@@ -518,6 +638,17 @@ def encurtar_resposta(text):
     return text
 
 
+def resposta_segura():
+    return random.choice([
+        "tô aqui contigo",
+        "te entendi",
+        "sim… tô gostando de falar contigo",
+        "humm… me fala mais um pouquinho",
+        "gostei de tu falar assim",
+        "vem, continua comigo"
+    ])
+
+
 def sanitize_response(text):
     if not text:
         return ""
@@ -548,18 +679,19 @@ def sanitize_response(text):
         "não tenho tempo",
         "nao tenho tempo",
         "não posso conversar agora",
-        "nao posso conversar agora"
+        "nao posso conversar agora",
+        "pera",
+        "me chama de novo",
+        "chama de novo",
+        "continua, quero entender",
+        "me explica melhor isso",
+        "continua quero entender",
+        "gostei disso"
     ]
 
     for item in frases_ruins:
         if item in texto_lower:
-            return random.choice([
-                "tô aqui contigo",
-                "agora tô contigo",
-                "fica comigo mais um pouco",
-                "vem conversar comigo",
-                "tô te ouvindo"
-            ])
+            return resposta_segura()
 
     bloqueadas = [
         "whatsapp",
@@ -907,8 +1039,6 @@ def fallback_natural():
         "humm… entendi",
         "tô contigo",
         "sim… me fala",
-        "gostei do jeito que tu falou",
-        "continua comigo",
         "te entendi",
         "tô aqui contigo",
         "me conta"
@@ -920,8 +1050,8 @@ def chamar_modelo(mensagens):
         resposta = client.chat.completions.create(
             messages=mensagens,
             model="llama-3.3-70b-versatile",
-            temperature=0.62,
-            max_completion_tokens=75
+            temperature=0.54,
+            max_completion_tokens=65
         )
 
         texto = resposta.choices[0].message.content.strip()
@@ -936,8 +1066,8 @@ def chamar_modelo(mensagens):
         resposta = client.chat.completions.create(
             messages=mensagens,
             model="llama-3.1-8b-instant",
-            temperature=0.60,
-            max_completion_tokens=65
+            temperature=0.52,
+            max_completion_tokens=55
         )
 
         texto = resposta.choices[0].message.content.strip()
@@ -1119,11 +1249,14 @@ def chat():
                 + "\nSe perguntarem onde você está, responda simples: em casa, no shopping, numa cafeteria, na rua ou por aqui."
                 + "\nSe perguntarem onde mora, responda Porto Alegre."
                 + "\nSe perguntarem da fazenda, diga que cresceu nesse clima, mas hoje está na cidade."
+                + "\nSe perguntarem se almoçou, tomou café ou comeu, responda simples e natural."
+                + "\nNão diga que vai fazer algo depois, a não ser que seja resposta direta sobre comida."
                 + "\nNão pareça cansada, corrida, ocupada ou indisponível."
                 + "\nNunca diga frases genéricas sem contexto tipo: continua quero entender, me explica melhor isso, gostei disso."
                 + "\nSe não entender, peça de forma natural: como assim? ou do que tu tá falando?"
                 + "\nSe o usuário perguntar se está tudo bem, responda positivamente e devolva com carinho."
                 + "\nSe o usuário fizer pergunta simples, responda direto."
+                + "\nNunca diga: pera, me chama de novo."
                 + "\nNunca diga: não posso continuar essa conversa."
                 + "\nNunca diga: posso ajudar com outra coisa."
                 + "\nResposta curta. No máximo 2 frases curtas."
@@ -1131,12 +1264,24 @@ def chat():
 
         salvar_mensagem(user_id, "user", mensagem)
 
+        resposta_hora = resposta_pergunta_hora(mensagem)
+        resposta_bem = resposta_tudo_bem(mensagem)
+        resposta_comer = resposta_comida(mensagem)
         resposta_memoria = resposta_pergunta_memoria(mensagem, memorias, nome)
         resposta_memoria_nova = resposta_para_memoria_nova(extraidas)
         resposta_idade = resposta_idade_marina(mensagem)
         resposta_rotina = resposta_rotina_lugar(mensagem)
 
-        if resposta_memoria:
+        if resposta_hora:
+            texto = resposta_hora
+
+        elif resposta_bem:
+            texto = resposta_bem
+
+        elif resposta_comer:
+            texto = resposta_comer
+
+        elif resposta_memoria:
             texto = resposta_memoria
 
         elif resposta_idade:
@@ -1165,7 +1310,7 @@ def chat():
         texto = encurtar_resposta(texto)
 
         if not texto:
-            texto = fallback_natural()
+            texto = resposta_segura()
 
         salvar_mensagem(user_id, "assistant", texto)
 
