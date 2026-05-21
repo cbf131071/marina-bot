@@ -49,7 +49,9 @@
         .input-area input{flex:1;height:58px;border:none;outline:none;border-radius:20px;background:#19191d;color:white;padding:0 18px;font-size:17px;min-width:0}
         .input-area input::placeholder{color:rgba(255,255,255,.42)}
         .send-btn{width:82px;border:none;border-radius:20px;background:linear-gradient(135deg,#7c3aed,#9333ea);color:white;font-size:17px;font-weight:600;cursor:pointer;flex-shrink:0}
+
         @keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
         @media(max-width:480px){
             .screen,.chat-header,.input-area{max-width:100%}
             .welcome-script{font-size:50px}
@@ -198,7 +200,7 @@ async function primeiraMensagem(){
             body:JSON.stringify({
                 nome:nomeUsuario,
                 codigo_usuario:codigoUsuario,
-                mensagem:'oi'
+                mensagem:'[entrada automática no chat]'
             })
         });
 
@@ -387,11 +389,14 @@ async function enviarMensagem(){
 
         removerDigitando();
 
-        adicionarMensagem(data.resposta, 'bot');
+        if(data && data.resposta){
+            adicionarMensagem(data.resposta, 'bot');
+        } else {
+            adicionarMensagem('me chama de novo… quero te responder direito', 'bot');
+        }
 
     } catch(error){
         removerDigitando();
-
         adicionarMensagem('pera… me chama de novo', 'bot');
 
     } finally{
