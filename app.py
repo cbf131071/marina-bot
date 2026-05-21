@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, abort
 from groq import Groq
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -15,7 +15,12 @@ from database import (
     salvar_mensagem,
     buscar_historico,
     salvar_memoria,
-    buscar_memorias
+    buscar_memorias,
+    buscar_metricas_admin,
+    listar_usuarios_admin,
+    buscar_conversa_admin,
+    buscar_memorias_admin,
+    buscar_usuario_admin
 )
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -604,6 +609,73 @@ def chamar_modelo(mensagens):
         print("ERRO MODELO BACKUP:", erro)
 
     return ""
+
+
+# =========================
+# ADMIN / DASHBOARD
+# =========================
+
+def admin_autorizado():
+    senha_correta = os.environ.get("ADMIN_PASSWORD", "")
+    senha_recebida = request.args.get("senha") or request.headers.get("X-Admin-Password")
+
+    if not senha_correta:
+        # Em produção, configure ADMIN_PASSWORD no Render.
+        return False
+
+    return senha_recebida == senha_correta
+
+
+@app.route("/admin")
+def admin_page():
+    if not admin_autorizado():
+        return render_template("admin_login.html") if os.path.exists(os.path.join(BASE_DIR, "templates", "admin_login.html")) else ("Acesso negado. Use /admin?senha=SUA_SENHA", 403)
+
+    return render_template("admin.html")
+
+
+@app.route("/api/admin/resumo")
+def admin_resumo():
+    if not admin_autorizado():
+        abort(403)
+
+    return jsonify(buscar_metricas_admin())
+
+
+@app.route("/api/admin/usuarios")
+def admin_usuarios():
+    if not admin_autorizado():
+        abort(403)
+
+    limite = request.args.get("limite", 80)
+    try:
+        limite = int(limite)
+    except Exception:
+        limite = 80
+
+    return jsonify({"usuarios": listar_usuarios_admin(limite=limite)})
+
+
+@app.route("/api/admin/conversa/<path:user_id>")
+def admin_conversa(user_id):
+    if not admin_autorizado():
+        abort(403)
+
+    limite = request.args.get("limite", 200)
+    try:
+        limite = int(limite)
+    except Exception:
+        limite = 200
+
+    usuario = buscar_usuario_admin(user_id)
+    conversa = buscar_conversa_admin(user_id, limite=limite)
+    memorias = buscar_memorias_admin(user_id)
+
+    return jsonify({
+        "usuario": usuario,
+        "mensagens": conversa,
+        "memorias": memorias
+    })
 
 
 @app.route("/")
