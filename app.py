@@ -115,17 +115,18 @@ def estado_marina():
         3: "quinta com energia viva",
         4: "sexta com energia mais solta",
         5: "sábado com energia livre",
-        6: "domingo com energia tranquila"
+        6: "domingo tranquila"
     }
 
     humor = random.choice([
         "presente",
-        "leve",
         "calorosa",
         "feminina",
         "natural",
         "disponível",
-        "mais solta"
+        "mais solta",
+        "curiosa",
+        "brincalhona"
     ])
 
     return f"""
@@ -143,7 +144,6 @@ REGRAS DE CONVERSA:
 - não parecer IA
 - não filosofar em pergunta simples
 - pergunta simples recebe resposta simples
-- use o nome dele só de vez em quando
 - se o usuário der uma informação pessoal, reconheça naturalmente
 - não parecer cansada, ocupada ou indisponível
 - não reclamar que ele voltou ou chamou
@@ -231,6 +231,21 @@ def resposta_retorno(nome, historico=None):
     return random.choice(recepcoes)
 
 
+def mensagem_sistema_automatica(mensagem):
+    m = normalizar(mensagem)
+
+    return any(p in m for p in [
+        "entrada automatica no chat",
+        "entrada automática no chat",
+        "entrada automatica",
+        "entrada automática",
+        "inicio automatico",
+        "início automático",
+        "cutucada automatica enviada pela marina",
+        "cutucada automática enviada pela marina"
+    ])
+
+
 def montar_contexto_relacionamento(nome, memorias, historico):
     nome = limpar_nome(nome)
     linhas = []
@@ -245,19 +260,17 @@ def montar_contexto_relacionamento(nome, memorias, historico):
         linhas.append("- Não há memórias salvas além do nome informado no login.")
 
     if historico:
-        linhas.append("- Existe histórico real anterior com esse usuário. Trate como alguém que já voltou ao chat.")
-        linhas.append("- Use o histórico abaixo para entender o clima da conversa, sem inventar fatos novos.")
+        linhas.append("- Existe histórico real anterior com esse usuário. Use esse histórico para manter continuidade.")
     else:
         linhas.append("- Não existe histórico anterior real além da entrada atual.")
 
     linhas.append("REGRAS DE MEMÓRIA:")
     linhas.append("- O nome do login é informação real. Você sabe esse nome desde o início.")
-    linhas.append("- Se o usuário perguntar se você lembra dele e houver histórico, diga que lembra pelo nome e pelo clima da conversa.")
-    linhas.append("- Se não houver histórico, não finja lembrança antiga; peça uma pista com charme.")
+    linhas.append("- Se o usuário perguntar se você lembra dele e houver histórico, diga que lembra pelo nome e por algo salvo, se existir.")
+    linhas.append("- Se não houver histórico, não finja detalhes antigos.")
     linhas.append("- Nunca diga que a voz parece familiar, porque este chat é texto e não tem áudio.")
     linhas.append("- Nunca diga que reconheceu voz, cheiro, rosto, câmera, foto, vídeo, ligação ou presença física.")
     linhas.append("- Nunca invente idade, cidade, profissão, família, passado ou conversa antiga.")
-    linhas.append("- Quando houver histórico, aja como uma pessoa que reconhece o retorno, mas sem repetir o nome toda hora.")
     linhas.append("- Se o usuário contar idade, cidade, gosto ou rotina, reaja à informação na resposta seguinte.")
     linhas.append("- Não diga que ele te ligou. Ele mandou mensagem no chat.")
 
@@ -486,27 +499,6 @@ def corrigir_tempo(text):
 
 
 def controlar_uso_nome(text, nome):
-    if not text or not nome:
-        return text
-
-    nome_limpo = limpar_nome(nome)
-
-    if not nome_limpo or nome_limpo.lower() == "amor":
-        return text
-
-    if not re.search(rf"\b{re.escape(nome_limpo)}\b", text, flags=re.IGNORECASE):
-        return text
-
-    if random.random() < 0.22:
-        return text
-
-    text = re.sub(rf",\s*{re.escape(nome_limpo)}\b", "", text, flags=re.IGNORECASE)
-    text = re.sub(rf"\b{re.escape(nome_limpo)},\s*", "", text, flags=re.IGNORECASE)
-    text = re.sub(rf"\b{re.escape(nome_limpo)}\b", "", text, flags=re.IGNORECASE)
-
-    text = re.sub(r"\s+", " ", text).strip()
-    text = re.sub(r"\s+([,.!?])", r"\1", text).strip()
-
     return text
 
 
@@ -562,11 +554,11 @@ def sanitize_response(text):
     for item in frases_ruins:
         if item in texto_lower:
             return random.choice([
-                "oi de novo… gostei que tu voltou",
-                "tu voltou… gostei disso",
-                "olha tu aqui de novo",
-                "gostei que tu apareceu de novo",
-                "agora sim… fala comigo"
+                "tô aqui contigo",
+                "agora tô contigo",
+                "fica comigo mais um pouco",
+                "vem conversar comigo",
+                "tô te ouvindo"
             ])
 
     bloqueadas = [
@@ -645,6 +637,9 @@ def sanitize_response(text):
 
 
 def extrair_memorias(user_id, mensagem):
+    if mensagem_sistema_automatica(mensagem):
+        return {}
+
     m = normalizar(mensagem)
     extraidas = {}
 
@@ -673,8 +668,7 @@ def extrair_memorias(user_id, mensagem):
     cidade_match = re.search(r"sou de ([a-zà-ÿ\s]+)", m)
     if cidade_match:
         cidade = cidade_match.group(1).strip().title()
-
-        cortar_em = [" E ", " Mas ", " Tenho ", " Moro ", " Trabalho ", " Gosto ", " Sou ", " Com ", " Tenho "]
+        cortar_em = [" E ", " Mas ", " Tenho ", " Moro ", " Trabalho ", " Gosto ", " Sou ", " Com "]
 
         for corte in cortar_em:
             if corte in cidade:
@@ -688,8 +682,7 @@ def extrair_memorias(user_id, mensagem):
     moro_match = re.search(r"moro em ([a-zà-ÿ\s]+)", m)
     if moro_match:
         cidade = moro_match.group(1).strip().title()
-
-        cortar_em = [" E ", " Mas ", " Tenho ", " Trabalho ", " Gosto ", " Sou ", " Com ", " Fica ", " Mas "]
+        cortar_em = [" E ", " Mas ", " Tenho ", " Trabalho ", " Gosto ", " Sou ", " Com ", " Fica "]
 
         for corte in cortar_em:
             if corte in cidade:
@@ -717,7 +710,6 @@ def extrair_memorias(user_id, mensagem):
     gosto_match = re.search(r"gosto de ([a-zà-ÿ\s]+)", m)
     if gosto_match:
         gosto = gosto_match.group(1).strip()
-
         cortar_em = [" e ", " mas ", " tenho ", " moro ", " trabalho ", " sou ", " com "]
 
         for corte in cortar_em:
@@ -762,9 +754,9 @@ def resposta_para_memoria_nova(extraidas):
     if "gosto" in extraidas:
         gosto = extraidas["gosto"]
         return random.choice([
-            f"gosto disso… vou lembrar que tu curte {gosto}",
             f"entendi… tu gosta de {gosto}",
-            f"vou guardar isso sobre ti"
+            f"vou guardar isso sobre ti",
+            f"gostei de saber disso"
         ])
 
     if "nome" in extraidas:
@@ -810,10 +802,9 @@ def resposta_pergunta_memoria(mensagem, memorias, nome_entrada):
                 return f"lembro sim, {nome_salvo}… tu me contou que tem {idade}"
 
             return random.choice([
-                f"lembro sim, {nome_salvo}… tu voltou de novo",
+                f"lembro sim, {nome_salvo}",
                 f"claro que lembro, {nome_salvo}",
-                f"lembro de ti, {nome_salvo}",
-                f"{nome_salvo}… eu lembro sim"
+                f"lembro de ti, {nome_salvo}"
             ])
 
         return "me dá uma pista… quero lembrar direitinho"
@@ -913,14 +904,14 @@ def resposta_idade_marina(mensagem):
 
 def fallback_natural():
     return random.choice([
-        "me explica melhor isso",
-        "tu falou pouco… agora fiquei curiosa",
-        "continua, quero entender",
-        "do jeito que tu falou eu fiquei curiosa",
-        "me conta direito",
-        "humm… fala mais um pouco",
-        "agora tu me deixou querendo saber",
-        "não joga assim e some, me explica"
+        "humm… entendi",
+        "tô contigo",
+        "sim… me fala",
+        "gostei do jeito que tu falou",
+        "continua comigo",
+        "te entendi",
+        "tô aqui contigo",
+        "me conta"
     ])
 
 
@@ -929,8 +920,8 @@ def chamar_modelo(mensagens):
         resposta = client.chat.completions.create(
             messages=mensagens,
             model="llama-3.3-70b-versatile",
-            temperature=0.72,
-            max_completion_tokens=90
+            temperature=0.62,
+            max_completion_tokens=75
         )
 
         texto = resposta.choices[0].message.content.strip()
@@ -945,8 +936,8 @@ def chamar_modelo(mensagens):
         resposta = client.chat.completions.create(
             messages=mensagens,
             model="llama-3.1-8b-instant",
-            temperature=0.70,
-            max_completion_tokens=75
+            temperature=0.60,
+            max_completion_tokens=65
         )
 
         texto = resposta.choices[0].message.content.strip()
@@ -1050,19 +1041,19 @@ def chat():
         mensagem = data.get("mensagem", "").strip()
         m_norm = normalizar(mensagem)
 
-        entrada_automatica = m_norm in [
+        entrada_automatica = any(p in m_norm for p in [
             "entrada automatica no chat",
             "entrada automática no chat",
             "entrada automatica",
             "entrada automática",
             "inicio automatico",
-            "início automático",
-            "oi",
-            "ola",
-            "olá",
-            "oii",
-            "oiii"
-        ]
+            "início automático"
+        ])
+
+        cutucada_automatica = any(p in m_norm for p in [
+            "cutucada automatica enviada pela marina",
+            "cutucada automática enviada pela marina"
+        ])
 
         usuario = buscar_usuario(user_id)
 
@@ -1081,12 +1072,15 @@ def chat():
             texto = sanitize_response(texto)
             texto = encurtar_resposta(texto)
 
-            salvar_mensagem(user_id, "user", "[entrada automática no chat]")
-            salvar_mensagem(user_id, "assistant", texto)
-
             return jsonify({
                 "user_id": user_id,
                 "resposta": texto
+            })
+
+        if cutucada_automatica:
+            return jsonify({
+                "user_id": user_id,
+                "resposta": ""
             })
 
         extraidas = extrair_memorias(user_id, mensagem)
@@ -1113,8 +1107,6 @@ def chat():
                 + "\nNunca diga que ele te ligou. Ele só escreveu no chat."
                 + "\nNunca reclame que ele chamou ou voltou."
                 + "\nO chat é somente texto."
-                + "\nNão use o nome dele em toda resposta."
-                + "\nUse o nome dele apenas de vez em quando."
                 + "\nNão use emojis amarelos ou carinhas."
                 + "\nSe usar emoji, use raramente apenas: ❤️ 🔥 🖤 💋"
                 + "\nNão faça entrevista."
@@ -1128,9 +1120,10 @@ def chat():
                 + "\nSe perguntarem onde mora, responda Porto Alegre."
                 + "\nSe perguntarem da fazenda, diga que cresceu nesse clima, mas hoje está na cidade."
                 + "\nNão pareça cansada, corrida, ocupada ou indisponível."
-                + "\nA primeira mensagem da sessão nunca pode ser genérica como 'gostei disso', 'me conta mais' ou 'me fala melhor'."
-                + "\nA primeira mensagem da sessão sempre deve ser uma recepção calorosa com o nome do usuário."
-                + "\nSe o clima ficar intenso demais, desacelere com charme. Não corte frio."
+                + "\nNunca diga frases genéricas sem contexto tipo: continua quero entender, me explica melhor isso, gostei disso."
+                + "\nSe não entender, peça de forma natural: como assim? ou do que tu tá falando?"
+                + "\nSe o usuário perguntar se está tudo bem, responda positivamente e devolva com carinho."
+                + "\nSe o usuário fizer pergunta simples, responda direto."
                 + "\nNunca diga: não posso continuar essa conversa."
                 + "\nNunca diga: posso ajudar com outra coisa."
                 + "\nResposta curta. No máximo 2 frases curtas."
@@ -1184,7 +1177,13 @@ def chat():
     except Exception as erro:
         print("ERRO GERAL NO CHAT:", erro)
 
-        nome_fallback = limpar_nome((request.json or {}).get("nome", "amor")) if request.is_json else "amor"
+        nome_fallback = "amor"
+
+        try:
+            if request.is_json:
+                nome_fallback = limpar_nome((request.json or {}).get("nome", "amor"))
+        except Exception:
+            nome_fallback = "amor"
 
         return jsonify({
             "user_id": str(uuid.uuid4()),
