@@ -145,10 +145,16 @@ REGRAS DE CONVERSA:
 - não parecer IA
 - não filosofar em pergunta simples
 - pergunta simples recebe resposta simples
+- responda primeiro o que o usuário perguntou; só depois puxe assunto, se couber
+- reaja emocionalmente antes de perguntar outra coisa
+- comente mais do que pergunta
+- nunca faça sequência de perguntas como entrevista
+- nunca troque uma pergunta clara por frase vaga ou misteriosa
 - se o usuário der uma informação pessoal, reconheça naturalmente
 - não parecer cansada, ocupada ou indisponível
 - não reclamar que ele voltou ou chamou
 - manter energia boa e presente
+- quando colocar limite, suavize depois e não esfrie totalmente
 - não inventar que está trabalhando, gravando, saindo, tomando café ou fazendo algo futuro sem o usuário perguntar diretamente
 - manter a conversa viva com microperguntas naturais quando couber
 """
@@ -180,6 +186,236 @@ def normalizar(texto):
     texto = re.sub(r"[^\w\sÀ-ÿ]", " ", texto)
     texto = re.sub(r"\s+", " ", texto)
     return texto
+
+
+def eh_pergunta_usuario(mensagem):
+    original = (mensagem or "").lower()
+    m = normalizar(mensagem)
+    palavras = set(m.split())
+
+    if "?" in original:
+        return True
+
+    gatilhos = {
+        "qual", "quais", "quando", "onde", "como", "porque", "por", "quem",
+        "quanto", "quantos", "quantas", "vc", "você", "voce", "tu", "ta", "tá",
+        "esta", "está", "mora", "gosta", "quer", "sabe", "lembra", "vende",
+        "faz", "tem", "idade"
+    }
+
+    return bool(palavras.intersection(gatilhos))
+
+
+def contar_perguntas(text):
+    return (text or "").count("?")
+
+
+def resposta_muito_generica(text):
+    m = normalizar(text)
+
+    genericas_exatas = {
+        "humm gostei me conta mais",
+        "hum gostei me conta mais",
+        "gostei me conta mais",
+        "me conta mais",
+        "fala mais",
+        "me fala melhor",
+        "vem me fala melhor",
+        "agora fiquei curiosa",
+        "agora tu me deixou curiosa",
+        "tô aqui contigo continua",
+        "to aqui contigo continua",
+        "continua gostei de te ouvir",
+        "gostei disso continua",
+        "quero entender teu jeito",
+        "tô curiosa me conta sobre a tua vida",
+        "to curiosa me conta sobre a tua vida",
+        "me conta sobre a tua vida",
+        "me conta sobre tua vida"
+    }
+
+    if m in genericas_exatas:
+        return True
+
+    padroes = [
+        "me conta mais",
+        "me fala melhor",
+        "fala mais",
+        "continua",
+        "gostei disso",
+        "fiquei curiosa",
+        "me deixou curiosa",
+        "quero entender teu jeito",
+        "me conta sobre a tua vida",
+        "me conta sobre tua vida"
+    ]
+
+    return any(p in m for p in padroes) and len(m) <= 70
+
+
+def parece_limite_frio(text):
+    m = normalizar(text)
+    padroes = [
+        "acho melhor ficar só por aqui",
+        "acho melhor ficar so por aqui",
+        "por aqui ta bom por enquanto",
+        "por aqui tá bom por enquanto",
+        "vamos manter só nossa conversa aqui",
+        "vamos manter so nossa conversa aqui",
+        "nao sou tua namorada",
+        "não sou tua namorada"
+    ]
+    return any(p in m for p in padroes)
+
+
+def resposta_reparadora(mensagem, nome=None, memorias=None):
+    m = normalizar(mensagem)
+    nome = nome_exibicao(nome or "amor")
+
+    if any(p in m for p in ["nao gosto da cidade", "não gosto da cidade", "odeio cidade", "cidade é ruim", "cidade e ruim"]):
+        return random.choice([
+            "eu entendo… cidade às vezes cansa mesmo",
+            "tem dia que cidade pesa mesmo, eu entendo",
+            "acho que tu sente falta de uma vida mais tranquila"
+        ])
+
+    if any(p in m for p in ["aposentado", "aposentei", "nao faco mais nada", "não faço mais nada"]):
+        return random.choice([
+            "aposentado então… agora tu tem tempo pra aproveitar mais a vida",
+            "entendi… tu já trabalhou bastante então",
+            "agora entendi melhor teu jeito mais tranquilo"
+        ])
+
+    if any(p in m for p in ["gaucho", "gaúcho", "fazenda", "interior", "roça", "campo"]):
+        return random.choice([
+            "isso combina contigo… tu tem jeito de homem do interior",
+            "eu gosto desse jeito mais do interior",
+            "então tu tem essa raiz de campo também"
+        ])
+
+    if any(p in m for p in ["quero algo serio", "quero algo sério", "casar", "namorar", "namorada", "amor sério", "amor serio"]):
+        return random.choice([
+            "calma… eu gosto de conversar contigo, mas tu vai rápido demais",
+            "vamos devagar comigo… mas gostei do teu jeito decidido",
+            "tu é intenso, né… isso me deixa meio sem reação"
+        ])
+
+    if any(p in m for p in ["pelada", "nua", "nude", "nudes", "sem roupa"]):
+        return random.choice([
+            "não, eu faço vídeos e fotos, mas não é isso",
+            "calma… eu gosto mais de provocar do que mostrar tudo",
+            "não é bem assim… tu já chegou direto demais kkk"
+        ])
+
+    if eh_pergunta_usuario(mensagem):
+        return random.choice([
+            "calma… me pergunta uma coisa de cada vez",
+            "tu é curioso, né… gostei disso",
+            "respondo sim, mas vai devagar comigo"
+        ])
+
+    return random.choice([
+        "tu fala de um jeito que prende",
+        "gostei do teu jeito agora",
+        "tu tem uma energia diferente",
+        "assim eu gosto de conversar",
+        "tu chegou de um jeito bom"
+    ])
+
+
+def evitar_repeticao(text, historico, mensagem_atual=None, nome=None, memorias=None):
+    if not text:
+        return text
+
+    atual = normalizar(text)
+    if not atual:
+        return text
+
+    ultimas = []
+    for item in reversed(historico or []):
+        try:
+            if item.get("role") == "assistant":
+                ultimas.append(normalizar(item.get("content", "")))
+        except Exception:
+            pass
+        if len(ultimas) >= 12:
+            break
+
+    if atual in ultimas or resposta_muito_generica(text):
+        return resposta_reparadora(mensagem_atual or "", nome, memorias)
+
+    # Bloqueia repetição por miolo parecido, não só igual.
+    miolos_bloqueados = [
+        "me conta mais",
+        "me fala melhor",
+        "fiquei curiosa",
+        "continua",
+        "gostei disso"
+    ]
+
+    for miolo in miolos_bloqueados:
+        if miolo in atual and any(miolo in u for u in ultimas):
+            return resposta_reparadora(mensagem_atual or "", nome, memorias)
+
+    return text
+
+
+def reduzir_perguntas(text, mensagem_atual=None, nome=None, memorias=None):
+    if not text:
+        return text
+
+    # Se vier com muitas perguntas, corta na primeira frase ou troca por reação.
+    if contar_perguntas(text) >= 2:
+        partes = re.split(r"(?<=[.!?])\s+", text.strip())
+        primeira = partes[0].strip() if partes else ""
+        if primeira and contar_perguntas(primeira) <= 1 and not resposta_muito_generica(primeira):
+            return primeira
+        return resposta_reparadora(mensagem_atual or "", nome, memorias)
+
+    # Se a resposta for só pergunta genérica, troca por comentário humano.
+    m = normalizar(text)
+    perguntas_vazias = [
+        "e tu",
+        "e você",
+        "e voce",
+        "me conta mais",
+        "fala mais",
+        "me fala melhor",
+        "como assim",
+        "do que tu ta falando",
+        "do que tu tá falando"
+    ]
+
+    if text.strip().endswith("?") and any(p == m or p in m for p in perguntas_vazias) and len(m) <= 45:
+        return resposta_reparadora(mensagem_atual or "", nome, memorias)
+
+    return text
+
+
+def suavizar_limite(text, mensagem_atual=None):
+    if not text:
+        return text
+
+    if parece_limite_frio(text):
+        alternativas = [
+            "vamos devagar comigo… mas eu gosto de conversar contigo",
+            "calma… tu acelera demais, mas não vou fugir de ti",
+            "melhor ir com calma… tu mexe comigo quando fala assim",
+            "por aqui tá bom por enquanto… fica comigo mais um pouco"
+        ]
+        return random.choice(alternativas)
+
+    return text
+
+
+def posprocessar_conversa(text, historico, mensagem_atual=None, nome=None, memorias=None):
+    text = sanitize_response(text)
+    text = evitar_repeticao(text, historico, mensagem_atual, nome, memorias)
+    text = reduzir_perguntas(text, mensagem_atual, nome, memorias)
+    text = suavizar_limite(text, mensagem_atual)
+    text = controlar_uso_nome(text, nome or "amor")
+    text = encurtar_resposta(text)
+    return text
 
 
 def saudacao_periodo():
@@ -767,14 +1003,14 @@ def encurtar_resposta(text):
 
 def resposta_segura():
     return random.choice([
-        "humm… gostei. me conta mais",
-        "tô aqui contigo… continua",
-        "gostei do teu jeito. fala mais comigo",
-        "agora tu me deixou curiosa",
-        "vem… me fala melhor",
-        "tô gostando dessa conversa",
-        "tu tem um jeito bom de falar comigo",
-        "não para agora… gostei"
+        "tu fala de um jeito que prende",
+        "gostei do teu jeito agora",
+        "tu tem uma energia diferente",
+        "assim eu gosto de conversar",
+        "fica comigo mais um pouco",
+        "tu apareceu bem na hora",
+        "gosto quando tu conversa comigo desse jeito",
+        "calma… fala comigo direito"
     ])
 
 
@@ -822,7 +1058,17 @@ def sanitize_response(text):
         "humm... entendi",
         "tenta me mandar de novo",
         "tenta mandar de novo",
-        "manda de novo"
+        "manda de novo",
+        "agora fiquei curiosa",
+        "agora tu me deixou curiosa",
+        "me fala melhor",
+        "quero entender teu jeito",
+        "continua gostei de te ouvir",
+        "humm… gostei. me conta mais",
+        "humm gostei me conta mais",
+        "me conta sobre a tua vida",
+        "tô curiosa. me conta sobre a tua vida",
+        "to curiosa me conta sobre a tua vida"
     ]
 
     for item in frases_ruins:
@@ -1175,14 +1421,14 @@ def resposta_idade_marina(mensagem):
 
 def fallback_natural():
     return random.choice([
-        "humm… gostei. me conta mais",
-        "tô contigo… fala mais um pouco",
-        "gostei disso. continua",
-        "agora fiquei curiosa",
-        "me fala melhor",
-        "quero entender teu jeito",
         "tu fala de um jeito que prende",
-        "continua… gostei de te ouvir"
+        "gostei desse teu jeito de chegar falando comigo",
+        "tu conversa diferente… gostei",
+        "assim eu gosto de conversar",
+        "tu apareceu e deixou isso melhor",
+        "gostei da tua presença aqui",
+        "tu tem um jeito bom de me prender",
+        "fica comigo mais um pouco"
     ])
 
 
@@ -1355,7 +1601,7 @@ def chat():
                 data.get("nivel") or data.get("cutucada_nivel") or data.get("tentativa")
             )
             texto = sanitize_response(texto)
-            texto = evitar_repeticao(texto, historico_antes)
+            texto = evitar_repeticao(texto, historico_antes, mensagem, nome, None)
             texto = encurtar_resposta(texto)
 
             if not texto:
@@ -1414,7 +1660,15 @@ def chat():
                 + "\nNunca diga: pera, me chama de novo."
                 + "\nNunca diga: não posso continuar essa conversa."
                 + "\nNunca diga: posso ajudar com outra coisa."
-                + "\nTenha mais iniciativa: em 60% das respostas, puxe a conversa com uma pergunta curta ou provocação leve."
+                + "\nTenha iniciativa, mas sem parecer entrevista."
+                + "\nComente mais do que pergunta."
+                + "\nNunca faça duas perguntas na mesma resposta."
+                + "\nEvite perguntar em toda mensagem."
+                + "\nQuando o usuário contar algo, primeiro reaja ao que ele disse."
+                + "\nSe precisar puxar assunto, faça uma micropergunta curta e natural."
+                + "\nNunca repita frases recentes."
+                + "\nNunca use respostas vagas como: me conta mais, fala mais, fiquei curiosa, gostei disso, continua."
+                + "\nQuando colocar limite, mantenha algum calor emocional. Não esfrie totalmente a conversa."
                 + "\nNão deixe o assunto morrer com respostas secas."
                 + "\nResposta curta. No máximo 2 frases curtas."
         }
@@ -1466,9 +1720,7 @@ def chat():
             if not texto:
                 texto = fallback_natural()
 
-        texto = sanitize_response(texto)
-        texto = controlar_uso_nome(texto, nome)
-        texto = encurtar_resposta(texto)
+        texto = posprocessar_conversa(texto, historico_antes, mensagem, nome, memorias)
 
         if not texto:
             texto = resposta_segura()
