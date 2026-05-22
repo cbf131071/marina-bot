@@ -213,6 +213,7 @@ function entrarChat(){
     setTimeout(() => {
         messageInput.focus();
         ajustarTecladoMobile();
+        iniciarCutucadas();
     }, 300);
 }
 
@@ -408,12 +409,12 @@ async function enviarMensagem(){
         if(data && data.resposta){
             adicionarMensagem(data.resposta, 'bot');
         } else {
-            adicionarMensagem('me chama de novo… quero te responder direito', 'bot');
+            adicionarMensagem('tô aqui contigo… me fala de novo', 'bot');
         }
 
     } catch(error){
         removerDigitando();
-        adicionarMensagem('pera… me chama de novo', 'bot');
+        adicionarMensagem('tô aqui contigo… tenta me mandar de novo', 'bot');
 
     } finally{
         enviando = false;
@@ -431,7 +432,8 @@ messageInput.addEventListener('keydown', function(e){
 
 messageInput.addEventListener('input', function(){
     ultimaAtividadeUsuario = Date.now();
-    limparCutucadas();
+    cutucadasEnviadas = 0;
+    iniciarCutucadas();
 });
 
 messageInput.addEventListener('blur', function(){
@@ -441,7 +443,7 @@ messageInput.addEventListener('blur', function(){
 
 messageInput.addEventListener('focus', function(){
     ultimaAtividadeUsuario = Date.now();
-    limparCutucadas();
+    iniciarCutucadas();
 });
 
 document.addEventListener('visibilitychange', function(){
