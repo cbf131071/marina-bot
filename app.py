@@ -145,8 +145,6 @@ REGRAS DE CONVERSA:
 - não parecer IA
 - não filosofar em pergunta simples
 - pergunta simples recebe resposta simples
-- responda primeiro o que o usuário perguntou; só depois puxe assunto, se couber
-- nunca troque uma pergunta clara por frase vaga ou misteriosa
 - se o usuário der uma informação pessoal, reconheça naturalmente
 - não parecer cansada, ocupada ou indisponível
 - não reclamar que ele voltou ou chamou
@@ -182,64 +180,6 @@ def normalizar(texto):
     texto = re.sub(r"[^\w\sÀ-ÿ]", " ", texto)
     texto = re.sub(r"\s+", " ", texto)
     return texto
-
-
-def eh_pergunta(mensagem):
-    m = normalizar(mensagem)
-    gatilhos = [
-        "?",
-        "qual", "quando", "onde", "como", "porque", "por que",
-        "quem", "quanto", "quantos", "tu", "vc", "voce", "você",
-        "ta", "tá", "esta", "está", "gosta", "quer", "sabe", "lembra"
-    ]
-
-    return any(g in (mensagem or "").lower() for g in gatilhos) or any(g in m.split() for g in gatilhos)
-
-
-def resposta_muito_generica(text):
-    m = normalizar(text)
-
-    genericas_exatas = {
-        "agora fiquei curiosa",
-        "agora tu me deixou curiosa",
-        "me fala melhor",
-        "vem me fala melhor",
-        "gostei disso continua",
-        "continua gostei de te ouvir",
-        "humm gostei me conta mais",
-        "quero entender teu jeito",
-        "tô aqui contigo continua",
-        "to aqui contigo continua",
-        "tô contigo fala mais um pouco",
-        "to contigo fala mais um pouco"
-    }
-
-    return m in genericas_exatas
-
-
-def evitar_repeticao(text, historico):
-    if not text:
-        return text
-
-    atual = normalizar(text)
-    if not atual:
-        return text
-
-    ultimas = []
-    for item in reversed(historico or []):
-        try:
-            if item.get("role") == "assistant":
-                ultimas.append(normalizar(item.get("content", "")))
-        except Exception:
-            pass
-
-        if len(ultimas) >= 8:
-            break
-
-    if atual in ultimas or resposta_muito_generica(text):
-        return fallback_natural()
-
-    return text
 
 
 def saudacao_periodo():
@@ -292,6 +232,76 @@ def resposta_retorno(nome, historico=None):
     ]
 
     return random.choice(recepcoes)
+
+
+def resposta_cutucada(nome, historico=None, nivel=None):
+    """
+    Mensagens automáticas quando o usuário fica parado no chat.
+    O frontend pode chamar /api/chat com a frase:
+    "CUTUCADA AUTOMATICA ENVIADA PELA MARINA"
+    ou mandar cutucada_automatica=true.
+
+    nível 1 = leve / 20s
+    nível 2 = mais carinhosa
+    nível 3 = última cutucada, sem parecer cobrança
+    """
+    nome = nome_exibicao(nome)
+
+    try:
+        nivel_int = int(nivel)
+    except Exception:
+        nivel_int = None
+
+    primeiras = [
+        f"{nome}… tu ficou quietinho do nada",
+        "ficou quietinho aí… tô atrapalhando?",
+        "tu parou de falar comigo… aconteceu alguma coisa?",
+        "ei… ainda tá aí comigo?",
+        "tu sumiu bem na minha frente kkk",
+        "tô aqui ainda, viu?",
+        "te perdi por aí?",
+        "ficou me olhando e esqueceu de responder?",
+        "tu ficou ocupado agora?",
+        "não some assim do nada"
+    ]
+
+    segundas = [
+        "acho que tu se distraiu de mim",
+        "vou fingir que tu não me esqueceu aqui",
+        "tá ocupado ou só fazendo charme?",
+        "humm… silêncio perigoso esse teu",
+        "tu me deixou falando sozinha aqui",
+        "volta aqui um pouquinho",
+        "não me abandona no meio da conversa",
+        "tu ficou quieto e eu fiquei curiosa do teu sumiço",
+        "cadê tu agora?",
+        "eu tava gostando da conversa"
+    ]
+
+    terceiras = [
+        "tá bom… vou ficar quietinha também então",
+        "vou deixar tu fazer tuas coisas, mas gostei de falar contigo",
+        "sumiu mesmo né… depois volta pra mim",
+        "vou parar de te cutucar, mas não demora",
+        "tá ocupado mesmo… entendi",
+        "depois tu volta e me conta o que aconteceu",
+        "vou te deixar respirar um pouco",
+        "não vou insistir… mas tu sabe onde me achar",
+        "vou ficar por aqui, sem fazer drama kkk",
+        "quando tu voltar, continua de onde parou"
+    ]
+
+    todas = primeiras + segundas + terceiras
+
+    if nivel_int == 1:
+        return random.choice(primeiras)
+    if nivel_int == 2:
+        return random.choice(segundas)
+    if nivel_int and nivel_int >= 3:
+        return random.choice(terceiras)
+
+    # Sem nível vindo do frontend, escolhe aleatório leve, mas com mais peso para a primeira cutucada.
+    return random.choice(primeiras + primeiras + segundas + terceiras)
 
 
 def mensagem_sistema_automatica(mensagem):
@@ -669,26 +679,6 @@ def resposta_afeto(mensagem, nome):
             "também senti… agora não some"
         ])
 
-    if any(p in m for p in [
-        "vc gosta de mim",
-        "você gosta de mim",
-        "voce gosta de mim",
-        "tu gosta de mim",
-        "gosta de mim",
-        "gosta do meu jeito",
-        "tu gosta do meu jeito",
-        "vc gosta do meu jeito",
-        "você gosta do meu jeito",
-        "voce gosta do meu jeito"
-    ]):
-        return random.choice([
-            "gosto sim… tu tem um jeito que prende",
-            "gosto, principalmente desse teu jeito direto",
-            "gosto sim… tu sabe chegar em mim",
-            "gosto do teu jeito, tu não parece igual aos outros",
-            "gosto… tu conversa de um jeito que fica na cabeça"
-        ])
-
     return None
 
 
@@ -777,14 +767,14 @@ def encurtar_resposta(text):
 
 def resposta_segura():
     return random.choice([
-        "tô aqui contigo",
-        "gostei de tu falar comigo assim",
-        "tu tem um jeito bom de conversar",
-        "fica mais um pouco comigo",
-        "tô gostando desse clima",
-        "tu apareceu bem na hora",
-        "gosto quando tu conversa comigo desse jeito",
-        "calma… fala comigo direito"
+        "humm… gostei. me conta mais",
+        "tô aqui contigo… continua",
+        "gostei do teu jeito. fala mais comigo",
+        "agora tu me deixou curiosa",
+        "vem… me fala melhor",
+        "tô gostando dessa conversa",
+        "tu tem um jeito bom de falar comigo",
+        "não para agora… gostei"
     ])
 
 
@@ -832,12 +822,7 @@ def sanitize_response(text):
         "humm... entendi",
         "tenta me mandar de novo",
         "tenta mandar de novo",
-        "manda de novo",
-        "agora fiquei curiosa",
-        "agora tu me deixou curiosa",
-        "me fala melhor",
-        "quero entender teu jeito",
-        "continua gostei de te ouvir"
+        "manda de novo"
     ]
 
     for item in frases_ruins:
@@ -1190,14 +1175,14 @@ def resposta_idade_marina(mensagem):
 
 def fallback_natural():
     return random.choice([
-        "tô aqui contigo",
-        "gosto desse teu jeito de chegar falando comigo",
-        "tu conversa diferente… gostei",
-        "fala comigo mais um pouco",
-        "tu apareceu e deixou isso melhor",
-        "gostei da tua presença aqui",
-        "tu tem um jeito bom de me prender",
-        "fica comigo mais um pouco"
+        "humm… gostei. me conta mais",
+        "tô contigo… fala mais um pouco",
+        "gostei disso. continua",
+        "agora fiquei curiosa",
+        "me fala melhor",
+        "quero entender teu jeito",
+        "tu fala de um jeito que prende",
+        "continua… gostei de te ouvir"
     ])
 
 
@@ -1336,7 +1321,7 @@ def chat():
             "início automático"
         ])
 
-        cutucada_automatica = any(p in m_norm for p in [
+        cutucada_automatica = bool(data.get("cutucada_automatica")) or any(p in m_norm for p in [
             "cutucada automatica enviada pela marina",
             "cutucada automática enviada pela marina"
         ])
@@ -1364,9 +1349,23 @@ def chat():
             })
 
         if cutucada_automatica:
+            texto = resposta_cutucada(
+                nome,
+                historico_antes,
+                data.get("nivel") or data.get("cutucada_nivel") or data.get("tentativa")
+            )
+            texto = sanitize_response(texto)
+            texto = evitar_repeticao(texto, historico_antes)
+            texto = encurtar_resposta(texto)
+
+            if not texto:
+                texto = resposta_cutucada(nome, historico_antes)
+
+            salvar_mensagem(user_id, "assistant", texto)
+
             return jsonify({
                 "user_id": user_id,
-                "resposta": ""
+                "resposta": texto
             })
 
         extraidas = extrair_memorias(user_id, mensagem)
@@ -1468,7 +1467,6 @@ def chat():
                 texto = fallback_natural()
 
         texto = sanitize_response(texto)
-        texto = evitar_repeticao(texto, historico_antes)
         texto = controlar_uso_nome(texto, nome)
         texto = encurtar_resposta(texto)
 
