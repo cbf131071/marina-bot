@@ -1049,6 +1049,22 @@ def chamar_modelo(mensagens):
     try:
         resposta = client.chat.completions.create(
             messages=mensagens,
+            model="openai/gpt-oss-120b",
+            temperature=0.50,
+            max_completion_tokens=65
+        )
+
+        texto = resposta.choices[0].message.content.strip()
+
+        if texto:
+            return texto
+
+    except Exception as erro:
+        print("ERRO MODELO GPT OSS 120B:", erro)
+
+    try:
+        resposta = client.chat.completions.create(
+            messages=mensagens,
             model="llama-3.3-70b-versatile",
             temperature=0.54,
             max_completion_tokens=65
