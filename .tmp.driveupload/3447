@@ -15,82 +15,74 @@
     box-sizing:border-box;
 }
 
-html,body{
-    width:100%;
-    min-height:100%;
-    background:#050505;
+body{
     font-family:'Poppins',sans-serif;
     color:white;
+    background:#000;
     overflow-x:hidden;
 }
 
 .hero{
     min-height:100vh;
+    position:relative;
+
+    background:
+    linear-gradient(
+        to right,
+        rgba(0,0,0,.88) 0%,
+        rgba(0,0,0,.72) 30%,
+        rgba(0,0,0,.35) 55%,
+        rgba(0,0,0,.08) 100%
+    ),
+    url('/static/home_marina.png');
+
+    background-size:cover;
+    background-position:center center;
+    background-repeat:no-repeat;
+
     display:flex;
     align-items:center;
-    background:#050505;
-}
-
-.left{
-    width:50%;
-    padding:50px;
-    background:#050505;
-    display:flex;
-    justify-content:center;
 }
 
 .content{
     width:100%;
-    max-width:520px;
-}
-
-.right{
-    width:50%;
-    height:100vh;
-    overflow:hidden;
-}
-
-.right img{
-    width:100%;
-    height:100%;
-    object-fit:cover;
-    object-position:center top;
-    display:block;
+    max-width:550px;
+    margin-left:60px;
 }
 
 .logo{
     font-family:'Great Vibes',cursive;
-    font-size:78px;
+    font-size:82px;
     color:#ff76a0;
     line-height:1;
-    margin-bottom:10px;
+    margin-bottom:8px;
 }
 
 .sub{
     font-size:18px;
-    color:rgba(255,255,255,.8);
-    margin-bottom:30px;
+    color:rgba(255,255,255,.85);
+    margin-bottom:35px;
 }
 
 .title{
     font-size:64px;
-    font-weight:700;
     line-height:1.05;
+    font-weight:700;
     margin-bottom:25px;
 }
 
 .desc{
     font-size:20px;
     line-height:1.7;
-    color:rgba(255,255,255,.9);
+    color:rgba(255,255,255,.92);
     margin-bottom:35px;
 }
 
 .btn{
     display:block;
     width:100%;
-    text-decoration:none;
     text-align:center;
+    text-decoration:none;
     padding:20px;
     border-radius:20px;
     font-size:22px;
@@ -99,15 +91,14 @@ html,body{
 }
 
 .btn-primary{
-    background:linear-gradient(135deg,#ff4b7d,#ff83a6);
+    background:linear-gradient(135deg,#ff4c7d,#ff85a8);
     color:white;
-    box-shadow:0 10px 30px rgba(255,75,125,.25);
 }
 
 .btn-secondary{
-    background:#0d0d0d;
+    background:rgba(0,0,0,.45);
     color:white;
-    border:1px solid rgba(255,255,255,.12);
+    border:1px solid rgba(255,255,255,.15);
 }
 
 .features{
@@ -118,7 +109,8 @@ html,body{
 }
 
 .feature{
-    background:#0d0d0d;
+    background:rgba(0,0,0,.45);
+    backdrop-filter:blur(6px);
     border:1px solid rgba(255,255,255,.08);
     border-radius:15px;
     padding:15px 18px;
@@ -127,41 +119,53 @@ html,body{
 
 .secure{
     margin-top:25px;
+    color:rgba(255,255,255,.75);
     font-size:14px;
-    color:rgba(255,255,255,.7);
 }
 
 @media(max-width:900px){
 
     .hero{
-        flex-direction:column;
+        align-items:flex-end;
+        padding-bottom:30px;
+
+        background:
+        linear-gradient(
+            to top,
+            rgba(0,0,0,.95) 0%,
+            rgba(0,0,0,.82) 40%,
+            rgba(0,0,0,.20) 100%
+        ),
+        url('/static/home_marina.png');
+
+        background-size:cover;
+        background-position:center top;
     }
 
-    .right{
-        order:-1;
-        width:100%;
-        height:55vh;
-    }
-
-    .left{
-        width:100%;
+    .content{
+        margin-left:0;
         padding:25px;
-    }
-
-    .title{
-        font-size:46px;
-    }
-
-    .desc{
-        font-size:17px;
+        max-width:100%;
     }
 
     .logo{
         font-size:58px;
     }
 
+    .title{
+        font-size:42px;
+    }
+
+    .desc{
+        font-size:17px;
+    }
+
     .btn{
         font-size:18px;
+    }
+
+    .feature{
+        font-size:15px;
     }
 }
 
@@ -172,64 +176,56 @@ html,body{
 
 <section class="hero">
 
-    <div class="left">
+<div class="content">
 
-        <div class="content">
+<div class="logo">Marina</div>
 
-            <div class="logo">Marina</div>
+<div class="sub">
+Cantinho da Marina
+</div>
 
-            <div class="sub">
-                Cantinho da Marina
-            </div>
+<h1 class="title">
+Bem-vindo ao<br>
+meu cantinho
+</h1>
 
-            <h1 class="title">
-                Bem-vindo ao<br>
-                meu cantinho
-            </h1>
+<p class="desc">
+Um lugar especial para me acompanhar mais de perto, conversar, ver meus conteúdos exclusivos e fazer parte da minha comunidade única.
+</p>
 
-            <p class="desc">
-                Um lugar especial para me acompanhar mais de perto, conversar, ver meus conteúdos exclusivos e fazer parte da minha comunidade única.
-            </p>
+<a href="/chat" class="btn btn-primary">
+CRIAR MINHA CONTA
+</a>
 
-            <a href="/chat" class="btn btn-primary">
-                CRIAR MINHA CONTA
-            </a>
+<a href="/chat" class="btn btn-secondary">
+JÁ TENHO CONTA
+</a>
 
-            <a href="/chat" class="btn btn-secondary">
-                JÁ TENHO CONTA
-            </a>
+<div class="features">
 
-            <div class="features">
+<div class="feature">
+💬 Converse comigo
+</div>
 
-                <div class="feature">
-                    💬 Converse comigo
-                </div>
+<div class="feature">
+📸 Minhas fotos exclusivas
+</div>
 
-                <div class="feature">
-                    📸 Minhas fotos exclusivas
-                </div>
+<div class="feature">
+🎥 Meus vídeos exclusivos
+</div>
 
-                <div class="feature">
-                    🎥 Meus vídeos exclusivos
-                </div>
+<div class="feature">
+❤️ Novidades em primeira mão
+</div>
 
-                <div class="feature">
-                    ❤️ Novidades em primeira mão
-                </div>
+</div>
 
-            </div>
+<div class="secure">
+🔒 Ambiente seguro e privado
+</div>
 
-            <div class="secure">
-                🔒 Ambiente seguro e privado
-            </div>
-
-        </div>
-
-    </div>
-
-    <div class="right">
-        <img src="/static/home_marina.png" alt="Marina">
-    </div>
+</div>
 
 </section>
 
