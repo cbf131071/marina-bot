@@ -3,9 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Cantinho da Marina</title>
 
-<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
+<title>Marina Alves</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Great+Vibes&display=swap" rel="stylesheet">
 
 <style>
 
@@ -17,65 +18,52 @@
 
 body{
     font-family:'Poppins',sans-serif;
-    color:white;
     background:#000;
-    overflow-x:hidden;
+    color:#fff;
 }
 
 .hero{
     min-height:100vh;
-    position:relative;
-
     background:
     linear-gradient(
-        to right,
-        rgba(0,0,0,.88) 0%,
-        rgba(0,0,0,.72) 30%,
-        rgba(0,0,0,.35) 55%,
-        rgba(0,0,0,.08) 100%
+        rgba(0,0,0,.35),
+        rgba(0,0,0,.65)
     ),
-    url('/static/home_marina.png');
+    url('/static/home_marina.jpg');
 
     background-size:cover;
-    background-position:center center;
+    background-position:center top;
     background-repeat:no-repeat;
 
     display:flex;
-    align-items:center;
+    justify-content:center;
 }
 
-.content{
+.overlay{
     width:100%;
-    max-width:550px;
-    margin-left:60px;
+    max-width:500px;
+    padding:35px 25px 40px;
 }
 
 .logo{
     font-family:'Great Vibes',cursive;
+    color:#ff5c95;
     font-size:82px;
-    color:#ff76a0;
+    text-align:center;
     line-height:1;
-    margin-bottom:8px;
+    margin-top:10px;
 }
 
-.sub{
-    font-size:18px;
-    color:rgba(255,255,255,.85);
-    margin-bottom:35px;
+.welcome{
+    margin-top:240px;
+    text-align:center;
 }
 
-.title{
-    font-size:64px;
-    line-height:1.05;
-    font-weight:700;
-    margin-bottom:25px;
-}
-
-.desc{
-    font-size:20px;
-    line-height:1.7;
-    color:rgba(255,255,255,.92);
-    margin-bottom:35px;
+.welcome h1{
+    font-size:38px;
+    font-weight:800;
+    line-height:1.1;
+    margin-bottom:18px;
 }
 
 .btn{
@@ -84,89 +72,70 @@ body{
     text-align:center;
     text-decoration:none;
     padding:20px;
-    border-radius:20px;
-    font-size:22px;
+    border-radius:22px;
+    font-size:18px;
     font-weight:700;
     margin-bottom:15px;
 }
 
 .btn-primary{
-    background:linear-gradient(135deg,#ff4c7d,#ff85a8);
+    background:linear-gradient(135deg,#ff4b7d,#ff79ad);
     color:white;
+    box-shadow:0 0 25px rgba(255,105,155,.35);
 }
 
 .btn-secondary{
-    background:rgba(0,0,0,.45);
+    background:rgba(0,0,0,.65);
+    border:1px solid rgba(255,255,255,.12);
     color:white;
-    border:1px solid rgba(255,255,255,.15);
 }
 
-.features{
+.info{
     margin-top:25px;
-    display:flex;
-    flex-direction:column;
-    gap:12px;
+    text-align:center;
 }
 
-.feature{
-    background:rgba(0,0,0,.45);
-    backdrop-filter:blur(6px);
-    border:1px solid rgba(255,255,255,.08);
-    border-radius:15px;
-    padding:15px 18px;
+.info p{
+    font-size:18px;
+    line-height:1.7;
+    color:#ffffffee;
+}
+
+.warning{
+    margin-top:28px;
+    text-align:center;
+}
+
+.warning .adult{
+    font-size:22px;
+    font-weight:700;
+    color:#ff7aa8;
+    margin-bottom:10px;
+}
+
+.warning .safe{
+    color:#ddd;
+    font-size:15px;
+}
+
+@media(max-width:480px){
+
+.logo{
+    font-size:74px;
+}
+
+.welcome{
+    margin-top:210px;
+}
+
+.welcome h1{
+    font-size:34px;
+}
+
+.info p{
     font-size:17px;
 }
 
-.secure{
-    margin-top:25px;
-    color:rgba(255,255,255,.75);
-    font-size:14px;
-}
-
-@media(max-width:900px){
-
-    .hero{
-        align-items:flex-end;
-        padding-bottom:30px;
-
-        background:
-        linear-gradient(
-            to top,
-            rgba(0,0,0,.95) 0%,
-            rgba(0,0,0,.82) 40%,
-            rgba(0,0,0,.20) 100%
-        ),
-        url('/static/home_marina.png');
-
-        background-size:cover;
-        background-position:center top;
-    }
-
-    .content{
-        margin-left:0;
-        padding:25px;
-        max-width:100%;
-    }
-
-    .logo{
-        font-size:58px;
-    }
-
-    .title{
-        font-size:42px;
-    }
-
-    .desc{
-        font-size:17px;
-    }
-
-    .btn{
-        font-size:18px;
-    }
-
-    .feature{
-        font-size:15px;
-    }
 }
 
 </style>
@@ -176,53 +145,46 @@ body{
 
 <section class="hero">
 
-<div class="content">
+<div class="overlay">
 
-<div class="logo">Marina</div>
-
-<div class="sub">
-Cantinho da Marina
+<div class="logo">
+Marina Alves
 </div>
 
-<h1 class="title">
-Bem-vindo ao<br>
-meu cantinho
+<div class="welcome">
+
+<h1>
+Bem-vindo ao meu cantinho
 </h1>
 
-<p class="desc">
-Um lugar especial para me acompanhar mais de perto, conversar, ver meus conteúdos exclusivos e fazer parte da minha comunidade única.
-</p>
-
-<a href="/chat" class="btn btn-primary">
+<a href="/cadastro" class="btn btn-primary">
 CRIAR MINHA CONTA
 </a>
 
-<a href="/chat" class="btn btn-secondary">
+<a href="/login" class="btn btn-secondary">
 JÁ TENHO CONTA
 </a>
 
-<div class="features">
-
-<div class="feature">
-💬 Converse comigo
 </div>
 
-<div class="feature">
-📸 Minhas fotos exclusivas
-</div>
+<div class="info">
 
-<div class="feature">
-🎥 Meus vídeos exclusivos
-</div>
-
-<div class="feature">
-❤️ Novidades em primeira mão
-</div>
+<p>
+Aqui você encontra conversas exclusivas comigo, fotos especiais, vídeos inéditos e novidades que não compartilho em nenhum outro lugar.
+</p>
 
 </div>
 
-<div class="secure">
-🔒 Ambiente seguro e privado
+<div class="warning">
+
+<div class="adult">
+🔥 Conteúdo exclusivo para maiores de 18 anos
+</div>
+
+<div class="safe">
+🔒 Ambiente privado e seguro
+</div>
+
 </div>
 
 </div>
