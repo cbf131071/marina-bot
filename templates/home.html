@@ -8,65 +8,90 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
 
 <style>
-
 *{
     margin:0;
     padding:0;
     box-sizing:border-box;
 }
 
-body{
+html,body{
+    width:100%;
+    min-height:100%;
+    background:#050505;
     font-family:'Poppins',sans-serif;
     color:white;
+}
+
+body{
     overflow-x:hidden;
 }
 
 .hero{
-    height:100vh;
+    position:relative;
+    min-height:100vh;
     display:flex;
     align-items:center;
-    padding:40px;
+    padding:42px;
+    overflow:hidden;
+    background:#050505;
+}
+
+.hero::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    background:url('/static/home_marina.png') no-repeat right center;
+    background-size:auto 100%;
+    z-index:0;
+}
+
+.hero::after{
+    content:"";
+    position:absolute;
+    inset:0;
     background:
-    linear-gradient(to right,
-    rgba(0,0,0,.78) 0%,
-    rgba(0,0,0,.72) 30%,
-    rgba(0,0,0,.45) 55%,
-    rgba(0,0,0,.15) 100%),
-    url('/static/home_marina.png');
-    background-size:cover;
-    background-position:right center;
+        linear-gradient(to right,
+            rgba(0,0,0,.94) 0%,
+            rgba(0,0,0,.88) 28%,
+            rgba(0,0,0,.58) 50%,
+            rgba(0,0,0,.18) 78%,
+            rgba(0,0,0,.05) 100%);
+    z-index:1;
 }
 
 .container{
-    max-width:450px;
+    position:relative;
+    z-index:2;
+    width:100%;
+    max-width:470px;
 }
 
 .logo{
     font-family:'Great Vibes',cursive;
-    font-size:72px;
+    font-size:76px;
     color:#ff7aa2;
-    margin-bottom:0;
-    line-height:1;
+    line-height:.9;
+    margin-bottom:10px;
 }
 
 .sub{
-    font-size:20px;
-    color:#ffffffcc;
-    margin-bottom:30px;
+    font-size:19px;
+    color:rgba(255,255,255,.82);
+    margin-bottom:28px;
 }
 
 .title{
-    font-size:58px;
-    line-height:1.1;
-    margin-bottom:20px;
+    font-size:54px;
+    line-height:1.08;
     font-weight:700;
+    margin-bottom:22px;
 }
 
 .desc{
-    font-size:20px;
-    line-height:1.7;
-    color:#ffffffdd;
-    margin-bottom:35px;
+    font-size:19px;
+    line-height:1.65;
+    color:rgba(255,255,255,.88);
+    margin-bottom:32px;
 }
 
 .btn{
@@ -74,61 +99,69 @@ body{
     width:100%;
     text-decoration:none;
     text-align:center;
-    padding:20px;
+    padding:19px 20px;
     border-radius:20px;
-    font-size:22px;
-    font-weight:600;
-    transition:.3s;
-}
-
-.btn:hover{
-    transform:translateY(-2px);
+    font-size:21px;
+    font-weight:700;
+    letter-spacing:.02em;
 }
 
 .btn-primary{
-    background:linear-gradient(135deg,#ff4b7d,#ff84a8);
+    background:linear-gradient(135deg,#ff3f76,#ff83a5);
     color:white;
     margin-bottom:15px;
+    box-shadow:0 12px 30px rgba(255,63,118,.28);
 }
 
 .btn-secondary{
-    background:rgba(0,0,0,.35);
+    background:rgba(0,0,0,.42);
     color:white;
-    border:1px solid rgba(255,255,255,.2);
-    margin-bottom:30px;
+    border:1px solid rgba(255,255,255,.20);
+    margin-bottom:28px;
 }
 
 .features{
     display:flex;
     flex-direction:column;
-    gap:14px;
+    gap:12px;
 }
 
 .feature{
-    background:rgba(0,0,0,.35);
+    background:rgba(0,0,0,.42);
+    border:1px solid rgba(255,255,255,.10);
+    border-radius:15px;
+    padding:14px 16px;
+    font-size:16px;
     backdrop-filter:blur(6px);
-    border:1px solid rgba(255,255,255,.08);
-    padding:16px 18px;
-    border-radius:16px;
-    font-size:17px;
 }
 
 .secure{
-    margin-top:25px;
-    color:#ffffffaa;
-    font-size:15px;
+    margin-top:22px;
+    font-size:14px;
+    color:rgba(255,255,255,.72);
 }
 
-@media(max-width:768px){
-
+@media(max-width:900px){
     .hero{
-        padding:25px;
         align-items:flex-end;
+        padding:24px;
+        min-height:100svh;
+    }
+
+    .hero::before{
+        background-size:cover;
         background-position:center top;
     }
 
+    .hero::after{
+        background:
+            linear-gradient(to top,
+                rgba(0,0,0,.96) 0%,
+                rgba(0,0,0,.82) 42%,
+                rgba(0,0,0,.28) 100%);
+    }
+
     .container{
-        width:100%;
         max-width:100%;
     }
 
@@ -136,75 +169,71 @@ body{
         font-size:58px;
     }
 
+    .sub{
+        font-size:16px;
+        margin-bottom:18px;
+    }
+
     .title{
-        font-size:42px;
+        font-size:38px;
     }
 
     .desc{
+        font-size:16px;
+        line-height:1.55;
+    }
+
+    .btn{
         font-size:18px;
+        padding:17px;
+    }
+
+    .feature{
+        font-size:15px;
+        padding:13px 15px;
     }
 }
-
 </style>
 </head>
 
 <body>
 
 <section class="hero">
+    <div class="container">
 
-<div class="container">
+        <div class="logo">Marina</div>
 
-<div class="logo">Marina</div>
+        <div class="sub">Cantinho da Marina</div>
 
-<div class="sub">Cantinho da Marina</div>
+        <h1 class="title">
+            Bem-vindo ao<br>
+            meu cantinho
+        </h1>
 
-<h1 class="title">
-Bem-vindo ao<br>
-Cantinho da Marina
-</h1>
+        <p class="desc">
+            Um lugar especial para me acompanhar mais de perto, conversar, ver meus conteúdos exclusivos e fazer parte da minha comunidade única.
+        </p>
 
-<p class="desc">
-Um lugar especial para acompanhar a Marina mais de perto, conversar, ver conteúdos exclusivos e fazer parte de uma comunidade única.
-</p>
+        <a href="/chat" class="btn btn-primary">
+            CRIAR MINHA CONTA
+        </a>
 
-<a href="/chat" class="btn btn-primary">
-💖 CRIAR MINHA CONTA
-</a>
+        <a href="/chat" class="btn btn-secondary">
+            JÁ TENHO CONTA
+        </a>
 
-<a href="/chat" class="btn btn-secondary">
-👤 JÁ TENHO CONTA
-</a>
+        <div class="features">
+            <div class="feature">💬 Converse comigo</div>
+            <div class="feature">📸 Minhas fotos exclusivas</div>
+            <div class="feature">🎥 Meus vídeos exclusivos</div>
+            <div class="feature">❤️ Novidades em primeira mão</div>
+        </div>
 
-<div class="features">
+        <div class="secure">
+            🔒 Ambiente seguro e privado
+        </div>
 
-<div class="feature">
-💬 Converse com Marina
-</div>
-
-<div class="feature">
-📸 Fotos exclusivas
-</div>
-
-<div class="feature">
-🎥 Vídeos exclusivos
-</div>
-
-<div class="feature">
-❤️ Novidades em primeira mão
-</div>
-
-<div class="feature">
-👥 Comunidade exclusiva
-</div>
-
-</div>
-
-<div class="secure">
-🔒 Ambiente seguro e privado
-</div>
-
-</div>
-
+    </div>
 </section>
 
 </body>
