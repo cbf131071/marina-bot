@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cantinho da Marina</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:#090909;
+    color:white;
+    font-family:'Poppins',sans-serif;
+}
+
+.hero{
+    min-height:100vh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:40px 20px;
+    background:
+    linear-gradient(rgba(0,0,0,.75),rgba(0,0,0,.85)),
+    url('/static/home_marina.jpg');
+    background-size:cover;
+    background-position:center;
+}
+
+.container{
+    max-width:500px;
+    text-align:center;
+}
+
+.logo{
+    font-family:'Great Vibes',cursive;
+    font-size:70px;
+    color:#ff5c8a;
+    margin-bottom:10px;
+}
+
+.sub{
+    font-size:18px;
+    color:#ffffffcc;
+    margin-bottom:30px;
+}
+
+.title{
+    font-size:42px;
+    font-weight:700;
+    margin-bottom:15px;
+}
+
+.desc{
+    font-size:17px;
+    line-height:1.7;
+    color:#ffffffcc;
+    margin-bottom:35px;
+}
+
+.btn{
+    display:block;
+    width:100%;
+    text-decoration:none;
+    text-align:center;
+    padding:18px;
+    border-radius:18px;
+    margin-bottom:14px;
+    font-weight:600;
+    font-size:18px;
+}
+
+.btn-primary{
+    background:linear-gradient(135deg,#ff3d63,#ff5c8a);
+    color:white;
+}
+
+.btn-secondary{
+    background:#1d1d1d;
+    color:white;
+    border:1px solid rgba(255,255,255,.15);
+}
+
+.features{
+    margin-top:40px;
+    display:grid;
+    gap:12px;
+}
+
+.feature{
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.08);
+    border-radius:16px;
+    padding:15px;
+}
+</style>
+</head>
+
+<body>
+
+<section class="hero">
+
+<div class="container">
+
+<div class="logo">
+Marina
+</div>
+
+<div class="sub">
+Cantinho da Marina
+</div>
+
+<h1 class="title">
+Bem-vindo
+</h1>
+
+<p class="desc">
+Um lugar especial para acompanhar a Marina mais de perto, conversar, ver novidades e fazer parte da comunidade.
+</p>
+
+<a href="/chat" class="btn btn-primary">
+Entrar no Cantinho
+</a>
+
+<a href="/chat" class="btn btn-secondary">
+Conversar com Marina
+</a>
+
+<div class="features">
+
+<div class="feature">
+💬 Converse com Marina
+</div>
+
+<div class="feature">
+📸 Fotos exclusivas em breve
+</div>
+
+<div class="feature">
+🎥 Vídeos exclusivos em breve
+</div>
+
+</div>
+
+</div>
+
+</section>
+
+</body>
+</html>

@@ -1289,6 +1289,11 @@ def admin_conversa(user_id):
 
 
 @app.route("/")
+def home():
+    return render_template("home.html")
+
+
+@app.route("/chat")
 def chat_page():
     return render_template("chat.html")
 
