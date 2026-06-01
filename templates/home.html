@@ -8,6 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
 
 <style>
+
 *{
     margin:0;
     padding:0;
@@ -15,52 +16,56 @@
 }
 
 body{
-    background:#090909;
-    color:white;
     font-family:'Poppins',sans-serif;
+    color:white;
+    overflow-x:hidden;
 }
 
 .hero{
     min-height:100vh;
     display:flex;
     align-items:center;
-    justify-content:center;
-    padding:40px 20px;
+    padding:40px;
     background:
-    linear-gradient(rgba(0,0,0,.75),rgba(0,0,0,.85)),
+    linear-gradient(to right,
+    rgba(0,0,0,.78) 0%,
+    rgba(0,0,0,.72) 30%,
+    rgba(0,0,0,.45) 55%,
+    rgba(0,0,0,.15) 100%),
     url('/static/home_marina.jpg');
     background-size:cover;
     background-position:center;
 }
 
 .container{
-    max-width:500px;
-    text-align:center;
+    max-width:520px;
 }
 
 .logo{
     font-family:'Great Vibes',cursive;
-    font-size:70px;
-    color:#ff5c8a;
-    margin-bottom:10px;
+    font-size:72px;
+    color:#ff7aa2;
+    margin-bottom:0;
+    line-height:1;
 }
 
 .sub{
-    font-size:18px;
+    font-size:20px;
     color:#ffffffcc;
     margin-bottom:30px;
 }
 
 .title{
-    font-size:42px;
+    font-size:58px;
+    line-height:1.1;
+    margin-bottom:20px;
     font-weight:700;
-    margin-bottom:15px;
 }
 
 .desc{
-    font-size:17px;
+    font-size:20px;
     line-height:1.7;
-    color:#ffffffcc;
+    color:#ffffffdd;
     margin-bottom:35px;
 }
 
@@ -69,36 +74,77 @@ body{
     width:100%;
     text-decoration:none;
     text-align:center;
-    padding:18px;
-    border-radius:18px;
-    margin-bottom:14px;
+    padding:20px;
+    border-radius:20px;
+    font-size:22px;
     font-weight:600;
-    font-size:18px;
+    transition:.3s;
+}
+
+.btn:hover{
+    transform:translateY(-2px);
 }
 
 .btn-primary{
-    background:linear-gradient(135deg,#ff3d63,#ff5c8a);
+    background:linear-gradient(135deg,#ff4b7d,#ff84a8);
     color:white;
+    margin-bottom:15px;
 }
 
 .btn-secondary{
-    background:#1d1d1d;
+    background:rgba(0,0,0,.35);
     color:white;
-    border:1px solid rgba(255,255,255,.15);
+    border:1px solid rgba(255,255,255,.2);
+    margin-bottom:30px;
 }
 
 .features{
-    margin-top:40px;
-    display:grid;
-    gap:12px;
+    display:flex;
+    flex-direction:column;
+    gap:14px;
 }
 
 .feature{
-    background:rgba(255,255,255,.05);
+    background:rgba(0,0,0,.35);
+    backdrop-filter:blur(6px);
     border:1px solid rgba(255,255,255,.08);
+    padding:16px 18px;
     border-radius:16px;
-    padding:15px;
+    font-size:17px;
 }
+
+.secure{
+    margin-top:25px;
+    color:#ffffffaa;
+    font-size:15px;
+}
+
+@media(max-width:768px){
+
+    .hero{
+        padding:25px;
+        align-items:flex-end;
+        background-position:center top;
+    }
+
+    .container{
+        width:100%;
+        max-width:100%;
+    }
+
+    .logo{
+        font-size:58px;
+    }
+
+    .title{
+        font-size:42px;
+    }
+
+    .desc{
+        font-size:18px;
+    }
+}
+
 </style>
 </head>
 
@@ -108,28 +154,25 @@ body{
 
 <div class="container">
 
-<div class="logo">
-Marina
-</div>
+<div class="logo">Marina</div>
 
-<div class="sub">
-Cantinho da Marina
-</div>
+<div class="sub">Cantinho da Marina</div>
 
 <h1 class="title">
-Bem-vindo
+Bem-vindo ao<br>
+Cantinho da Marina
 </h1>
 
 <p class="desc">
-Um lugar especial para acompanhar a Marina mais de perto, conversar, ver novidades e fazer parte da comunidade.
+Um lugar especial para acompanhar a Marina mais de perto, conversar, ver conteúdos exclusivos e fazer parte de uma comunidade única.
 </p>
 
 <a href="/chat" class="btn btn-primary">
-Entrar no Cantinho
+💖 CRIAR MINHA CONTA
 </a>
 
 <a href="/chat" class="btn btn-secondary">
-Conversar com Marina
+👤 JÁ TENHO CONTA
 </a>
 
 <div class="features">
@@ -139,13 +182,25 @@ Conversar com Marina
 </div>
 
 <div class="feature">
-📸 Fotos exclusivas em breve
+📸 Fotos exclusivas
 </div>
 
 <div class="feature">
-🎥 Vídeos exclusivos em breve
+🎥 Vídeos exclusivos
 </div>
 
+<div class="feature">
+❤️ Novidades em primeira mão
+</div>
+
+<div class="feature">
+👥 Comunidade exclusiva
+</div>
+
+</div>
+
+<div class="secure">
+🔒 Ambiente seguro e privado
 </div>
 
 </div>
