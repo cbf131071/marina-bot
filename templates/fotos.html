@@ -1,87 +1,87 @@
-!DOCTYPE html
-html lang=pt-br
-head
-meta charset=UTF-8
-meta name=viewport content=width=device-width, initial-scale=1.0
-titleFotos Exclusivas - Marina Alvestitle
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fotos Exclusivas - Marina Alves</title>
 
-style
+<style>
 body{
-    margin0;
-    background#111;
-    colorwhite;
-    font-familyArial,sans-serif;
+    margin:0;
+    background:#111;
+    color:white;
+    font-family:Arial,sans-serif;
 }
 
 .topo{
-    padding20px;
-    text-aligncenter;
+    padding:20px;
+    text-align:center;
 }
 
 .topo h1{
-    color#ff4fa3;
+    color:#ff4fa3;
 }
 
 .galeria{
-    displaygrid;
-    grid-template-columnsrepeat(auto-fit,minmax(280px,1fr));
-    gap15px;
-    padding20px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:15px;
+    padding:20px;
 }
 
 .card{
-    background#1c1c1c;
-    border-radius15px;
-    overflowhidden;
+    background:#1c1c1c;
+    border-radius:15px;
+    overflow:hidden;
 }
 
 .card img{
-    width100%;
-    displayblock;
+    width:100%;
+    display:block;
 }
 
 .voltar{
-    displayblock;
-    width220px;
-    margin20px auto;
-    text-aligncenter;
-    padding12px;
-    border-radius10px;
-    background#ff4fa3;
-    colorwhite;
-    text-decorationnone;
+    display:block;
+    width:220px;
+    margin:20px auto;
+    text-align:center;
+    padding:12px;
+    border-radius:10px;
+    background:#ff4fa3;
+    color:white;
+    text-decoration:none;
 }
-style
-head
+</style>
+</head>
 
-body
+<body>
 
-div class=topo
-h1📸 Fotos Exclusivash1
-div
+<div class="topo">
+<h1>📸 Fotos Exclusivas</h1>
+</div>
 
-div class=galeria id=galeriadiv
+<div class="galeria" id="galeria"></div>
 
-a class=voltar href=areaVoltara
+<a class="voltar" href="/area">Voltar</a>
 
-script
-fetch(apifotos)
-.then(r=r.json())
-.then(lista={
+<script>
+fetch("/api/fotos")
+.then(r => r.json())
+.then(lista => {
 
-    const galeria=document.getElementById(galeria);
+    const galeria = document.getElementById("galeria");
 
-    lista.forEach(item={
+    lista.forEach(item => {
 
         galeria.innerHTML += `
-        div class=card
-            img src=apiimagem${item.id}
-        div
+        <div class="card">
+            <img src="/api/imagem/${item.id}">
+        </div>
         `;
     });
 
 });
-script
+</script>
 
-body
-html
+</body>
+</html>
