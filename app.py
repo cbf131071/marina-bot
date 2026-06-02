@@ -1714,6 +1714,48 @@ def chat():
         })
 
 
+
+from google.oauth2 import service_account
+from googleapiclient.discovery import build
+
+GOOGLE_DRIVE_FILE = "/etc/secrets/google-drive.json"
+FOTOS_FOLDER_ID = "1qiESmRhW96oMKFhPsR0YNvjbtARIHMZb"
+VIDEOS_FOLDER_ID = "1QQZz03GPHDzY9iIMZZ1Pnc67wdKgFA-6"
+
+def get_drive_service():
+    try:
+        creds = service_account.Credentials.from_service_account_file(
+            GOOGLE_DRIVE_FILE,
+            scopes=["https://www.googleapis.com/auth/drive.readonly"]
+        )
+        return build("drive", "v3", credentials=creds)
+    except Exception as e:
+        print("ERRO DRIVE:", e)
+        return None
+
+def listar_drive(folder_id):
+    service = get_drive_service()
+    if not service:
+        return []
+    try:
+        results = service.files().list(
+            q=f"'{folder_id}' in parents and trashed=false",
+            fields="files(id,name,mimeType)",
+            pageSize=200
+        ).execute()
+        return results.get("files", [])
+    except Exception as e:
+        print("ERRO LISTAR DRIVE:", e)
+        return []
+
+@app.route("/api/fotos")
+def api_fotos():
+    return jsonify(listar_drive(FOTOS_FOLDER_ID))
+
+@app.route("/api/videos")
+def api_videos():
+    return jsonify(listar_drive(VIDEOS_FOLDER_ID))
+
 init_db()
 
 try:
