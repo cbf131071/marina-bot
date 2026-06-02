@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify, abort
+from flask import Flask, render_template, request, jsonify, abort, session, redirect, url_for
 from groq import Groq
 from datetime import datetime
 from zoneinfo import ZoneInfo
@@ -6,9 +6,11 @@ import uuid
 import os
 import random
 import re
+from werkzeug.security import generate_password_hash, check_password_hash
 
 from database import (
     init_db,
+    get_conn,
     salvar_usuario,
     buscar_usuario,
     atualizar_usuario,
@@ -30,6 +32,8 @@ app = Flask(
     template_folder=os.path.join(BASE_DIR, "templates"),
     static_folder=os.path.join(BASE_DIR, "static")
 )
+
+app.secret_key = os.environ.get("SECRET_KEY", "marina-cantinho-secret-key-trocar-no-render")
 
 client = Groq(api_key=os.environ.get("GROQ_API_KEY"))
 
@@ -179,6 +183,128 @@ def normalizar(texto):
     texto = texto.replace("[", " ").replace("]", " ")
     texto = re.sub(r"[^\w\sÀ-ÿ]", " ", texto)
     texto = re.sub(r"\s+", " ", texto)
+    return texto
+
+
+
+def normalizar_email(email):
+    return (email or "").strip().lower()
+
+
+def gerar_codigo_usuario(nome, email):
+    base = f"{limpar_nome(nome)}_{normalizar_email(email)}"
+    codigo = normalizar(base).replace(" ", "")
+    codigo = re.sub(r"[^a-z0-9_]", "", codigo)
+    return "marina_" + codigo[:80]
+
+
+def criar_usuario_cadastro(nome, idade, email, senha):
+    nome = limpar_nome(nome)
+    email = normalizar_email(email)
+
+    try:
+        idade_int = int(idade)
+    except Exception:
+        idade_int = None
+
+    if idade_int is None or idade_int < 18:
+        return None, "Você precisa ter 18 anos ou mais."
+
+    if not nome or nome == "amor":
+        return None, "Preencha seu nome."
+
+    if not email or "@" not in email:
+        return None, "Preencha um e-mail válido."
+
+    if not senha or len(senha) < 4:
+        return None, "Crie uma senha com pelo menos 4 caracteres."
+
+    senha_hash = generate_password_hash(senha)
+    user_id = gerar_codigo_usuario(nome, email)
+    codigo = user_id.replace("marina_", "", 1)
+
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT user_id
+                FROM usuarios
+                WHERE LOWER(email) = LOWER(%s)
+                LIMIT 1;
+            """, (email,))
+            existente = cur.fetchone()
+
+            if existente:
+                return None, "Esse e-mail já tem uma conta. Faça login."
+
+            cur.execute("""
+                INSERT INTO usuarios (
+                    user_id, nome, idade, email, senha, codigo, atualizado_em
+                )
+                VALUES (%s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
+                ON CONFLICT (user_id)
+                DO UPDATE SET
+                    nome = EXCLUDED.nome,
+                    idade = EXCLUDED.idade,
+                    email = EXCLUDED.email,
+                    senha = EXCLUDED.senha,
+                    codigo = EXCLUDED.codigo,
+                    atualizado_em = CURRENT_TIMESTAMP
+                RETURNING user_id, nome, idade, cidade, email, codigo;
+            """, (user_id, nome, idade_int, email, senha_hash, codigo))
+            usuario = cur.fetchone()
+
+    if usuario:
+        salvar_memoria(usuario["user_id"], "nome", usuario["nome"])
+        salvar_memoria(usuario["user_id"], "idade", str(usuario["idade"]))
+
+    return usuario, None
+
+
+def buscar_usuario_por_email(email):
+    email = normalizar_email(email)
+
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT user_id, nome, idade, cidade, email, senha, codigo
+                FROM usuarios
+                WHERE LOWER(email) = LOWER(%s)
+                LIMIT 1;
+            """, (email,))
+            return cur.fetchone()
+
+
+def validar_login_usuario(email, senha):
+    usuario = buscar_usuario_por_email(email)
+
+    if not usuario:
+        return None
+
+    senha_salva = usuario.get("senha") or ""
+
+    if senha_salva.startswith("scrypt:") or senha_salva.startswith("pbkdf2:"):
+        if check_password_hash(senha_salva, senha or ""):
+            return usuario
+        return None
+
+    if senha_salva and senha_salva == senha:
+        return usuario
+
+    return None
+
+
+def logar_usuario(usuario):
+    session["user_id"] = usuario.get("user_id")
+    session["nome"] = usuario.get("nome") or "amor"
+    session["email"] = usuario.get("email") or ""
+    session["codigo_usuario"] = usuario.get("codigo") or usuario.get("user_id", "").replace("marina_", "", 1)
+
+
+def usuario_logado():
+    return bool(session.get("user_id"))
+
+
+def evitar_repeticao(texto, historico=None):
     return texto
 
 
@@ -1293,9 +1419,82 @@ def home():
     return render_template("home.html")
 
 
+@app.route("/cadastro", methods=["GET", "POST"])
+def cadastro_page():
+    if request.method == "GET":
+        if usuario_logado():
+            return redirect(url_for("chat_page"))
+        return render_template("cadastro.html")
+
+    nome = request.form.get("nome", "")
+    idade = request.form.get("idade", "")
+    email = request.form.get("email", "")
+    senha = request.form.get("senha", "")
+    confirmar_senha = request.form.get("confirmar_senha", "")
+
+    if senha != confirmar_senha:
+        return render_template("cadastro.html", erro="As senhas não conferem.")
+
+    usuario, erro = criar_usuario_cadastro(nome, idade, email, senha)
+
+    if erro:
+        return render_template("cadastro.html", erro=erro)
+
+    logar_usuario(usuario)
+
+    return redirect(url_for("chat_page"))
+
+
+@app.route("/login", methods=["GET", "POST"])
+def login_page():
+    if request.method == "GET":
+        if usuario_logado():
+            return redirect(url_for("chat_page"))
+        return render_template("login.html")
+
+    email = request.form.get("email", "")
+    senha = request.form.get("senha", "")
+
+    usuario = validar_login_usuario(email, senha)
+
+    if not usuario:
+        return render_template("login.html", erro="E-mail ou senha inválidos.")
+
+    logar_usuario(usuario)
+
+    return redirect(url_for("chat_page"))
+
+
+@app.route("/logout")
+def logout_page():
+    session.clear()
+    return redirect(url_for("home"))
+
+
+@app.route("/api/sessao")
+def api_sessao():
+    if not usuario_logado():
+        return jsonify({"logado": False}), 401
+
+    return jsonify({
+        "logado": True,
+        "user_id": session.get("user_id"),
+        "nome": session.get("nome", "amor"),
+        "codigo_usuario": session.get("codigo_usuario", "")
+    })
+
+
 @app.route("/chat")
 def chat_page():
-    return render_template("chat.html")
+    if not usuario_logado():
+        return redirect(url_for("login_page"))
+
+    return render_template(
+        "chat.html",
+        user_id=session.get("user_id"),
+        nome=session.get("nome", "amor"),
+        codigo_usuario=session.get("codigo_usuario", "")
+    )
 
 
 @app.route("/api/chat", methods=["POST"])
@@ -1303,9 +1502,9 @@ def chat():
     try:
         data = request.json or {}
 
-        nome = limpar_nome(data.get("nome", "amor"))
-        codigo_usuario = data.get("codigo_usuario", "")
-        user_id = data.get("user_id")
+        nome = limpar_nome(data.get("nome") or session.get("nome", "amor"))
+        codigo_usuario = data.get("codigo_usuario") or session.get("codigo_usuario", "")
+        user_id = data.get("user_id") or session.get("user_id")
 
         if not user_id:
             if codigo_usuario:
@@ -1503,6 +1702,15 @@ def chat():
 
 
 init_db()
+
+try:
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute("ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS email TEXT;")
+            cur.execute("ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS senha TEXT;")
+            cur.execute("ALTER TABLE usuarios ADD COLUMN IF NOT EXISTS codigo TEXT;")
+except Exception as erro:
+    print("AVISO AO GARANTIR COLUNAS DE CADASTRO:", erro)
 
 if __name__ == "__main__":
     app.run(debug=True)

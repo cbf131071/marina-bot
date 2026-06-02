@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Login - Marina Alves</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Great+Vibes&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html,
+body{
+    width:100%;
+    min-height:100%;
+    background:#000;
+    font-family:'Poppins',sans-serif;
+    overflow-x:hidden;
+}
+
+.hero{
+
+    min-height:100vh;
+
+    background:
+    linear-gradient(
+        rgba(0,0,0,.35),
+        rgba(0,0,0,.80)
+    ),
+    url('/static/home_marina.png');
+
+    background-size:cover;
+    background-position:center top;
+    background-repeat:no-repeat;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    padding:30px 20px;
+
+}
+
+.card{
+
+    width:100%;
+    max-width:480px;
+
+    background:rgba(0,0,0,.55);
+
+    border:1px solid rgba(255,255,255,.08);
+
+    backdrop-filter:blur(12px);
+
+    border-radius:32px;
+
+    padding:35px 25px;
+
+}
+
+.logo{
+
+    font-family:'Great Vibes',cursive;
+
+    color:#ff5c95;
+
+    font-size:72px;
+
+    text-align:center;
+
+    margin-bottom:10px;
+
+    text-shadow:0 0 20px rgba(255,92,149,.35);
+
+}
+
+.subtitulo{
+
+    text-align:center;
+
+    color:#fff;
+
+    font-size:28px;
+
+    font-weight:800;
+
+    margin-bottom:10px;
+
+}
+
+.descricao{
+
+    text-align:center;
+
+    color:rgba(255,255,255,.90);
+
+    line-height:1.6;
+
+    margin-bottom:30px;
+
+    font-size:15px;
+
+}
+
+.input-group{
+
+    margin-bottom:15px;
+
+}
+
+.input-group input{
+
+    width:100%;
+
+    height:58px;
+
+    border:none;
+
+    outline:none;
+
+    border-radius:18px;
+
+    background:rgba(255,255,255,.08);
+
+    color:white;
+
+    padding:0 18px;
+
+    font-size:16px;
+
+}
+
+.input-group input::placeholder{
+
+    color:rgba(255,255,255,.55);
+
+}
+
+.btn{
+
+    width:100%;
+
+    border:none;
+
+    cursor:pointer;
+
+    height:62px;
+
+    border-radius:22px;
+
+    background:linear-gradient(
+        135deg,
+        #ff4f84,
+        #ff7fb2
+    );
+
+    color:white;
+
+    font-size:18px;
+
+    font-weight:700;
+
+    margin-top:10px;
+
+    margin-bottom:18px;
+
+    box-shadow:
+    0 0 25px rgba(255,92,149,.35);
+
+}
+
+.cadastro-link{
+
+    text-align:center;
+
+    color:white;
+
+    font-size:15px;
+
+}
+
+.cadastro-link a{
+
+    color:#ff82b1;
+
+    text-decoration:none;
+
+    font-weight:700;
+
+}
+
+.aviso{
+
+    margin-top:25px;
+
+    text-align:center;
+
+    color:#ff82b1;
+
+    font-weight:700;
+
+    font-size:14px;
+
+}
+
+.erro{
+
+    background:#a81832;
+
+    color:white;
+
+    padding:12px;
+
+    border-radius:14px;
+
+    text-align:center;
+
+    margin-bottom:15px;
+
+}
+
+@media(max-width:480px){
+
+.logo{
+    font-size:60px;
+}
+
+.subtitulo{
+    font-size:24px;
+}
+
+.card{
+    padding:28px 20px;
+}
+
+}
+
+</style>
+</head>
+
+<body>
+
+<section class="hero">
+
+<div class="card">
+
+<div class="logo">
+Marina Alves
+</div>
+
+<div class="subtitulo">
+Entrar no meu cantinho 💖
+</div>
+
+<div class="descricao">
+Que bom te ver de novo.
+</div>
+
+{% if erro %}
+<div class="erro">
+{{ erro }}
+</div>
+{% endif %}
+
+<form method="POST" action="/login">
+
+<div class="input-group">
+<input
+type="email"
+name="email"
+placeholder="Seu e-mail"
+required>
+</div>
+
+<div class="input-group">
+<input
+type="password"
+name="senha"
+placeholder="Sua senha"
+required>
+</div>
+
+<button class="btn" type="submit">
+ENTRAR
+</button>
+
+</form>
+
+<div class="cadastro-link">
+Ainda não tem conta?
+<br>
+<a href="/cadastro">CRIAR MINHA CONTA</a>
+</div>
+
+<div class="aviso">
+🔞 Ambiente privado para maiores de 18 anos
+</div>
+
+</div>
+
+</section>
+
+</body>
+</html>
