@@ -1,0 +1,87 @@
+!DOCTYPE html
+html lang=pt-br
+head
+meta charset=UTF-8
+meta name=viewport content=width=device-width, initial-scale=1.0
+titleFotos Exclusivas - Marina Alvestitle
+
+style
+body{
+    margin0;
+    background#111;
+    colorwhite;
+    font-familyArial,sans-serif;
+}
+
+.topo{
+    padding20px;
+    text-aligncenter;
+}
+
+.topo h1{
+    color#ff4fa3;
+}
+
+.galeria{
+    displaygrid;
+    grid-template-columnsrepeat(auto-fit,minmax(280px,1fr));
+    gap15px;
+    padding20px;
+}
+
+.card{
+    background#1c1c1c;
+    border-radius15px;
+    overflowhidden;
+}
+
+.card img{
+    width100%;
+    displayblock;
+}
+
+.voltar{
+    displayblock;
+    width220px;
+    margin20px auto;
+    text-aligncenter;
+    padding12px;
+    border-radius10px;
+    background#ff4fa3;
+    colorwhite;
+    text-decorationnone;
+}
+style
+head
+
+body
+
+div class=topo
+h1📸 Fotos Exclusivash1
+div
+
+div class=galeria id=galeriadiv
+
+a class=voltar href=areaVoltara
+
+script
+fetch(apifotos)
+.then(r=r.json())
+.then(lista={
+
+    const galeria=document.getElementById(galeria);
+
+    lista.forEach(item={
+
+        galeria.innerHTML += `
+        div class=card
+            img src=apiimagem${item.id}
+        div
+        `;
+    });
+
+});
+script
+
+body
+html
