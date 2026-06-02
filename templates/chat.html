@@ -438,39 +438,57 @@ function textoCutucada(numero){
 
 async function enviarCutucada(numero){
     if(enviando) return;
-    if(!userId) return;
     if(!chatScreen) return;
-    if(document.hidden) return;
 
     const tempoSemUsuario = Date.now() - ultimaAtividadeUsuario;
 
-    if(numero === 1 && tempoSemUsuario < 20000) return;
-    if(numero === 2 && tempoSemUsuario < 60000) return;
+    if(numero === 1 && tempoSemUsuario < 12000) return;
+    if(numero === 2 && tempoSemUsuario < 30000) return;
+    if(cutucadasEnviadas >= 2) return;
 
     cutucadasEnviadas += 1;
 
     mostrarDigitando();
     await esperar(Math.floor(Math.random() * (2500 - 1200 + 1)) + 1200);
-    removerDigitando();
-
-    const texto = textoCutucada(numero);
-    adicionarMensagem(texto, 'bot');
 
     try{
-        await fetch('/api/chat', {
+        const response = await fetch('/api/chat', {
             method:'POST',
             headers:{'Content-Type':'application/json'},
             body:JSON.stringify({
-                user_id:userId,
-                nome:nomeUsuario,
-                codigo_usuario:codigoUsuario,
+                user_id:userId || '',
+                nome:nomeUsuario || 'amor',
+                codigo_usuario:codigoUsuario || '',
                 cutucada_automatica:true,
                 tentativa:numero,
-                mensagem:`[cutucada automática enviada pela Marina: ${texto}]`
+                nivel:numero,
+                mensagem:'[cutucada automática enviada pela Marina]'
             })
         });
+
+        removerDigitando();
+
+        if(response.status === 401){
+            window.location.href = '/login';
+            return;
+        }
+
+        const data = await response.json();
+
+        if(data && data.user_id){
+            userId = data.user_id;
+        }
+
+        if(data && data.resposta){
+            adicionarMensagem(data.resposta, 'bot');
+        } else {
+            adicionarMensagem(textoCutucada(numero), 'bot');
+        }
+
     } catch(error){
-        console.log('Erro ao registrar cutucada:', error);
+        removerDigitando();
+        console.log('Erro ao enviar cutucada:', error);
+        adicionarMensagem(textoCutucada(numero), 'bot');
     }
 }
 
@@ -550,7 +568,6 @@ document.addEventListener('visibilitychange', function(){
     if(document.hidden){
         limparCutucadas();
     } else {
-        ultimaAtividadeUsuario = Date.now();
         iniciarCutucadas();
     }
 });
