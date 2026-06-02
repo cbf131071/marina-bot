@@ -1748,6 +1748,28 @@ def listar_drive(folder_id):
         print("ERRO LISTAR DRIVE:", e)
         return []
 
+
+@app.route("/fotos")
+def fotos_page():
+    if not usuario_logado():
+        return redirect(url_for("login_page"))
+    return render_template("fotos.html")
+
+@app.route("/videos")
+def videos_page():
+    if not usuario_logado():
+        return redirect(url_for("login_page"))
+    return render_template("videos.html")
+
+@app.route("/api/imagem/<file_id>")
+def api_imagem(file_id):
+    return redirect(f"https://drive.google.com/thumbnail?id={file_id}&sz=w2000")
+
+@app.route("/api/video/<file_id>")
+def api_video(file_id):
+    return redirect(f"https://drive.google.com/file/d/{file_id}/preview")
+
+
 @app.route("/api/fotos")
 def api_fotos():
     return jsonify(listar_drive(FOTOS_FOLDER_ID))
