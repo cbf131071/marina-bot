@@ -219,45 +219,48 @@ def criar_usuario_cadastro(nome, idade, email, senha):
     if not senha or len(senha) < 4:
         return None, "Crie uma senha com pelo menos 4 caracteres."
 
-    senha_hash = generate_password_hash(senha)
-    user_id = gerar_codigo_usuario(nome, email)
-    codigo = user_id.replace("marina_", "", 1)
+    try:
+        senha_hash = generate_password_hash(senha)
+        user_id = gerar_codigo_usuario(nome, email)
+        codigo = user_id.replace("marina_", "", 1)
 
-    with get_conn() as conn:
-        with conn.cursor() as cur:
-            cur.execute("""
-                SELECT user_id
-                FROM usuarios
-                WHERE LOWER(email) = LOWER(%s)
-                LIMIT 1;
-            """, (email,))
-            existente = cur.fetchone()
+        with get_conn() as conn:
+            with conn.cursor() as cur:
 
-            if existente:
-                return None, "Esse e-mail já tem uma conta. Faça login."
+                cur.execute("""
+                    SELECT user_id
+                    FROM usuarios
+                    WHERE LOWER(email) = LOWER(%s)
+                    LIMIT 1;
+                """, (email,))
 
-            cur.execute("""
-                INSERT INTO usuarios (
-                    user_id, nome, idade, email, senha, codigo, atualizado_em
-                )
-                VALUES (%s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
-                ON CONFLICT (user_id)
-                DO UPDATE SET
-                    nome = EXCLUDED.nome,
-                    idade = EXCLUDED.idade,
-                    email = EXCLUDED.email,
-                    senha = EXCLUDED.senha,
-                    codigo = EXCLUDED.codigo,
-                    atualizado_em = CURRENT_TIMESTAMP
-                RETURNING user_id, nome, idade, cidade, email, codigo;
-            """, (user_id, nome, idade_int, email, senha_hash, codigo))
-            usuario = cur.fetchone()
+                existente = cur.fetchone()
 
-    if usuario:
-        salvar_memoria(usuario["user_id"], "nome", usuario["nome"])
-        salvar_memoria(usuario["user_id"], "idade", str(usuario["idade"]))
+                if existente:
+                    return None, "Esse e-mail já tem uma conta. Faça login."
 
-    return usuario, None
+                cur.execute("""
+                    INSERT INTO usuarios (
+                        user_id, nome, idade, email, senha, codigo, atualizado_em
+                    )
+                    VALUES (%s, %s, %s, %s, %s, %s, CURRENT_TIMESTAMP)
+                    RETURNING user_id, nome, idade, cidade, email, codigo;
+                """, (
+                    user_id,
+                    nome,
+                    idade_int,
+                    email,
+                    senha_hash,
+                    codigo
+                ))
+
+                usuario = cur.fetchone()
+
+        return usuario, None
+
+    except Exception as e:
+        print("ERRO CADASTRO:", str(e))
+        return None, str(e)
 
 
 def buscar_usuario_por_email(email):
