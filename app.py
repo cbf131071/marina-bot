@@ -1426,7 +1426,7 @@ def home():
 def cadastro_page():
     if request.method == "GET":
         if usuario_logado():
-            return redirect(url_for("chat_page"))
+            return redirect(url_for("area_page"))
         return render_template("cadastro.html")
 
     nome = request.form.get("nome", "")
@@ -1445,14 +1445,14 @@ def cadastro_page():
 
     logar_usuario(usuario)
 
-    return redirect(url_for("chat_page"))
+    return redirect(url_for("area_page"))
 
 
 @app.route("/login", methods=["GET", "POST"])
 def login_page():
     if request.method == "GET":
         if usuario_logado():
-            return redirect(url_for("chat_page"))
+            return redirect(url_for("area_page"))
         return render_template("login.html")
 
     email = request.form.get("email", "")
@@ -1465,7 +1465,7 @@ def login_page():
 
     logar_usuario(usuario)
 
-    return redirect(url_for("chat_page"))
+    return redirect(url_for("area_page"))
 
 
 @app.route("/logout")
@@ -1486,6 +1486,16 @@ def api_sessao():
         "codigo_usuario": session.get("codigo_usuario", "")
     })
 
+
+
+@app.route("/area")
+def area_page():
+    if not usuario_logado():
+        return redirect(url_for("login_page"))
+    return render_template(
+        "area.html",
+        nome=session.get("nome", "amor")
+    )
 
 @app.route("/chat")
 def chat_page():

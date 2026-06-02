@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marina Alves</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:'Poppins',sans-serif;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:url('/static/home_marina.png') center center;
+    background-size:cover;
+    position:relative;
+}
+
+body::before{
+    content:'';
+    position:absolute;
+    inset:0;
+    background:rgba(0,0,0,.65);
+}
+
+.container{
+    position:relative;
+    z-index:2;
+    width:90%;
+    max-width:430px;
+    background:rgba(0,0,0,.70);
+    backdrop-filter:blur(12px);
+    border-radius:28px;
+    padding:35px 30px;
+    text-align:center;
+}
+
+.logo{
+    font-family:'Great Vibes',cursive;
+    color:#ff5ca8;
+    font-size:70px;
+    line-height:1;
+    margin-bottom:15px;
+}
+
+.avatar{
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    object-fit:cover;
+    border:4px solid #ff5ca8;
+    margin-bottom:20px;
+}
+
+h2{
+    color:white;
+    margin-bottom:10px;
+    font-size:30px;
+}
+
+p{
+    color:#d4d4d4;
+    margin-bottom:30px;
+    line-height:1.6;
+}
+
+.menu{
+    display:flex;
+    flex-direction:column;
+    gap:15px;
+}
+
+.btn{
+    display:block;
+    width:100%;
+    text-decoration:none;
+    padding:18px;
+    border-radius:16px;
+    font-size:18px;
+    font-weight:600;
+    transition:.3s;
+}
+
+.btn-chat{
+    background:#ff5ca8;
+    color:white;
+}
+
+.btn-chat:hover{
+    transform:translateY(-2px);
+}
+
+.btn-fotos{
+    background:#222;
+    color:white;
+}
+
+.btn-videos{
+    background:#222;
+    color:white;
+}
+
+.btn-sair{
+    background:#111;
+    color:#bbb;
+}
+
+.online{
+    color:#00ff66;
+    margin-bottom:20px;
+    font-size:14px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="logo">Marina Alves</div>
+
+    <img src="/static/home_marina.png" class="avatar">
+
+    <h2>Oi, {{ nome if nome else 'meu amor' }} 💕</h2>
+
+    <div class="online">● Marina está online agora</div>
+
+    <p>
+        Bem-vindo ao meu cantinho.<br>
+        Escolhe o que você quer ver primeiro...
+    </p>
+
+    <div class="menu">
+
+        <a href="/chat" class="btn btn-chat">
+            💬 Conversar Comigo
+        </a>
+
+        <a href="/fotos" class="btn btn-fotos">
+            📸 Fotos Exclusivas
+        </a>
+
+        <a href="/videos" class="btn btn-videos">
+            🎥 Vídeos Exclusivos
+        </a>
+
+        <a href="/logout" class="btn btn-sair">
+            🚪 Sair
+        </a>
+
+    </div>
+
+</div>
+
+</body>
+</html>
