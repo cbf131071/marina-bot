@@ -6,6 +6,7 @@ import uuid
 import os
 import random
 import re
+import requests
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from database import (
@@ -1712,6 +1713,175 @@ def chat():
             "user_id": str(uuid.uuid4()),
             "resposta": primeira_resposta(nome_fallback)
         })
+
+
+
+# =========================
+# TELEGRAM / BOT MARINA
+# =========================
+
+TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "").strip()
+
+
+def telegram_api_url(metodo):
+    if not TELEGRAM_BOT_TOKEN:
+        return None
+    return f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/{metodo}"
+
+
+def telegram_send_message(chat_id, texto):
+    if not TELEGRAM_BOT_TOKEN or not chat_id:
+        print("TELEGRAM: token ou chat_id ausente.")
+        return False
+
+    texto = (texto or "").strip()
+    if not texto:
+        texto = "oi"
+
+    try:
+        r = requests.post(
+            telegram_api_url("sendMessage"),
+            json={
+                "chat_id": chat_id,
+                "text": texto,
+                "disable_web_page_preview": True
+            },
+            timeout=20
+        )
+        if not r.ok:
+            print("ERRO TELEGRAM SEND:", r.status_code, r.text)
+            return False
+        return True
+    except Exception as erro:
+        print("ERRO TELEGRAM SEND EXCEPTION:", erro)
+        return False
+
+
+def resposta_marina_para_telegram(user_id, nome, mensagem):
+    try:
+        with app.test_client() as client_local:
+            resp = client_local.post(
+                "/api/chat",
+                json={
+                    "user_id": user_id,
+                    "nome": nome,
+                    "mensagem": mensagem,
+                    "codigo_usuario": user_id.replace("telegram_", "")
+                }
+            )
+
+            if resp.status_code != 200:
+                print("ERRO TELEGRAM -> /api/chat STATUS:", resp.status_code, resp.get_data(as_text=True))
+                return "tive um probleminha aqui… me manda de novo?"
+
+            data = resp.get_json(silent=True) or {}
+            return (data.get("resposta") or "oi").strip()
+
+    except Exception as erro:
+        print("ERRO TELEGRAM -> CHAT:", erro)
+        return "tive um probleminha aqui… me manda de novo?"
+
+
+@app.route("/telegram/webhook", methods=["POST"])
+def telegram_webhook():
+    try:
+        update = request.get_json(silent=True) or {}
+
+        message = update.get("message") or update.get("edited_message") or {}
+        chat = message.get("chat") or {}
+        from_user = message.get("from") or {}
+
+        chat_id = chat.get("id")
+        texto_usuario = (message.get("text") or "").strip()
+
+        if not chat_id:
+            return jsonify({"ok": True})
+
+        nome = limpar_nome(
+            from_user.get("first_name")
+            or chat.get("first_name")
+            or chat.get("username")
+            or "amor"
+        )
+
+        telegram_user_id = from_user.get("id") or chat_id
+        user_id = f"telegram_{telegram_user_id}"
+
+        if not texto_usuario:
+            telegram_send_message(chat_id, "me manda em texto, amor")
+            return jsonify({"ok": True})
+
+        if texto_usuario.lower().strip() in ["/start", "start", "começar", "comecar", "oi", "olá", "ola"]:
+            resposta = resposta_marina_para_telegram(
+                user_id=user_id,
+                nome=nome,
+                mensagem="ENTRADA AUTOMATICA NO CHAT"
+            )
+        else:
+            resposta = resposta_marina_para_telegram(
+                user_id=user_id,
+                nome=nome,
+                mensagem=texto_usuario
+            )
+
+        telegram_send_message(chat_id, resposta)
+
+        return jsonify({"ok": True})
+
+    except Exception as erro:
+        print("ERRO WEBHOOK TELEGRAM:", erro)
+        return jsonify({"ok": False, "erro": str(erro)}), 200
+
+
+@app.route("/telegram/status")
+def telegram_status():
+    return jsonify({
+        "ok": True,
+        "telegram_token_configurado": bool(TELEGRAM_BOT_TOKEN),
+        "webhook_url": "https://marina-bot-socn.onrender.com/telegram/webhook"
+    })
+
+
+@app.route("/telegram/set-webhook")
+def telegram_set_webhook():
+    senha_correta = os.environ.get("ADMIN_PASSWORD", "")
+    senha_recebida = request.args.get("senha", "")
+
+    if senha_correta and senha_recebida != senha_correta:
+        abort(403)
+
+    if not TELEGRAM_BOT_TOKEN:
+        return jsonify({
+            "ok": False,
+            "erro": "TELEGRAM_BOT_TOKEN não configurado no Render."
+        }), 500
+
+    webhook_url = "https://marina-bot-socn.onrender.com/telegram/webhook"
+
+    try:
+        r = requests.post(
+            telegram_api_url("setWebhook"),
+            json={"url": webhook_url},
+            timeout=20
+        )
+
+        try:
+            telegram_json = r.json()
+        except Exception:
+            telegram_json = {"raw": r.text}
+
+        return jsonify({
+            "ok": r.ok,
+            "status_code": r.status_code,
+            "telegram": telegram_json,
+            "webhook_url": webhook_url
+        })
+
+    except Exception as erro:
+        return jsonify({
+            "ok": False,
+            "erro": str(erro)
+        }), 500
 
 
 
