@@ -278,20 +278,31 @@ renderUsuarios();
 usuariosConhecidos.add(id);
 }
 
-if(mensagensConhecidas[id] !== undefined && total > mensagensConhecidas[id]){
-if(painelInicializado){
-tocarSom();
-notificar('💬 Nova mensagem', `${nome}: ${ultima}`);
-usuariosNovosDestacados.add(id);
-setTimeout(() => {
-usuariosNovosDestacados.delete(id);
-renderUsuarios();
-}, 5 * 60 * 1000);
-}
+const chaveAtual = `${total}|${u.ultima_interacao || ''}|${ultima}`;
+
+if(
+    mensagensConhecidas[id] &&
+    mensagensConhecidas[id] !== chaveAtual
+){
+    if(painelInicializado){
+
+        tocarSom();
+
+        notificar(
+            '💬 Nova mensagem',
+            `${nome}: ${ultima}`
+        );
+
+        usuariosNovosDestacados.add(id);
+
+        setTimeout(() => {
+            usuariosNovosDestacados.delete(id);
+            renderUsuarios();
+        }, 5 * 60 * 1000);
+    }
 }
 
-mensagensConhecidas[id] = total;
-});
+mensagensConhecidas[id] = chaveAtual;
 
 painelInicializado = true;
 
