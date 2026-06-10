@@ -15,6 +15,7 @@
         .top{padding:18px;border-bottom:1px solid rgba(255,255,255,.08);flex:0 0 auto}
         .top h1{font-size:22px;margin-bottom:6px}
         .top p{font-size:13px;color:#aaa}
+        .alerta-status{font-size:12px;color:#c4b5fd;margin-top:8px}
         .cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px;flex:0 0 auto}
         .card{background:#1b1b26;border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:14px}
         .card small{display:block;color:#aaa;font-size:12px;margin-bottom:8px}
@@ -24,6 +25,7 @@
         .users{overflow-y:auto;overflow-x:hidden;padding:0 10px 14px;flex:1 1 auto;min-height:0}
         .user{padding:12px;border-radius:14px;margin-bottom:8px;background:#181823;border:1px solid rgba(255,255,255,.05);cursor:pointer;transition:.15s}
         .user:hover,.user.active{background:#242436;border-color:rgba(255,255,255,.16)}
+        .user.alerta{border-color:#a855f7;box-shadow:0 0 0 1px rgba(168,85,247,.55)}
         .user-row{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:5px}
         .user-name{font-weight:700;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
         .badge{font-size:11px;padding:4px 8px;border-radius:999px;white-space:nowrap}
@@ -122,6 +124,7 @@
         <div class="top">
             <h1>Marina Dashboard</h1>
             <p>Monitoramento quase em tempo real do chat</p>
+            <div class="alerta-status" id="alertaStatus">🔔 Alertas carregando...</div>
         </div>
 
         <div class="cards">
@@ -175,6 +178,10 @@ let usuarioSelecionado = null;
 let filtro = '';
 let carregandoConversa = false;
 
+let painelInicializado = false;
+let statusUsuarios = {};
+let usuariosComAlertaVisual = new Set();
+
 const $ = (id) => document.getElementById(id);
 
 function apiUrl(path){
@@ -197,6 +204,11 @@ function statusClasse(status){
     if(status === 'online') return 'online';
     if(status === 'recente') return 'recente';
     return 'offline';
+}
+
+function origemUsuario(userId){
+    if(String(userId || '').startsWith('telegram_')) return 'Telegram';
+    return 'Site';
 }
 
 function normalizarListaUsuarios(data){
@@ -232,6 +244,101 @@ function normalizarMemorias(memorias){
     return [['memória', memorias]];
 }
 
+function atualizarStatusAlerta(){
+    const box = $('alertaStatus');
+    if(!box) return;
+
+    if(!('Notification' in window)){
+        box.innerText = '🔕 Notificações indisponíveis';
+        return;
+    }
+
+    if(Notification.permission === 'granted'){
+        box.innerText = '🔔 Alertas ativos';
+    }else if(Notification.permission === 'denied'){
+        box.innerText = '🔕 Notificação bloqueada';
+    }else{
+        box.innerText = '🔔 Clique na página para ativar alertas';
+    }
+}
+
+function pedirPermissaoNotificacao(){
+    try{
+        if(!('Notification' in window)){
+            atualizarStatusAlerta();
+            return;
+        }
+
+        if(Notification.permission === 'default'){
+            Notification.requestPermission().then(() => {
+                atualizarStatusAlerta();
+            });
+        }else{
+            atualizarStatusAlerta();
+        }
+    }catch(e){
+        atualizarStatusAlerta();
+    }
+}
+
+function tocarSom(){
+    try{
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'sine';
+        osc.frequency.value = 880;
+        gain.gain.value = 0.08;
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start();
+
+        setTimeout(() => {
+            try{ osc.stop(); }catch(e){}
+            try{ ctx.close(); }catch(e){}
+        }, 280);
+    }catch(e){}
+}
+
+function notificarWindows(titulo, texto){
+    try{
+        if(!('Notification' in window)) return;
+        if(Notification.permission !== 'granted') return;
+
+        new Notification(titulo, {
+            body: texto,
+            silent: false
+        });
+    }catch(e){}
+}
+
+function avisarUsuarioAtivo(u){
+    const id = u.user_id || '';
+    const nome = u.nome || 'Usuário';
+    const origem = origemUsuario(id);
+    const ultima = u.ultima_mensagem || 'Entrou para conversar';
+
+    tocarSom();
+
+    notificarWindows(
+        '💬 Alguém está na Marina',
+        `${nome} entrou pelo ${origem}: ${ultima}`
+    );
+
+    usuariosComAlertaVisual.add(id);
+
+    setTimeout(() => {
+        usuariosComAlertaVisual.delete(id);
+        renderUsuarios();
+    }, 5 * 60 * 1000);
+}
+
+document.addEventListener('click', pedirPermissaoNotificacao, {once:true});
+atualizarStatusAlerta();
+
 async function carregarResumo(){
     const r = await fetch(apiUrl('/api/admin/resumo'));
     if(!r.ok) throw new Error('Erro ao carregar resumo');
@@ -249,6 +356,25 @@ async function carregarUsuarios(){
 
     const data = await r.json();
     usuarios = normalizarListaUsuarios(data);
+
+    usuarios.forEach(u => {
+        const id = u.user_id || '';
+        if(!id) return;
+
+        const statusAtual = (u.status || 'offline').toLowerCase();
+        const statusAnterior = statusUsuarios[id] || 'desconhecido';
+
+        const ficouAtivo = (statusAtual === 'online' || statusAtual === 'recente');
+        const estavaInativo = (statusAnterior === 'offline' || statusAnterior === 'desconhecido');
+
+        if(painelInicializado && ficouAtivo && estavaInativo){
+            avisarUsuarioAtivo(u);
+        }
+
+        statusUsuarios[id] = statusAtual;
+    });
+
+    painelInicializado = true;
 
     renderUsuarios();
 }
@@ -269,14 +395,16 @@ function renderUsuarios(){
 
     box.innerHTML = lista.map(u => {
         const ativo = usuarioSelecionado === u.user_id ? 'active' : '';
+        const alerta = usuariosComAlertaVisual.has(u.user_id) ? 'alerta' : '';
         const status = u.status || 'offline';
+        const origem = origemUsuario(u.user_id);
         return `
-            <div class="user ${ativo}" onclick="selecionarUsuario('${escapar(u.user_id)}')">
+            <div class="user ${ativo} ${alerta}" onclick="selecionarUsuario('${escapar(u.user_id)}')">
                 <div class="user-row">
                     <div class="user-name">${escapar(u.nome || 'sem nome')}</div>
                     <span class="badge ${statusClasse(status)}">${escapar(status)}</span>
                 </div>
-                <div class="user-meta">${escapar(u.user_id || '')}</div>
+                <div class="user-meta">${escapar(origem)} • ${escapar(u.user_id || '')}</div>
                 <div class="user-meta">Msgs: ${u.total_mensagens || 0} • ${formatarData(u.ultima_interacao)}</div>
                 <div class="user-meta">${escapar(u.ultima_mensagem || '')}</div>
             </div>
@@ -286,6 +414,7 @@ function renderUsuarios(){
 
 async function selecionarUsuario(userId){
     usuarioSelecionado = userId;
+    usuariosComAlertaVisual.delete(userId);
     renderUsuarios();
     await carregarConversa(userId);
 }
@@ -304,7 +433,7 @@ async function carregarConversa(userId){
         const memorias = data.memorias || {};
 
         $('tituloChat').innerText = usuario.nome || userId;
-        $('subtituloChat').innerText = `${userId} • ${mensagens.length} mensagens`;
+        $('subtituloChat').innerText = `${origemUsuario(userId)} • ${userId} • ${mensagens.length} mensagens`;
 
         const chatBox = $('chatBox');
         if(mensagens.length === 0){
