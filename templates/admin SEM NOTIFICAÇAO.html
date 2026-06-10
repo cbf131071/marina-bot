@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Marina</title>
+
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        html,body{width:100%;height:100%}
+        body{font-family:Arial,Helvetica,sans-serif;background:#0b0b10;color:#fff;height:100vh;overflow:hidden}
+
+        .app{display:grid;grid-template-columns:360px 1fr;height:100vh;min-height:0;overflow:hidden}
+        .sidebar{background:#12121a;border-right:1px solid rgba(255,255,255,.08);display:flex;flex-direction:column;min-width:0;min-height:0;overflow:hidden}
+        .top{padding:18px;border-bottom:1px solid rgba(255,255,255,.08);flex:0 0 auto}
+        .top h1{font-size:22px;margin-bottom:6px}
+        .top p{font-size:13px;color:#aaa}
+        .cards{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px;flex:0 0 auto}
+        .card{background:#1b1b26;border:1px solid rgba(255,255,255,.07);border-radius:16px;padding:14px}
+        .card small{display:block;color:#aaa;font-size:12px;margin-bottom:8px}
+        .card strong{font-size:24px}
+        .search{padding:0 14px 12px;flex:0 0 auto}
+        .search input{width:100%;height:42px;border:none;outline:none;border-radius:12px;background:#20202d;color:#fff;padding:0 14px;font-size:14px}
+        .users{overflow-y:auto;overflow-x:hidden;padding:0 10px 14px;flex:1 1 auto;min-height:0}
+        .user{padding:12px;border-radius:14px;margin-bottom:8px;background:#181823;border:1px solid rgba(255,255,255,.05);cursor:pointer;transition:.15s}
+        .user:hover,.user.active{background:#242436;border-color:rgba(255,255,255,.16)}
+        .user-row{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:5px}
+        .user-name{font-weight:700;font-size:15px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+        .badge{font-size:11px;padding:4px 8px;border-radius:999px;white-space:nowrap}
+        .online{background:#123d22;color:#48ff84}
+        .recente{background:#3d3212;color:#ffd35a}
+        .offline{background:#333;color:#aaa}
+        .user-meta{font-size:12px;color:#aaa;line-height:1.45;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+        .main{display:flex;flex-direction:column;min-width:0;min-height:0;background:#0b0b10;overflow:hidden}
+        .chat-head{height:82px;min-height:82px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;justify-content:space-between;align-items:center;padding:0 22px;background:#101018;flex:0 0 auto}
+        .chat-title h2{font-size:21px;margin-bottom:5px}
+        .chat-title p{font-size:13px;color:#aaa}
+        .refresh{border:none;background:#7c3aed;color:#fff;padding:12px 16px;border-radius:12px;cursor:pointer;font-weight:700}
+
+        .content{display:grid;grid-template-columns:minmax(0,1fr) 300px;flex:1 1 auto;min-height:0;overflow:hidden}
+
+        .chat-box{
+            height:100%;
+            min-height:0;
+            overflow-y:auto;
+            overflow-x:hidden;
+            padding:14px 18px;
+            display:flex;
+            flex-direction:column;
+            gap:8px;
+        }
+
+        .empty{height:100%;display:flex;align-items:center;justify-content:center;color:#777;text-align:center;font-size:16px}
+
+        .msg{
+            display:flex;
+            flex-direction:column;
+            width:auto;
+            min-width:70px;
+            max-width:260px;
+            padding:5px 8px 4px;
+            border-radius:11px;
+            line-height:1.15;
+            font-size:12.5px;
+            white-space:normal;
+            overflow-wrap:anywhere;
+            word-break:normal;
+        }
+
+        .msg-text{
+            display:block;
+            width:auto;
+            max-width:244px;
+            white-space:pre-wrap;
+        }
+
+        .msg.user{
+            align-self:flex-end;
+            background:linear-gradient(135deg,#7c3aed,#9333ea);
+            border-bottom-right-radius:4px;
+        }
+
+        .msg.assistant{
+            align-self:flex-start;
+            background:#242431;
+            border-bottom-left-radius:4px;
+        }
+
+        .msg small{
+            display:block;
+            margin-top:3px;
+            opacity:.52;
+            font-size:8.5px;
+            line-height:1.05;
+            white-space:nowrap;
+        }
+
+        .memories{border-left:1px solid rgba(255,255,255,.08);background:#111119;padding:16px;overflow-y:auto;overflow-x:hidden;min-height:0}
+        .memories h3{font-size:17px;margin-bottom:12px}
+        .memory{background:#1b1b26;border:1px solid rgba(255,255,255,.06);border-radius:12px;padding:11px;margin-bottom:8px}
+        .memory small{display:block;color:#999;font-size:11px;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+        .memory strong{font-size:14px;font-weight:600;word-break:break-word}
+        .hint{font-size:12px;color:#888;margin-top:14px;line-height:1.4}
+
+        @media(max-width:900px){
+            body{overflow:auto}
+            .app{grid-template-columns:1fr;height:auto;min-height:100vh;overflow:visible}
+            .sidebar{height:52vh}
+            .content{grid-template-columns:1fr;overflow:visible}
+            .memories{border-left:none;border-top:1px solid rgba(255,255,255,.08);max-height:260px}
+            .chat-box{height:55vh}
+            .chat-head{position:sticky;top:0;z-index:5}
+            .msg{max-width:82%}
+            .msg-text{max-width:100%}
+        }
+    </style>
+</head>
+<body>
+<div class="app">
+    <aside class="sidebar">
+        <div class="top">
+            <h1>Marina Dashboard</h1>
+            <p>Monitoramento quase em tempo real do chat</p>
+        </div>
+
+        <div class="cards">
+            <div class="card"><small>Usuários</small><strong id="totalUsuarios">0</strong></div>
+            <div class="card"><small>Online</small><strong id="usuariosOnline">0</strong></div>
+            <div class="card"><small>Conversas hoje</small><strong id="conversasHoje">0</strong></div>
+            <div class="card"><small>Mensagens hoje</small><strong id="mensagensHoje">0</strong></div>
+        </div>
+
+        <div class="search">
+            <input type="text" id="busca" placeholder="Buscar usuário, nome, cidade...">
+        </div>
+
+        <div class="users" id="listaUsuarios"></div>
+    </aside>
+
+    <main class="main">
+        <div class="chat-head">
+            <div class="chat-title">
+                <h2 id="tituloChat">Selecione um usuário</h2>
+                <p id="subtituloChat">As conversas atualizam sozinhas a cada 5 segundos</p>
+            </div>
+            <button class="refresh" onclick="carregarTudo()">Atualizar</button>
+        </div>
+
+        <div class="content">
+            <section class="chat-box" id="chatBox">
+                <div class="empty">Escolhe alguém na lista para ver o chat completo.</div>
+            </section>
+
+            <aside class="memories">
+                <h3>Memórias</h3>
+                <div id="memoriasBox">
+                    <div class="hint">Quando selecionar um usuário, aparecem aqui nome, cidade, idade e outras informações salvas.</div>
+                </div>
+                <div class="hint">
+                    Online = última interação até 3 minutos.<br>
+                    Recente = até 15 minutos.<br>
+                    Offline = passou disso.
+                </div>
+            </aside>
+        </div>
+    </main>
+</div>
+
+<script>
+const params = new URLSearchParams(window.location.search);
+const senha = params.get('senha') || '';
+let usuarios = [];
+let usuarioSelecionado = null;
+let filtro = '';
+let carregandoConversa = false;
+
+const $ = (id) => document.getElementById(id);
+
+function apiUrl(path){
+    const sep = path.includes('?') ? '&' : '?';
+    return `${path}${sep}senha=${encodeURIComponent(senha)}`;
+}
+
+function formatarData(valor){
+    if(!valor) return 'sem data';
+    const d = new Date(valor);
+    if(isNaN(d.getTime())) return valor;
+    return d.toLocaleString('pt-BR', {dateStyle:'short', timeStyle:'short'});
+}
+
+function escapar(texto){
+    return String(texto ?? '').replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+}
+
+function statusClasse(status){
+    if(status === 'online') return 'online';
+    if(status === 'recente') return 'recente';
+    return 'offline';
+}
+
+function normalizarListaUsuarios(data){
+    if(Array.isArray(data)) return data;
+    if(data && Array.isArray(data.usuarios)) return data.usuarios;
+    if(data && Array.isArray(data.data)) return data.data;
+    if(data && Array.isArray(data.lista)) return data.lista;
+    if(data && Array.isArray(data.resultado)) return data.resultado;
+    return [];
+}
+
+function normalizarMemorias(memorias){
+    if(!memorias) return [];
+    if(Array.isArray(memorias)) return memorias.map((item, index) => {
+        if(item && typeof item === 'object'){
+            return [
+                item.chave || item.key || item.nome || `memória ${index + 1}`,
+                item.valor || item.value || item.content || item.texto || JSON.stringify(item)
+            ];
+        }
+        return [`memória ${index + 1}`, item];
+    });
+
+    if(typeof memorias === 'object'){
+        return Object.entries(memorias).map(([chave, valor]) => {
+            if(valor && typeof valor === 'object'){
+                return [chave, valor.valor || valor.value || valor.content || valor.texto || JSON.stringify(valor)];
+            }
+            return [chave, valor];
+        });
+    }
+
+    return [['memória', memorias]];
+}
+
+async function carregarResumo(){
+    const r = await fetch(apiUrl('/api/admin/resumo'));
+    if(!r.ok) throw new Error('Erro ao carregar resumo');
+    const data = await r.json();
+
+    $('totalUsuarios').innerText = data.total_usuarios ?? 0;
+    $('usuariosOnline').innerText = data.usuarios_online ?? 0;
+    $('conversasHoje').innerText = data.conversas_hoje ?? 0;
+    $('mensagensHoje').innerText = data.mensagens_hoje ?? 0;
+}
+
+async function carregarUsuarios(){
+    const r = await fetch(apiUrl('/api/admin/usuarios'));
+    if(!r.ok) throw new Error('Erro ao carregar usuários');
+
+    const data = await r.json();
+    usuarios = normalizarListaUsuarios(data);
+
+    renderUsuarios();
+}
+
+function renderUsuarios(){
+    const box = $('listaUsuarios');
+    const termo = filtro.toLowerCase().trim();
+
+    const lista = usuarios.filter(u => {
+        if(!termo) return true;
+        return `${u.user_id || ''} ${u.nome || ''} ${u.cidade || ''} ${u.ultima_mensagem || ''}`.toLowerCase().includes(termo);
+    });
+
+    if(lista.length === 0){
+        box.innerHTML = '<div class="empty">Nenhum usuário encontrado.</div>';
+        return;
+    }
+
+    box.innerHTML = lista.map(u => {
+        const ativo = usuarioSelecionado === u.user_id ? 'active' : '';
+        const status = u.status || 'offline';
+        return `
+            <div class="user ${ativo}" onclick="selecionarUsuario('${escapar(u.user_id)}')">
+                <div class="user-row">
+                    <div class="user-name">${escapar(u.nome || 'sem nome')}</div>
+                    <span class="badge ${statusClasse(status)}">${escapar(status)}</span>
+                </div>
+                <div class="user-meta">${escapar(u.user_id || '')}</div>
+                <div class="user-meta">Msgs: ${u.total_mensagens || 0} • ${formatarData(u.ultima_interacao)}</div>
+                <div class="user-meta">${escapar(u.ultima_mensagem || '')}</div>
+            </div>
+        `;
+    }).join('');
+}
+
+async function selecionarUsuario(userId){
+    usuarioSelecionado = userId;
+    renderUsuarios();
+    await carregarConversa(userId);
+}
+
+async function carregarConversa(userId){
+    if(!userId || carregandoConversa) return;
+    carregandoConversa = true;
+
+    try{
+        const r = await fetch(apiUrl(`/api/admin/conversa/${encodeURIComponent(userId)}`));
+        if(!r.ok) throw new Error('Erro ao carregar conversa');
+        const data = await r.json();
+
+        const usuario = data.usuario || {};
+        const mensagens = Array.isArray(data.mensagens) ? data.mensagens : [];
+        const memorias = data.memorias || {};
+
+        $('tituloChat').innerText = usuario.nome || userId;
+        $('subtituloChat').innerText = `${userId} • ${mensagens.length} mensagens`;
+
+        const chatBox = $('chatBox');
+        if(mensagens.length === 0){
+            chatBox.innerHTML = '<div class="empty">Sem mensagens ainda.</div>';
+        } else {
+            chatBox.innerHTML = mensagens.map(m => {
+                const tipo = m.role === 'assistant' ? 'assistant' : 'user';
+                const autor = tipo === 'assistant' ? 'Marina' : 'Usuário';
+                return `
+                    <div class="msg ${tipo}">
+                        <span class="msg-text">${escapar(m.content || '')}</span>
+                        <small>${autor} • ${formatarData(m.criado_em)}</small>
+                    </div>
+                `;
+            }).join('');
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+
+        const memBox = $('memoriasBox');
+        const entradas = normalizarMemorias(memorias);
+
+        if(entradas.length === 0){
+            memBox.innerHTML = '<div class="hint">Nenhuma memória salva para esse usuário ainda.</div>';
+        } else {
+            memBox.innerHTML = entradas.map(([chave, valor]) => `
+                <div class="memory">
+                    <small>${escapar(chave)}</small>
+                    <strong>${escapar(valor)}</strong>
+                </div>
+            `).join('');
+        }
+    } catch(e){
+        $('chatBox').innerHTML = `<div class="empty">Erro ao carregar conversa: ${escapar(e.message)}</div>`;
+    } finally{
+        carregandoConversa = false;
+    }
+}
+
+async function carregarTudo(){
+    try{
+        await Promise.all([carregarResumo(), carregarUsuarios()]);
+        if(usuarioSelecionado){
+            await carregarConversa(usuarioSelecionado);
+        }
+    } catch(e){
+        $('listaUsuarios').innerHTML = `<div class="empty">Erro: ${escapar(e.message)}<br><br>Confere a senha ADMIN_PASSWORD e a URL.</div>`;
+    }
+}
+
+$('busca').addEventListener('input', (e) => {
+    filtro = e.target.value;
+    renderUsuarios();
+});
+
+carregarTudo();
+setInterval(carregarTudo, 5000);
+</script>
+</body>
+</html>

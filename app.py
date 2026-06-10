@@ -1322,7 +1322,7 @@ def chamar_modelo(mensagens):
             messages=mensagens,
             model="llama-3.3-70b-versatile",
             temperature=0.54,
-            max_completion_tokens=180
+            max_completion_tokens=300
         )
 
         texto = resposta.choices[0].message.content.strip()
