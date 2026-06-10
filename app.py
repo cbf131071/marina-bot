@@ -889,8 +889,8 @@ def encurtar_resposta(text):
     if len(partes) > 2:
         text = " ".join(partes[:2]).strip()
 
-    if len(text) > 180:
-        text = text[:180].rsplit(" ", 1)[0].strip()
+    if len(text) > 280:
+        text = text[:280].rsplit(" ", 1)[0].strip()
 
     return text
 
@@ -1322,7 +1322,7 @@ def chamar_modelo(mensagens):
             messages=mensagens,
             model="llama-3.3-70b-versatile",
             temperature=0.54,
-            max_completion_tokens=65
+            max_completion_tokens=180
         )
 
         texto = resposta.choices[0].message.content.strip()
@@ -1338,7 +1338,7 @@ def chamar_modelo(mensagens):
             messages=mensagens,
             model="llama-3.1-8b-instant",
             temperature=0.52,
-            max_completion_tokens=55
+            max_completion_tokens=180
         )
 
         texto = resposta.choices[0].message.content.strip()
