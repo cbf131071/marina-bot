@@ -7,6 +7,7 @@ import os
 import random
 import re
 import requests
+import time
 from werkzeug.security import generate_password_hash, check_password_hash
 
 from database import (
@@ -1869,6 +1870,9 @@ def chat():
         texto = sanitize_response(texto)
         texto = controlar_uso_nome(texto, nome)
         texto = encurtar_resposta(texto)
+
+        # Delay humano de digitação
+        time.sleep(random.uniform(2.0, 6.5))
 
         if not texto:
             texto = resposta_segura()
