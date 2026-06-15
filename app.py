@@ -233,7 +233,48 @@ def detectar_pedido_compra_ou_link(mensagem):
     return any(f in m for f in frases)
 
 
+def detectar_interesse_em_fotos(mensagem):
+    m = normalizar(mensagem)
+
+    frases = [
+        "voce vende fotos",
+        "você vende fotos",
+        "tu vende fotos",
+        "vende fotos",
+        "tem fotos para vender",
+        "tem fotos pra vender",
+        "tu tem fotos para vender",
+        "tu tem fotos pra vender",
+        "você tem fotos para vender",
+        "voce tem fotos para vender",
+        "você tem fotos pra vender",
+        "voce tem fotos pra vender",
+        "tem pacote de fotos",
+        "tem pacote",
+        "vende pacote",
+        "vende conteudo",
+        "vende conteúdo",
+        "tem fotos suas",
+        "tem fotos exclusivas",
+        "fotos exclusivas",
+        "tem ensaio",
+        "tem ensaio seu"
+    ]
+
+    return any(f in m for f in frases)
+
+
+def resposta_interesse_fotos():
+    return random.choice([
+        "sim, amor ❤️ tenho um pacote com 35 fotos exclusivas minhas na fazenda... tem rio, feno, curral, horta, quarto, shortinho e lingerie",
+        "tenho sim 😘 é um pacote com 35 fotos minhas mais sensuais na fazenda, diferente do que eu posto normalmente",
+        "tenho, amor ❤️ são 35 fotos exclusivas minhas, com clima de fazenda, rio, shortinho, lingerie e umas poses mais especiais",
+        "sim 😏 eu tenho um ensaio chamado Roça Quente, com 35 fotos minhas mais sensuais na fazenda"
+    ])
+
+
 def resposta_link_pacote():
+
     return random.choice([
         f"claro ❤️ é por aqui:\n\n{PACOTE_ROCA_QUENTE_LINK}\n\ndepois me conta o que achou",
         f"te mando sim 😘\n\n{PACOTE_ROCA_QUENTE_LINK}\n\né o meu pacote {PACOTE_ROCA_QUENTE_NOME}",
@@ -1779,6 +1820,9 @@ def chat():
 
         if detectar_pedido_compra_ou_link(mensagem):
             texto = resposta_link_pacote()
+
+        elif detectar_interesse_em_fotos(mensagem):
+            texto = resposta_interesse_fotos()
 
         elif detectar_pergunta_nudez(mensagem):
             texto = resposta_nudez()
