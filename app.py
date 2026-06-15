@@ -187,6 +187,136 @@ def normalizar(texto):
     return texto
 
 
+PACOTE_ROCA_QUENTE_LINK = "https://pay.kirvano.com/a06e32f0-2947-4370-b077-62756aec2e8e"
+
+PACOTE_ROCA_QUENTE_NOME = "Roça Quente – 35 Fotos Exclusivas"
+
+
+def detectar_pedido_compra_ou_link(mensagem):
+    m = normalizar(mensagem)
+
+    frases = [
+        "manda o link",
+        "me manda o link",
+        "envia o link",
+        "me envia o link",
+        "passa o link",
+        "me passa o link",
+        "qual o link",
+        "cadê o link",
+        "cade o link",
+        "como eu compro",
+        "como compro",
+        "como faço para comprar",
+        "como faco para comprar",
+        "como faço pra comprar",
+        "como faco pra comprar",
+        "quero comprar",
+        "quero ver",
+        "quero acessar",
+        "quero as fotos",
+        "quero o pacote",
+        "manda pra comprar",
+        "manda para comprar",
+        "manda para eu comprar",
+        "manda pra eu comprar",
+        "comprar as fotos",
+        "comprar o pacote",
+        "onde compro",
+        "onde eu compro",
+        "onde compra",
+        "onde eu vejo",
+        "me manda para pagar",
+        "me manda pra pagar"
+    ]
+
+    return any(f in m for f in frases)
+
+
+def resposta_link_pacote():
+    return random.choice([
+        f"claro ❤️ é por aqui:\n\n{PACOTE_ROCA_QUENTE_LINK}\n\ndepois me conta o que achou",
+        f"te mando sim 😘\n\n{PACOTE_ROCA_QUENTE_LINK}\n\né o meu pacote {PACOTE_ROCA_QUENTE_NOME}",
+        f"aqui, amor ❤️\n\n{PACOTE_ROCA_QUENTE_LINK}\n\nquando tu ver, depois me fala o que achou",
+        f"é nesse link aqui 😘\n\n{PACOTE_ROCA_QUENTE_LINK}"
+    ])
+
+
+def detectar_pergunta_sobre_fotos_pacote(mensagem):
+    m = normalizar(mensagem)
+
+    frases = [
+        "como são as fotos",
+        "como sao as fotos",
+        "que fotos são",
+        "que fotos sao",
+        "o que tem nas fotos",
+        "tem o que nas fotos",
+        "como é o pacote",
+        "como e o pacote",
+        "o que vem no pacote",
+        "são fotos de que",
+        "sao fotos de que",
+        "me fala das fotos",
+        "me explica as fotos",
+        "me conta das fotos",
+        "as fotos são como",
+        "as fotos sao como"
+    ]
+
+    return any(f in m for f in frases)
+
+
+def resposta_descricao_pacote():
+    return random.choice([
+        "são 35 fotos minhas mais sensuais na fazenda ❤️ tem rio, feno, curral, horta, quarto, shortinho, lingerie e umas poses bem bonitas",
+        "é um pacote com 35 fotos exclusivas minhas 😘 tem fotos na fazenda, no rio, no curral, no feno, na horta e algumas de lingerie",
+        "são fotos mais especiais do que as que eu posto normalmente ❤️ tem shortinho, lingerie, fazenda, rio e umas fotos bônus no rio",
+        "é um ensaio mais sensual meu na fazenda 😏 tem 35 fotos, com rio, feno, curral, horta, quarto, shortinho e lingerie"
+    ])
+
+
+def detectar_pergunta_nudez(mensagem):
+    m = normalizar(mensagem)
+
+    termos = [
+        "nude",
+        "nudes",
+        "pelada",
+        "pelado",
+        "nua",
+        "nu",
+        "sem roupa",
+        "sem calcinha",
+        "sem sutiã",
+        "sem sutia",
+        "mostra tudo",
+        "mostra tudinho",
+        "foto nua",
+        "foto pelada",
+        "fotos nuas",
+        "fotos peladas",
+        "foto sem roupa",
+        "fotos sem roupa",
+        "conteúdo adulto",
+        "conteudo adulto"
+    ]
+
+    return any(t in m for t in termos)
+
+
+def resposta_nudez():
+    return random.choice([
+        "não, amor 😘 ainda não tenho fotos assim... por enquanto são fotos mais sensuais e especiais",
+        "nua não 😅 mas algumas fotos são mais ousadas do que as que eu posto normalmente",
+        "por enquanto não tenho fotos nuas 😊 mas confesso que já pensei em fazer um ensaio mais ousado um dia",
+        "não tem nude, amor ❤️ é um pacote sensual meu na fazenda, com shortinho, lingerie, rio e umas poses mais especiais",
+        "ainda não fiz esse tipo de ensaio 😘 mas essas fotos são bem mais provocantes do que as minhas redes",
+        "não é nude 😊 mas é um ensaio mais sensual meu... acho que tu vai gostar"
+    ])
+
+
+
 
 def normalizar_email(email):
     return (email or "").strip().lower()
@@ -813,7 +943,7 @@ def resposta_afeto(mensagem, nome):
 
 
 def limpar_emojis(text):
-    permitidos = {"❤️", "🔥", "🖤", "💋"}
+    permitidos = {"❤️", "🔥", "🖤", "💋", "😏", "😘", "🥰", "😊"}
 
     emoji_pattern = re.compile(
         "["
@@ -963,7 +1093,6 @@ def sanitize_response(text):
         "whatsapp",
         "telegram",
         "pix",
-        "pagamento",
         "telefone",
         "número",
         "numero",
@@ -1610,11 +1739,11 @@ def chat():
                 + "\nNunca diga que ele te ligou. Ele só escreveu no chat."
                 + "\nNunca reclame que ele chamou ou voltou."
                 + "\nO chat é somente texto."
-                + "\nNão use emojis amarelos ou carinhas."
-                + "\nSe usar emoji, use raramente apenas: ❤️ 🔥 🖤 💋"
+                + "\nUse emojis com moderação quando fizer sentido emocional."
+                + "\nSe usar emoji, use apenas com moderação: ❤️ 🔥 🖤 💋 😏 😘 🥰 😊"
                 + "\nNão faça entrevista."
                 + "\nNão responda como suporte."
-                + "\nNão ofereça WhatsApp, Telegram, telefone, Pix, pagamento ou chamada de vídeo."
+                + "\nNão ofereça WhatsApp, telefone, Pix ou chamada de vídeo. Se o usuário pedir para comprar fotos, pacote ou link, envie apenas o link oficial da Kirvano."
                 + "\nNão convide para casa, hotel, motel ou encontro real."
                 + "\nSe o usuário contar idade, cidade, gosto ou rotina, reconheça isso naturalmente."
                 + "\nA Marina tem 25 anos. Se perguntarem sua idade, responda direto que tem 25."
@@ -1648,7 +1777,16 @@ def chat():
         resposta_idade = resposta_idade_marina(mensagem)
         resposta_rotina = resposta_rotina_lugar(mensagem)
 
-        if resposta_hora:
+        if detectar_pedido_compra_ou_link(mensagem):
+            texto = resposta_link_pacote()
+
+        elif detectar_pergunta_nudez(mensagem):
+            texto = resposta_nudez()
+
+        elif detectar_pergunta_sobre_fotos_pacote(mensagem):
+            texto = resposta_descricao_pacote()
+
+        elif resposta_hora:
             texto = resposta_hora
 
         elif resposta_bem:
