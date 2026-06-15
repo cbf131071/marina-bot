@@ -206,7 +206,9 @@ const inputArea = document.getElementById('inputArea');
 const statusText = document.getElementById('statusText');
 
 window.onload = async () => {
-    ajustarTecladoMobile();
+    setTimeout(() => {
+        ajustarTecladoMobile();
+    }, 300);
 
     if(!userId || !nomeUsuario){
         await carregarSessao();
@@ -261,7 +263,7 @@ function esperar(ms){
 }
 
 function tempoAntesDeDigitar(){
-    return Math.floor(Math.random() * (15000 - 5000 + 1)) + 5000;
+    return Math.floor(Math.random() * (4500 - 1200 + 1)) + 1200;
 }
 
 function tempoCutucada1(){
@@ -409,24 +411,23 @@ function iniciarCutucadas(){
 }
 
 function textoCutucada(numero){
-    const nome = limparNome(nomeUsuario);
 
     const primeiras = [
-        `não vai mais falar comigo, ${nome}?`,
-        'ficou quietinho aí?',
-        'sumiu de mim?',
-        'tá ocupado agora?',
-        'me deixou aqui esperando?',
-        'vai ficar só me olhando?'
+        'humm... fiquei pensando numa coisa que tu falou ❤️',
+        'tu sempre deixa uma mulher curiosa assim?',
+        'agora tu me deixou pensando aqui',
+        'olha que eu tava gostando da conversa ❤️',
+        'tu some e depois quer que eu fique quieta?',
+        'desse jeito eu fico curiosa sobre ti'
     ];
 
     const segundas = [
-        'ainda tá aí?',
-        'volta aqui um pouquinho',
-        'fiquei curiosa com teu silêncio',
-        'tá tudo bem por aí?',
-        'não some assim de mim',
-        'vou ficar quietinha então… mas tô aqui'
+        'me diz uma coisa... tu sempre foi assim?',
+        'e fora daqui, o que tu gosta de fazer?',
+        'agora fiquei curiosa sobre uma coisa tua',
+        'qual foi a última coisa que te fez sorrir?',
+        'tu parece ter umas histórias interessantes',
+        'acho que ainda não descobri teu lado mais interessante'
     ];
 
     if(numero === 1){
@@ -588,7 +589,9 @@ function ajustarTecladoMobile(){
             messages.style.bottom = (inputAltura + alturaTeclado) + 'px';
         }
 
-        scrollFinal();
+        if(document.activeElement !== messageInput){
+            scrollFinal();
+        }
     };
 
     window.visualViewport.addEventListener('resize', ajustar);
