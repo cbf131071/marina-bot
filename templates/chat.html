@@ -267,11 +267,11 @@ function tempoAntesDeDigitar(){
 }
 
 function tempoCutucada1(){
-    return 15000;
+    return 20000;
 }
 
 function tempoCutucada2(){
-    return 35000;
+    return 40000;
 }
 
 function saudacaoLocal(){
@@ -443,8 +443,8 @@ async function enviarCutucada(numero){
 
     const tempoSemUsuario = Date.now() - ultimaAtividadeUsuario;
 
-    if(numero === 1 && tempoSemUsuario < 12000) return;
-    if(numero === 2 && tempoSemUsuario < 30000) return;
+    if(numero === 1 && tempoSemUsuario < 18000) return;
+    if(numero === 2 && tempoSemUsuario < 38000) return;
     if(cutucadasEnviadas >= 2) return;
 
     cutucadasEnviadas += 1;
