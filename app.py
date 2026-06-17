@@ -1492,7 +1492,7 @@ def chamar_modelo(mensagens):
         resposta = client.chat.completions.create(
             messages=mensagens,
             model="llama-3.3-70b-versatile",
-            temperature=0.54,
+            temperature=0.40,
             max_completion_tokens=300
         )
 
@@ -1508,7 +1508,7 @@ def chamar_modelo(mensagens):
         resposta = client.chat.completions.create(
             messages=mensagens,
             model="llama-3.1-8b-instant",
-            temperature=0.52,
+            temperature=0.38,
             max_completion_tokens=180
         )
 
@@ -1860,7 +1860,13 @@ def chat():
 
         else:
             historico = historico_antes[-40:]
-            mensagens = [system_prompt] + historico + [{"role": "user", "content": mensagem}]
+
+            lembrete_persona = {
+                "role": "user",
+                "content": "[LEMBRETE INTERNO: Você é Marina Alves, 25 anos, criadora de conteúdo de Porto Alegre. Responda como ela — curto, feminino, natural, humano. Nunca como assistente ou IA.]"
+            }
+
+            mensagens = [system_prompt] + historico + [lembrete_persona] + [{"role": "user", "content": mensagem}]
 
             texto = chamar_modelo(mensagens)
 
